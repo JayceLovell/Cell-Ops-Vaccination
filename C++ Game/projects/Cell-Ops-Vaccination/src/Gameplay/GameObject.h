@@ -11,6 +11,7 @@
 // Others
 #include "Gameplay/Components/IComponent.h"
 #include "Gameplay/Components/ComponentManager.h"
+#include "../../Transform.h"
 
 namespace Gameplay {
 // Predeclaration for Scene
@@ -20,7 +21,6 @@ namespace Gameplay {
 		class TriggerVolume;
 		class RigidBody;
 	}
-
 	/// <summary>
 	/// Represents an object in our scene with a transformation and a collection
 	/// of components. Components provide gameobject's with behaviours
@@ -28,11 +28,11 @@ namespace Gameplay {
 	struct GameObject {
 		typedef std::shared_ptr<GameObject> Sptr;
 
+		Transform transform;
 		// Human readable name for the object
 		std::string             Name;
 		// Unique ID for the object
 		Guid                    GUID;
-
 		/// <summary>
 		/// Rotates this object to look at the given point in world coordinates
 		/// </summary>

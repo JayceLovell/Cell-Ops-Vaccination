@@ -463,7 +463,9 @@ void CreateScene() {
 			ICollider::Sptr box = BoxCollider::Create();
 			box->SetScale(glm::vec3(2.0f));
 			box->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
-			physics->AddCollider(box);			
+			physics->AddCollider(box);	
+
+		
 		}
 		//
 		//GameObject::Sptr FastEnemy = scene->CreateGameObject("FastEnemy");
@@ -523,6 +525,13 @@ void CreateScene() {
 		// Save the scene to a JSON file
 		scene->Save("scene.json");
 	}
+}
+
+// Templated LERP function
+template<typename T>
+T LERP(const T& p0, const T& p1, float t)
+{
+	return (1.0f - t) * p0 + t * p1;
 }
 
 int main() {
@@ -637,6 +646,8 @@ int main() {
 		// Calculate the time since our last frame (dt)
 		double thisFrame = glfwGetTime();
 		float dt = static_cast<float>(thisFrame - lastFrame);
+
+
 
 		// Draw our material properties window!
 		DrawMaterialsWindow();
