@@ -3,7 +3,7 @@
 #include "Gameplay/GameObject.h"
 #include <Gameplay/Components/IComponent.h>
 #include <main.cpp>
-#include "PathSampler.h"
+#include "Utils/PathUtility.h"
 
 
 class CPathAnimation

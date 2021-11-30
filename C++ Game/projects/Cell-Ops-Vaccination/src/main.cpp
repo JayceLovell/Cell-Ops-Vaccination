@@ -527,12 +527,12 @@ void CreateScene() {
 	}
 }
 
-// Templated LERP function
-template<typename T>
-T LERP(const T& p0, const T& p1, float t)
-{
-	return (1.0f - t) * p0 + t * p1;
-}
+//// Templated LERP function
+//template<typename T>
+//T LERP(const T& p0, const T& p1, float t)
+//{
+//	return (1.0f - t) * p0 + t * p1;
+//}
 
 int main() {
 	Logger::Init(); // We'll borrow the logger from the toolkit, but we need to initialize it

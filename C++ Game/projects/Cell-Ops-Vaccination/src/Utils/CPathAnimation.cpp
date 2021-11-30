@@ -1,4 +1,5 @@
 #include "CPathAnimation.h"
+#include "Utils/PathUtility.h"
 
 CPathAnimation::CPathAnimation(GameObject& owner) 
 {
