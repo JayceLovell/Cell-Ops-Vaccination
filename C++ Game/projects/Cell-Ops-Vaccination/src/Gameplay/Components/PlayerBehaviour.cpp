@@ -45,14 +45,6 @@ void PlayerBehaviour::OnLeavingTrigger(const std::shared_ptr<Gameplay::Physics::
 
 
 void PlayerBehaviour::Update(float deltaTime) {
-
-	if (glfwGetKey(GetGameObject()->GetScene()->Window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
-		if (GetGameObject()->GetScene()->IsPlaying) {
-			GetGameObject()->GetScene()->IsPlaying = false;
-		}
-		else
-			GetGameObject()->GetScene()->IsPlaying = true;
-	}
 	GetGameObject()->SetRotation(GetGameObject()->GetScene()->FindObjectByName("Main Camera")->GetRotation());
 	GetGameObject()->SetPostion(GetGameObject()->GetScene()->FindObjectByName("Main Camera")->GetPosition());
 }

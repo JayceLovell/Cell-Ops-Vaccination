@@ -1,6 +1,8 @@
 #include "Scene.h"
 
 #include <GLFW/glfw3.h>
+#include <locale>
+#include <codecvt>
 
 #include "Utils/FileHelpers.h"
 #include "Utils/GlmBulletConversions.h"
@@ -19,6 +21,7 @@ namespace Gameplay {
 		_deletionQueue(std::vector<std::weak_ptr<GameObject>>()),
 		Lights(std::vector<Light>()),
 		IsPlaying(false),
+		IsPaused(true),
 		MainCamera(nullptr),
 		DefaultMaterial(nullptr),
 		_isAwake(false),
@@ -87,17 +90,17 @@ namespace Gameplay {
 		_deletionQueue.push_back(object);
 	}
 
-	GameObject::Sptr Scene::FindObjectByName(const std::string name) {
+	GameObject::Sptr Scene::FindObjectByName(const std::string name) const {
 		auto it = std::find_if(_objects.begin(), _objects.end(), [&](const GameObject::Sptr& obj) {
 			return obj->Name == name;
-		});
+			});
 		return it == _objects.end() ? nullptr : *it;
 	}
 
-	GameObject::Sptr Scene::FindObjectByGUID(Guid id) {
+	GameObject::Sptr Scene::FindObjectByGUID(Guid id) const {
 		auto it = std::find_if(_objects.begin(), _objects.end(), [&](const GameObject::Sptr& obj) {
-			return obj->GUID == id;
-		});
+			return obj->_guid == id;
+			});
 		return it == _objects.end() ? nullptr : *it;
 	}
 
@@ -106,7 +109,7 @@ namespace Gameplay {
 		_lightingUbo->Update();
 	}
 
-	const glm::vec3& Scene::GetAmbientLight() const { 
+	const glm::vec3& Scene::GetAmbientLight() const {
 		return _lightingUbo->GetData().AmbientCol;
 	}
 
@@ -137,10 +140,10 @@ namespace Gameplay {
 	void Scene::DoPhysics(float dt) {
 		ComponentManager::Each<Gameplay::Physics::RigidBody>([=](const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
 			body->PhysicsPreStep(dt);
-		});
+			});
 		ComponentManager::Each<Gameplay::Physics::TriggerVolume>([=](const std::shared_ptr<Gameplay::Physics::TriggerVolume>& body) {
 			body->PhysicsPreStep(dt);
-		});
+			});
 
 		if (IsPlaying) {
 
@@ -148,10 +151,10 @@ namespace Gameplay {
 
 			ComponentManager::Each<Gameplay::Physics::RigidBody>([=](const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
 				body->PhysicsPostStep(dt);
-			});
+				});
 			ComponentManager::Each<Gameplay::Physics::TriggerVolume>([=](const std::shared_ptr<Gameplay::Physics::TriggerVolume>& body) {
 				body->PhysicsPostStep(dt);
-			});
+				});
 			if (_bulletDebugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug) {
 				_physicsWorld->debugDrawWorld();
 				DebugDrawer::Get().FlushAll();
@@ -171,6 +174,16 @@ namespace Gameplay {
 
 	void Scene::PreRender() {
 		_lightingUbo->Bind(LIGHT_UBO_BINDING);
+	}
+
+	void Scene::RenderGUI()
+	{
+		for (auto& obj : _objects) {
+			// Parents handle rendering for children, so ignore parented objects
+			if (obj->GetParent() == nullptr) {
+				obj->RenderGUI();
+			}
+		}
 	}
 
 	void Scene::SetShaderLight(int index, bool update /*= true*/) {
@@ -221,9 +234,9 @@ namespace Gameplay {
 		if (data.contains("skybox") && data["skybox"].is_object()) {
 			nlohmann::json& blob = data["skybox"].get<nlohmann::json>();
 			result->_skyboxMesh = ResourceManager::Get<MeshResource>(Guid(blob["mesh"]));
-			result->_skyboxShader = ResourceManager::Get<Shader>(Guid(blob["shader"]));
-			result->_skyboxTexture = ResourceManager::Get<TextureCube>(Guid(blob["texture"]));
-			result->_skyboxRotation = glm::mat3_cast(ParseJsonQuat(blob["orientation"]));
+			result->SetSkyboxShader(ResourceManager::Get<Shader>(Guid(blob["shader"])));
+			result->SetSkyboxTexture(ResourceManager::Get<TextureCube>(Guid(blob["texture"])));
+			result->SetSkyboxRotation(glm::mat3_cast(ParseJsonQuat(blob["orientation"])));
 		}
 
 		// Make sure the scene has objects, then load them all in!
@@ -231,8 +244,16 @@ namespace Gameplay {
 		for (auto& object : data["objects"]) {
 			GameObject::Sptr obj = GameObject::FromJson(object);
 			obj->_scene = result.get();
+			obj->_parent.SceneContext = result.get();
 			obj->_selfRef = obj;
 			result->_objects.push_back(obj);
+		}
+
+		// Re-build the parent hierarchy 
+		for (const auto& object : result->_objects) {
+			if (object->GetParent() != nullptr) {
+				object->GetParent()->AddChild(object);
+			}
 		}
 
 		// Make sure the scene has lights, then load all
@@ -243,7 +264,7 @@ namespace Gameplay {
 
 		// Create and load camera config
 		result->MainCamera = ComponentManager::GetComponentByGUID<Camera>(Guid(data["main_camera"]));
-	
+
 		return result;
 	}
 
@@ -371,7 +392,7 @@ namespace Gameplay {
 			_skyboxMesh->Mesh != nullptr &&
 			_skyboxTexture != nullptr &&
 			MainCamera != nullptr) {
-			
+
 			glDepthMask(false);
 			glDisable(GL_CULL_FACE);
 			glDepthFunc(GL_LEQUAL);

@@ -10,15 +10,12 @@ TriggerVolumeEnterBehaviour::~TriggerVolumeEnterBehaviour() = default;
 
 void TriggerVolumeEnterBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body)
 {
-	LOG_INFO("Body has entered our trigger volume: {}", body->GetGameObject()->Name);
+	LOG_INFO("Body has entered {} trigger volume: {}", GetGameObject()->Name, body->GetGameObject()->Name);
 	_playerInTrigger = true;
-	/*if (body->GetGameObject()->Name == "LargeEnemy") {
-		body->GetGameObject()->Get<EnemyBehaviour>()->TakeDamage();
-	}*/
 }
 
 void TriggerVolumeEnterBehaviour::OnTriggerVolumeLeaving(const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
-	LOG_INFO("Body has left our trigger volume: {}", body->GetGameObject()->Name);
+	LOG_INFO("Body has left {} trigger volume: {}", GetGameObject()->Name, body->GetGameObject()->Name);
 	_playerInTrigger = false;
 }
 

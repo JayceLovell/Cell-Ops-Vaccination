@@ -4,10 +4,10 @@
 
 void EnemyBehaviour::Awake()
 {
-	_body = GetComponent<Gameplay::Physics::RigidBody>();
-	if (_body == nullptr) {
+	//_body = GetComponent<Gameplay::Physics::RigidBody>();
+	/*if (_body == nullptr) {
 		IsEnabled = false;
-	}
+	}*/
 	_health = _maxHealth;
 }
 void EnemyBehaviour::RenderImGui() {
@@ -51,20 +51,30 @@ void EnemyBehaviour::Update(float deltaTime)
 	GetGameObject()->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 	//GetGameObject()->SetPostion(glm::vec3(10.0f, 0.0f, 0.0));
 }
-void EnemyBehaviour::OnEnteredTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger)
+void EnemyBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body)
 {
-	TakeDamage();
-	_body->ApplyImpulse(glm::vec3(0.0f, 0.0f, 1.0f));
+	LOG_INFO("Body has entered {} trigger volume: {}", GetGameObject()->Name, body->GetGameObject()->Name);
 }
+void EnemyBehaviour::OnTriggerVolumeLeaving(const std::shared_ptr<Gameplay::Physics::RigidBody>& body)
+{
+	LOG_INFO("Body has left {} trigger volume: {}", GetGameObject()->Name, body->GetGameObject()->Name);
+}
+//void EnemyBehaviour::OnEnteredTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger)
+//{
+//	LOG_INFO("Ouch {}", EnemyType);
+//	TakeDamage();
+//	//_body->ApplyImpulse(glm::vec3(0.0f, 0.0f, 1.0f));
+//}
 // After destroying target look for new one
 void EnemyBehaviour::NewTarget()
 {
 	// TODO: Add your implementation code here.
 }
 
-void EnemyBehaviour::OnLeavingTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger)
-{
-}
+//void EnemyBehaviour::OnLeavingTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger)
+//{
+//	LOG_INFO("Leaving {}", EnemyType);
+//}
 
 void EnemyBehaviour::TakeDamage()
 {

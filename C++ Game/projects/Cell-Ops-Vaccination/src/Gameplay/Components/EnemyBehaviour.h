@@ -1,8 +1,10 @@
 #pragma once
 #include "IComponent.h"
-#include "Gameplay/Physics/RigidBody.h"
 #include "Gameplay/GameObject.h"
 #include "Gameplay/Scene.h"
+#include "Gameplay/Physics/TriggerVolume.h"
+#include "Gameplay/Components/RenderComponent.h"
+#include "Gameplay/Physics/TriggerVolume.h"
 
 class EnemyBehaviour :public Gameplay::IComponent
 {
@@ -17,8 +19,8 @@ public:
 public:
 	virtual void RenderImGui() override;
 	virtual void Update(float deltaTime) override;
-	virtual void OnEnteredTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger) override;
-	virtual void OnLeavingTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger) override;
+	virtual void OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body) override;
+	virtual void OnTriggerVolumeLeaving(const std::shared_ptr<Gameplay::Physics::RigidBody>& body) override;
 	void TakeDamage();
 	MAKE_TYPENAME(EnemyBehaviour);
 	virtual nlohmann::json ToJson() const override;
@@ -28,7 +30,7 @@ protected:
 	float _health;
 	float _dmg;
 
-	Gameplay::Physics::RigidBody::Sptr _body;
+	//Gameplay::Physics::RigidBody::Sptr _body;
 public:
 	float _maxHealth;
 	float _speed;

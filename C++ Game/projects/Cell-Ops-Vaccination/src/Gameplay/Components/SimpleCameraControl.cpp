@@ -11,7 +11,7 @@
 SimpleCameraControl::SimpleCameraControl() :
 	IComponent(),
 	_mouseSensitivity({ 0.5f, 0.3f }),
-	_moveSpeeds(glm::vec3(1.0f)),
+	_moveSpeeds(glm::vec3(10.0f)),
 	_shiftMultipler(2.0f),
 	_currentRot(glm::vec2(0.0f)),
 	_isMousePressed(false)
@@ -40,8 +40,8 @@ void SimpleCameraControl::Update(float deltaTime)
 
 		_currentRot.x += static_cast<float>(currentMousePos.x - _prevMousePos.x) * _mouseSensitivity.x;
 		_currentRot.y += static_cast<float>(currentMousePos.y - _prevMousePos.y) * _mouseSensitivity.y;
-		glm::quat rotX = glm::angleAxis(glm::radians(_currentRot.x), glm::vec3(0, 0, 1));
-		glm::quat rotY = glm::angleAxis(glm::radians(_currentRot.y), glm::vec3(1, 0, 0));
+		glm::quat rotX = glm::angleAxis(glm::radians(_currentRot.x), glm::vec3(0, 0, -1));
+		glm::quat rotY = glm::angleAxis(glm::radians(_currentRot.y), glm::vec3(-1, 0, 0));
 		glm::quat currentRot = rotX * rotY;
 		GetGameObject()->SetRotation(currentRot);
 
