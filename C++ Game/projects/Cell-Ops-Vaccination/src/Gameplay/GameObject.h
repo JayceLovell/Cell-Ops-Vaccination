@@ -122,7 +122,7 @@ namespace Gameplay {
 			void Reset();
 		};
 
-		Transform transform;
+		
 		// Human readable name for the object
 		std::string             Name;
 		/// <summary>
