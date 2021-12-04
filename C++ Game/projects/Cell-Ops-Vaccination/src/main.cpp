@@ -54,6 +54,7 @@
 #include "Gameplay/Components/MaterialSwapBehaviour.h"
 #include "Gameplay/Components/PlayerBehaviour.h"
 #include "Gameplay/Components/EnemyBehaviour.h"
+#include "Gameplay/Components/TargetBehaviour.h"
 
 // Physics
 #include "Gameplay/Physics/RigidBody.h"
@@ -292,40 +293,51 @@ void CreateScene() {
 		/////////////////////////////////////////// MESHES ////////////////////////////////////////////////
 		// Load in the meshes
 		MeshResource::Sptr PlayerMesh = ResourceManager::CreateAsset<MeshResource>("models/Player.obj");
+
 		MeshResource::Sptr LargeEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Lower Poly Large Enemy.obj");
 		MeshResource::Sptr FastEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Lower Poly Fast Enemy.obj");
 		MeshResource::Sptr NormalEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Lower Poly Normal Enemy.obj");
-		MeshResource::Sptr LevelMesh = ResourceManager::CreateAsset<MeshResource>("models/Game Floor.obj");
+
+		//MeshResource::Sptr LevelMesh = ResourceManager::CreateAsset<MeshResource>("models/Game Floor.obj");
+
 		MeshResource::Sptr LungsTargetMesh = ResourceManager::CreateAsset<MeshResource>("models/LungsTarget.obj");
 		MeshResource::Sptr CellMesh = ResourceManager::CreateAsset<MeshResource>("models/Cell.obj");
 		MeshResource::Sptr Cell2Mesh = ResourceManager::CreateAsset<MeshResource>("models/Cell2.obj");
 		MeshResource::Sptr Co2Mesh = ResourceManager::CreateAsset<MeshResource>("models/Co2.obj");
 		MeshResource::Sptr OxygenMesh = ResourceManager::CreateAsset<MeshResource>("models/Oxygen.obj");
-
 		MeshResource::Sptr APCMesh = ResourceManager::CreateAsset<MeshResource>("models/APC.obj");
 		MeshResource::Sptr APC2Mesh = ResourceManager::CreateAsset<MeshResource>("models/APC2.obj");
 		MeshResource::Sptr SymbiontMesh = ResourceManager::CreateAsset<MeshResource>("models/Symbiont.obj");
 		MeshResource::Sptr Symbiont2Mesh = ResourceManager::CreateAsset<MeshResource>("models/Symbiont2.obj");
 		MeshResource::Sptr VeinMesh = ResourceManager::CreateAsset<MeshResource>("models/Vein.obj");
+		MeshResource::Sptr MicrobiotaMesh = ResourceManager::CreateAsset<MeshResource>("models/Microbiota.obj");
+		MeshResource::Sptr SmokeplaqueMesh = ResourceManager::CreateAsset<MeshResource>("models/Smoke plaque.obj");
+		MeshResource::Sptr YellowMicrobiotaMesh = ResourceManager::CreateAsset<MeshResource>("models/Smoke plaque.obj");
+
 
 		/////////////////////////////////////////// TEXTURES ////////////////////////////////////////////////
 		// Load in some textures
-		Texture2D::Sptr		PlayerTexture = ResourceManager::CreateAsset<Texture2D>("textures/tempWhiteCell.jpg");
-		Texture2D::Sptr		LargeEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Large Enemy.png");
-		Texture2D::Sptr		FastEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Fast Enemy.png");
-		Texture2D::Sptr		NormalEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Normal Enemy.png");
-		Texture2D::Sptr		LevelTexture = ResourceManager::CreateAsset<Texture2D>("textures/Lungs_Floor_Asset_Small.png");
-		Texture2D::Sptr		LungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
-		Texture2D::Sptr		CellTexture = ResourceManager::CreateAsset<Texture2D>("textures/Cell.png");
-		Texture2D::Sptr		Cell2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Cell2.png");
-		Texture2D::Sptr		Co2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Co2.png");
-		Texture2D::Sptr		OxygenTexture = ResourceManager::CreateAsset<Texture2D>("textures/Oxygen.png");
+		Texture2D::Sptr PlayerTexture = ResourceManager::CreateAsset<Texture2D>("textures/tempWhiteCell.jpg");
 
-		Texture2D::Sptr		APCTexture = ResourceManager::CreateAsset<Texture2D>("textures/APC.png");
-		Texture2D::Sptr		APC2Texture = ResourceManager::CreateAsset<Texture2D>("textures/APC2.png");
-		Texture2D::Sptr		SymbiontTexture = ResourceManager::CreateAsset<Texture2D>("textures/Symbiont.png");
-		Texture2D::Sptr		Symbiont2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Symbiont2.png");
-		Texture2D::Sptr		VeinTexture = ResourceManager::CreateAsset<Texture2D>("textures.Vein.png");
+		Texture2D::Sptr	LargeEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Large Enemy.png");
+		Texture2D::Sptr	FastEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Fast Enemy.png");
+		Texture2D::Sptr	NormalEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Normal Enemy.png");
+
+		//Texture2D::Sptr		LevelTexture = ResourceManager::CreateAsset<Texture2D>("textures/Lungs_Floor_Asset_Small.png");
+		Texture2D::Sptr	LungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+
+		Texture2D::Sptr	CellTexture = ResourceManager::CreateAsset<Texture2D>("textures/Cell.png");
+		Texture2D::Sptr	Cell2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Cell2.png");
+		Texture2D::Sptr	Co2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Co2.png");
+		Texture2D::Sptr	OxygenTexture = ResourceManager::CreateAsset<Texture2D>("textures/Oxygen.png");
+		Texture2D::Sptr	APCTexture = ResourceManager::CreateAsset<Texture2D>("textures/APC.png");
+		Texture2D::Sptr	APC2Texture = ResourceManager::CreateAsset<Texture2D>("textures/APC2.png");
+		Texture2D::Sptr	SymbiontTexture = ResourceManager::CreateAsset<Texture2D>("textures/Symbiont.png");
+		Texture2D::Sptr	Symbiont2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Symbiont2.png");
+		Texture2D::Sptr	VeinTexture = ResourceManager::CreateAsset<Texture2D>("textures/Vein.png");
+		Texture2D::Sptr	MicrobiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/Microbiota.png");
+		Texture2D::Sptr SmokeplaqueTexture = ResourceManager::CreateAsset<Texture2D>("textures/Smokeplaque.png");
+		Texture2D::Sptr YellowMBiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/YellowMBiota.png");
 
 		// Here we'll load in the cubemap, as well as a special shader to handle drawing the skybox
 		TextureCube::Sptr testCubemap = ResourceManager::CreateAsset<TextureCube>("cubemaps/ocean/ocean.jpg");
@@ -374,12 +386,12 @@ void CreateScene() {
 			FastEnemyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 
-		Material::Sptr LevelMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		/*Material::Sptr LevelMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			LevelMaterial->Name = "Levelmaterial";
 			LevelMaterial->Set("u_Material.Diffuse", LevelTexture);
 			LevelMaterial->Set("u_Material.Shininess", 0.1f);
-		}
+		}*/
 
 		Material::Sptr LungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
@@ -443,6 +455,24 @@ void CreateScene() {
 			VeinMaterial->Set("u_Material.Diffuse", VeinTexture);
 			VeinMaterial->Set("u_Material.Shininess", 0.1f);
 		}
+		Material::Sptr MicrobiotaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			VeinMaterial->Name = "MicrobiotaMaterial";
+			VeinMaterial->Set("u_Material.Diffuse", MicrobiotaTexture);
+			VeinMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr SmokeplaqueMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			VeinMaterial->Name = "SmokeplaqueMaterial";
+			VeinMaterial->Set("u_Material.Diffuse", SmokeplaqueTexture);
+			VeinMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr YellowMicrobiotaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			VeinMaterial->Name = "YellowMicrobiotaMaterial";
+			VeinMaterial->Set("u_Material.Diffuse", YellowMBiotaTexture);
+			VeinMaterial->Set("u_Material.Shininess", 0.1f);
+		}
 
 		/////////////// MAP MATERIALS ////////////////////
 
@@ -502,7 +532,6 @@ void CreateScene() {
 		{
 			camera->SetPostion(glm::vec3(5.0f));
 			camera->SetRotation(glm::vec3(112.735f, 0.0f, -72.0f));
-			//camera->LookAt(glm::vec3(0.0f));
 
 			camera->Add<SimpleCameraControl>();
 
@@ -518,129 +547,175 @@ void CreateScene() {
 			renderer->SetMesh(PlayerMesh);
 			renderer->SetMaterial(PlayerMaterial);
 			
-			Player->SetPostion(glm::vec3(100.0f));
 			
 			Player->Add<PlayerBehaviour>();
 			
 
 			TriggerVolume::Sptr trigger = Player->Add<TriggerVolume>();
-			ConvexMeshCollider::Sptr collider = ConvexMeshCollider::Create();
-			//trigger->SetFlags(TriggerTypeFlags::Statics | TriggerTypeFlags::Kinematics);
+			BoxCollider::Sptr collider = BoxCollider::Create();
+			collider->SetPosition(glm::vec3(-0.28f, 0.0f, -1.17f));
+			collider->SetScale(glm::vec3(0.79f, 0.45f, 2.04f));
+
 			trigger->AddCollider(collider);
 		}
 
-		GameObject::Sptr Level = scene->CreateGameObject("Level");
-		{
+		//GameObject::Sptr Level = scene->CreateGameObject("Level");
+		//{
 
-			// Make a big tiled mesh
-			MeshResource::Sptr tiledMesh = ResourceManager::CreateAsset<MeshResource>();
-			tiledMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(100.0f), glm::vec2(20.0f)));
-			tiledMesh->GenerateMesh();
+		//	// Make a big tiled mesh
+		//	MeshResource::Sptr tiledMesh = ResourceManager::CreateAsset<MeshResource>();
+		//	tiledMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(100.0f), glm::vec2(20.0f)));
+		//	tiledMesh->GenerateMesh();
 
-			RenderComponent::Sptr renderer =Level->Add<RenderComponent>();
-			renderer->SetMesh(tiledMesh);
-			renderer->SetMaterial(LevelMaterial);
+		//	RenderComponent::Sptr renderer =Level->Add<RenderComponent>();
+		//	renderer->SetMesh(tiledMesh);
+		//	renderer->SetMaterial(LevelMaterial);
 
-			// Attach a plane collider that extends infinitely along the X / Y axis
-			RigidBody::Sptr physics = Level->Add<RigidBody>(/*static by default*/);
-			physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
-		}
+		//	// Attach a plane collider that extends infinitely along the X / Y axis
+		//	RigidBody::Sptr physics = Level->Add<RigidBody>(/*static by default*/);
+		//	physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
+		//}
+		/////////////////////////TARGETS////////////////////////// 10 max
 		GameObject::Sptr Target = scene->CreateGameObject("Target");
 		{
-			Target->SetPostion(glm::vec3(20.f, 0.0f, 0.0f));
+			float x = (float)(rand() % 20 + (-10));
+			float y = (float)(rand() % 20 + (-10));
+			float z = (float)(rand() % 20 + (-10));
+			// Set and rotation position in the scene
+			Target->SetPostion(glm::vec3(x, y, z));
 
 			// Add a render component
 			RenderComponent::Sptr renderer = Target->Add<RenderComponent>();
 			renderer->SetMesh(LungsTargetMesh);
 			renderer->SetMaterial(LungMaterial);
 
-			// Add a dynamic rigid body to this monkey
-			RigidBody::Sptr physics = Target->Add<RigidBody>(/*static by default*/);
-			physics->AddCollider(ConvexMeshCollider::Create());
 
 			TriggerVolume::Sptr volume = Target->Add<TriggerVolume>();
 			ConvexMeshCollider::Sptr collider = ConvexMeshCollider::Create();
 			volume->AddCollider(collider);
 
+			Target->Add<TargetBehaviour>();
+			Target->Get<TargetBehaviour>()->MaxHealth = 500;
+
+ 			scene->Targets.push_back(Target);
 		}
-		////////////////////////Enemies///////////////////////////////
-		//GameObject::Sptr LargeEnemy = scene->CreateGameObject("LargeEnemy");
-		//{
-		//	// Set and rotation position in the scene
-		//	LargeEnemy->SetPostion(glm::vec3(30.0f, 10.0f, 10.0f));			
-
-		//	// Add a render component
-		//	RenderComponent::Sptr renderer = LargeEnemy->Add<RenderComponent>();
-		//	renderer->SetMesh(LargeEnemyMesh);
-		//	renderer->SetMaterial(LargeEnemyMaterial);
-
-		//	// Add a dynamic rigid body to this monkey
-		//	RigidBody::Sptr physics = LargeEnemy->Add<RigidBody>(RigidBodyType::Dynamic);
-		//	physics->SetMass(0.0f);
-		//	physics->AddCollider(ConvexMeshCollider::Create());
-
-
-		//	TriggerVolume::Sptr trigger = LargeEnemy->Add<TriggerVolume>();
-		//	trigger->AddCollider(ConvexMeshCollider::Create());
-
-		//	LargeEnemy->Add<EnemyBehaviour>();
-		//	LargeEnemy->Get<EnemyBehaviour>()->EnemyType = "Large Enemy";
-		//	LargeEnemy->Get<EnemyBehaviour>()->_maxHealth = 50;
-		//}
-		
-		//GameObject::Sptr FastEnemy = scene->CreateGameObject("FastEnemy");
-		//{
-		//	// Set and rotation position in the scene
-		//	FastEnemy->SetPostion(glm::vec3(10.0f, 10.0f, 10.0f));
-
-		//	// Add a render component
-		//	RenderComponent::Sptr renderer = FastEnemy->Add<RenderComponent>();
-		//	renderer->SetMesh(FastEnemyMesh);
-		//	renderer->SetMaterial(FastEnemyMaterial);
-
-		//	// Add a dynamic rigid body to this monkey
-		//	RigidBody::Sptr physics = FastEnemy->Add<RigidBody>(RigidBodyType::Dynamic);
-		//	physics->SetMass(0.0f);
-		//	physics->AddCollider(ConvexMeshCollider::Create());
-
-
-		//	TriggerVolume::Sptr trigger = FastEnemy->Add<TriggerVolume>();
-		//	trigger->AddCollider(ConvexMeshCollider::Create());
-
-		//	FastEnemy->Add<EnemyBehaviour>();
-		//	FastEnemy->Get<EnemyBehaviour>()->EnemyType = "Fast Enemy";
-		//	FastEnemy->Get<EnemyBehaviour>()->_maxHealth = 10;
-		//}
-
-		GameObject::Sptr NormalEnemy = scene->CreateGameObject("NormalEnemy");
+		GameObject::Sptr Target1 = scene->CreateGameObject("Target1");
 		{
+			float x = (float)(rand() % 20 + (-10));
+			float y = (float)(rand() % 20 + (-10));
+			float z = (float)(rand() % 20 + (-10));
 			// Set and rotation position in the scene
-			NormalEnemy->SetPostion(glm::vec3(20.0f, 10.0f, 10.0f));
+			Target->SetPostion(glm::vec3(x, y, z));
 
 			// Add a render component
-			RenderComponent::Sptr renderer = NormalEnemy->Add<RenderComponent>();
+			RenderComponent::Sptr renderer = Target1->Add<RenderComponent>();
+			renderer->SetMesh(LungsTargetMesh);
+			renderer->SetMaterial(LungMaterial);
+
+
+			TriggerVolume::Sptr volume = Target1->Add<TriggerVolume>();
+			ConvexMeshCollider::Sptr collider = ConvexMeshCollider::Create();
+			volume->AddCollider(collider);
+
+			Target1->Add<TargetBehaviour>();
+			Target1->Get<TargetBehaviour>()->MaxHealth = 500;
+
+			scene->Targets.push_back(Target1);
+		}
+
+		////////////////////////Enemies/////////////////////////////// 25 max
+		GameObject::Sptr LargeEnemy = scene->CreateGameObject("LargeEnemy");
+		{
+			float x = (float)(rand() % 50 + (-25));
+			float y = (float)(rand() % 50 + (-25));
+			float z = (float)(rand() % 50 + (-25));
+			// Set and rotation position in the scene
+			LargeEnemy->SetPostion(glm::vec3(x, y, z));			
+
+			// Add a render component
+			RenderComponent::Sptr renderer = LargeEnemy->Add<RenderComponent>();
+			renderer->SetMesh(LargeEnemyMesh);
+			renderer->SetMaterial(LargeEnemyMaterial);
+
+			// Add a dynamic rigid body to this monkey
+			RigidBody::Sptr physics = LargeEnemy->Add<RigidBody>(RigidBodyType::Dynamic);
+			physics->SetMass(0.0f);
+			BoxCollider::Sptr collider = BoxCollider::Create();
+			collider->SetScale(glm::vec3(3.04f, 4.23f, 3.44f));
+			collider->SetPosition(glm::vec3(0.0f, 0.0f, 2.0f));
+			physics->AddCollider(collider);
+
+
+			LargeEnemy->Add<EnemyBehaviour>();
+			LargeEnemy->Get<EnemyBehaviour>()->EnemyType = "Large Enemy";
+			LargeEnemy->Get<EnemyBehaviour>()->_maxHealth = 5;
+			LargeEnemy-> Get<EnemyBehaviour>()->_speed = 1;
+		}
+		
+		GameObject::Sptr FastEnemy = scene->CreateGameObject("FastEnemy");
+		{
+			float x = (float)(rand() % 50 + (-25));
+			float y = (float)(rand() % 50 + (-25));
+			float z = (float)(rand() % 50 + (-25));
+			// Set and rotation position in the scene
+			FastEnemy->SetPostion(glm::vec3(x, y, z));
+
+			// Add a render component
+			RenderComponent::Sptr renderer = FastEnemy->Add<RenderComponent>();
+			renderer->SetMesh(FastEnemyMesh);
+			renderer->SetMaterial(FastEnemyMaterial);
+
+			// Add a dynamic rigid body to this monkey
+			RigidBody::Sptr physics = FastEnemy->Add<RigidBody>(RigidBodyType::Dynamic);
+			physics->SetMass(0.0f);
+			BoxCollider::Sptr collider = BoxCollider::Create();
+			collider->SetScale(glm::vec3(1.130f, 1.120f, 1.790f));
+			collider->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+			physics->AddCollider(collider);
+
+
+			FastEnemy->Add<EnemyBehaviour>();
+			FastEnemy->Get<EnemyBehaviour>()->EnemyType = "Fast Enemy";
+			FastEnemy->Get<EnemyBehaviour>()->_maxHealth = 1;
+			FastEnemy->Get<EnemyBehaviour>()->_speed = 5;
+		}
+
+		GameObject::Sptr Enemy = scene->CreateGameObject("Enemy");
+		{
+			float x = (float)(rand() % 50 + (-25));
+			float y = (float)(rand() % 50 + (-25));
+			float z = (float)(rand() % 50 + (-25));
+			// Set and rotation position in the scene
+			Enemy->SetPostion(glm::vec3(x, y, z));
+
+			// Add a render component
+			RenderComponent::Sptr renderer = Enemy->Add<RenderComponent>();
 			renderer->SetMesh(NormalEnemyMesh);
 			renderer->SetMaterial(NormalEnemyMaterial);
 
 			// Add a dynamic rigid body to this monkey
-			RigidBody::Sptr physics = NormalEnemy->Add<RigidBody>(RigidBodyType::Dynamic);
+			RigidBody::Sptr physics = Enemy->Add<RigidBody>(RigidBodyType::Dynamic);
 			physics->SetMass(0.0f);
-			physics->AddCollider(ConvexMeshCollider::Create());
+			BoxCollider::Sptr collider = BoxCollider::Create();
+			collider->SetScale(glm::vec3(1.130f, 1.120f, 1.790f));
+			collider->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+			physics->AddCollider(collider);
 
 
-			TriggerVolume::Sptr trigger = NormalEnemy->Add<TriggerVolume>();
-			trigger->AddCollider(ConvexMeshCollider::Create());
-
-			NormalEnemy->Add<EnemyBehaviour>();
-			NormalEnemy->Get<EnemyBehaviour>()->EnemyType = "Normal Enemy";
-			NormalEnemy->Get<EnemyBehaviour>()->_maxHealth = 30;
+			Enemy->Add<EnemyBehaviour>();
+			Enemy->Get<EnemyBehaviour>()->EnemyType = "Normal Enemy";
+			Enemy->Get<EnemyBehaviour>()->_maxHealth = 3;
+			Enemy->Get<EnemyBehaviour>()->_speed = 3;
 		}
 
-		//////////////// Background Objects
+		//////////////// Background Objects ///// 50 max
 
 		GameObject::Sptr Cell = scene->CreateGameObject("Cell");
 		{
-			Cell->SetPostion(glm::vec3(40.0f, 10.0f, 10.0f));
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Cell->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
@@ -651,7 +726,10 @@ void CreateScene() {
 		}
 		GameObject::Sptr Cell2 = scene->CreateGameObject("Cell2");
 		{
-			Cell2->SetPostion(glm::vec3(40.0f, 20.0f, 10.0f));
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Cell2->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
@@ -662,7 +740,10 @@ void CreateScene() {
 		}
 		GameObject::Sptr Co2 = scene->CreateGameObject("Co2");
 		{
-			Co2->SetPostion(glm::vec3(50.0f, 10.0f, 10.0f));
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Co2->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
@@ -672,7 +753,10 @@ void CreateScene() {
 		}
 		GameObject::Sptr Oxygen = scene->CreateGameObject("Oxygen");
 		{
-			Oxygen->SetPostion(glm::vec3(60.0f, 10.0f, 10.0f));
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Oxygen->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
@@ -683,7 +767,10 @@ void CreateScene() {
 		}
 		GameObject::Sptr APC = scene->CreateGameObject("APC");
 		{
-			APC->SetPostion(glm::vec3(70.0f, 10.0f, 10.0f));
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			APC->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
@@ -694,7 +781,10 @@ void CreateScene() {
 		}
 		GameObject::Sptr APC2 = scene->CreateGameObject("APC2");
 		{
-			APC2->SetPostion(glm::vec3(70.0f, 20.0f, 10.0f));
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			APC2->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
@@ -705,7 +795,10 @@ void CreateScene() {
 		}
 		GameObject::Sptr Symbiont = scene->CreateGameObject("Symbiont");
 		{
-			Symbiont->SetPostion(glm::vec3(80.0f, 10.0f, 10.0f));
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Symbiont->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
@@ -716,13 +809,72 @@ void CreateScene() {
 		}
 		GameObject::Sptr Symbiont2 = scene->CreateGameObject("Symbiont2");
 		{
-			Symbiont2->SetPostion(glm::vec3(80.0f, 20.0f, 10.0f));
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Symbiont2->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
 			RenderComponent::Sptr renderer = Symbiont2->Add<RenderComponent>();
 			renderer->SetMesh(Symbiont2Mesh);
 			renderer->SetMaterial(Symbiont2Material);
+
+		}
+		GameObject::Sptr Vein = scene->CreateGameObject("Vein");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Vein->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = Vein->Add<RenderComponent>();
+			renderer->SetMesh(VeinMesh);
+			renderer->SetMaterial(VeinMaterial);
+
+		}
+		GameObject::Sptr Microbiota = scene->CreateGameObject("Microbiota");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Microbiota->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = Microbiota->Add<RenderComponent>();
+			renderer->SetMesh(MicrobiotaMesh);
+			renderer->SetMaterial(MicrobiotaMaterial);
+
+		}
+		GameObject::Sptr Smokeplaque = scene->CreateGameObject("Smokeplaque");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Smokeplaque->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = Smokeplaque->Add<RenderComponent>();
+			renderer->SetMesh(SmokeplaqueMesh);
+			renderer->SetMaterial(SmokeplaqueMaterial);
+
+		}
+		GameObject::Sptr YellowMicrobiota = scene->CreateGameObject("YellowMicrobiota");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			YellowMicrobiota->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = YellowMicrobiota->Add<RenderComponent>();
+			renderer->SetMesh(YellowMicrobiotaMesh);
+			renderer->SetMaterial(YellowMicrobiotaMaterial);
 
 		}
 		/////////////////////////// UI //////////////////////////////
@@ -777,6 +929,10 @@ void CreateScene() {
 //}
 
 int main() {
+	//Add this for true random ;)
+	srand(std::time(nullptr));
+	///
+
 	Logger::Init(); // We'll borrow the logger from the toolkit, but we need to initialize it
 
 	//Initialize GLFW
@@ -816,6 +972,7 @@ int main() {
 	ComponentManager::RegisterType<SimpleCameraControl>();
 	ComponentManager::RegisterType<PlayerBehaviour>();
 	ComponentManager::RegisterType<EnemyBehaviour>();
+	ComponentManager::RegisterType<TargetBehaviour>();
 
 	ComponentManager::RegisterType<RectTransform>();
 	ComponentManager::RegisterType<GuiPanel>();

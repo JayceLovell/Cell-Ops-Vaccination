@@ -32,6 +32,8 @@ namespace Gameplay {
 	/// </summary>
 	class Scene {
 	public:
+		std::vector<GameObject::Sptr> Targets;
+
 		typedef std::shared_ptr<Scene> Sptr;
 
 		static const int MAX_LIGHTS = 8;
@@ -54,6 +56,12 @@ namespace Gameplay {
 
 		Scene();
 		~Scene();
+
+
+		/////// METHODS I ADD ////
+		GameObject::Sptr FindTarget();
+		void DeleteTarget(const GameObject::Sptr& object);
+		///
 
 		void SetPhysicsDebugDrawMode(BulletDebugMode mode);
 

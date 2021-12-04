@@ -19,9 +19,8 @@ public:
 public:
 	virtual void RenderImGui() override;
 	virtual void Update(float deltaTime) override;
-	virtual void OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body) override;
-	virtual void OnTriggerVolumeLeaving(const std::shared_ptr<Gameplay::Physics::RigidBody>& body) override;
 	void TakeDamage();
+	void Reset();
 	MAKE_TYPENAME(EnemyBehaviour);
 	virtual nlohmann::json ToJson() const override;
 	static EnemyBehaviour::Sptr FromJson(const nlohmann::json& blob);
@@ -36,6 +35,11 @@ public:
 	float _speed;
 	std::string EnemyType;
 	Gameplay::GameObject::Sptr Target;
+
+	glm::vec3 RespawnPosition;
+
+	float lerpTimer = 0;
+	float lerpTimerMax = 10.0f;
 
 	// After destroying target look for new one
 	void NewTarget();

@@ -2,6 +2,13 @@
 #include <GLFW/glfw3.h>
 #include "Utils/ImGuiHelper.h"
 
+// Templated LERP function
+template<typename T>
+T LERP(const T& p0, const T& p1, float t)
+{
+	return (1.0f - t) * p0 + t * p1;
+}
+
 void EnemyBehaviour::Awake()
 {
 	//_body = GetComponent<Gameplay::Physics::RigidBody>();
@@ -9,6 +16,8 @@ void EnemyBehaviour::Awake()
 		IsEnabled = false;
 	}*/
 	_health = _maxHealth;
+	RespawnPosition = GetGameObject()->GetPosition();
+	Target = GetGameObject()->GetScene()->FindTarget();
 }
 void EnemyBehaviour::RenderImGui() {
 	LABEL_LEFT(ImGui::DragFloat, "Speed", &_speed, 1.0f);
@@ -31,7 +40,8 @@ EnemyBehaviour::EnemyBehaviour() :
 	_health(0.0f),
 	_maxHealth(0.0f),
 	EnemyType(""),
-	Target(nullptr)
+	Target(nullptr),
+	RespawnPosition(glm::vec3(0.0f,0.0f,0.0f))
 {}
 
 EnemyBehaviour::~EnemyBehaviour() = default;
@@ -47,28 +57,21 @@ EnemyBehaviour::Sptr EnemyBehaviour::FromJson(const nlohmann::json & blob) {
 
 void EnemyBehaviour::Update(float deltaTime)
 {
-	//GetGameObject()->LookAt();
 	GetGameObject()->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
-	//GetGameObject()->SetPostion(glm::vec3(10.0f, 0.0f, 0.0));
+	lerpTimer += deltaTime * _speed;
+	if (lerpTimer >= lerpTimerMax) {
+		lerpTimer = 0;
+	}
+	float t;
+	t = lerpTimer / lerpTimerMax;
+
+	GetGameObject()->SetPostion(LERP(RespawnPosition, Target.get()->GetPosition(), t));
 }
-void EnemyBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body)
-{
-	LOG_INFO("Body has entered {} trigger volume: {}", GetGameObject()->Name, body->GetGameObject()->Name);
-}
-void EnemyBehaviour::OnTriggerVolumeLeaving(const std::shared_ptr<Gameplay::Physics::RigidBody>& body)
-{
-	LOG_INFO("Body has left {} trigger volume: {}", GetGameObject()->Name, body->GetGameObject()->Name);
-}
-//void EnemyBehaviour::OnEnteredTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger)
-//{
-//	LOG_INFO("Ouch {}", EnemyType);
-//	TakeDamage();
-//	//_body->ApplyImpulse(glm::vec3(0.0f, 0.0f, 1.0f));
-//}
+
 // After destroying target look for new one
 void EnemyBehaviour::NewTarget()
 {
-	// TODO: Add your implementation code here.
+	Target = GetGameObject()->GetScene()->FindTarget();
 }
 
 //void EnemyBehaviour::OnLeavingTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger)
@@ -80,6 +83,15 @@ void EnemyBehaviour::TakeDamage()
 {
 	_health = _health - 1;
 	if (_health <= 0) {
-		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
+		//GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
+		Reset();
 	}
+	LOG_INFO("I {} Took Damage",EnemyType);
+}
+
+void EnemyBehaviour::Reset()
+{
+	_health = _maxHealth;
+	GetGameObject()->SetPostion(RespawnPosition);
+	NewTarget();
 }

@@ -3,26 +3,30 @@
 #include "Gameplay/GameObject.h"
 #include "Gameplay/Scene.h"
 #include "Gameplay/Physics/TriggerVolume.h"
+#include <Utils/ImGuiHelper.h>
 
 /// <summary>
-/// Player Behaviour Class
+/// Target Behaviour
 /// </summary>
-class PlayerBehaviour :public Gameplay::IComponent
+class TargetBehaviour :public Gameplay::IComponent
 {
 public:
-	typedef std::shared_ptr<PlayerBehaviour> Sptr;
+	typedef std::shared_ptr<TargetBehaviour> Sptr;
 
-	PlayerBehaviour();
-	virtual ~PlayerBehaviour();
+	TargetBehaviour();
+	virtual ~TargetBehaviour();
 
 	virtual void Awake() override;
 	virtual void Update(float deltaTime) override;
 	virtual void OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body) override;
 	virtual void RenderImGui() override;
 	virtual nlohmann::json ToJson() const override;
-	static PlayerBehaviour::Sptr FromJson(const nlohmann::json& blob);
-	MAKE_TYPENAME(PlayerBehaviour);
+	static TargetBehaviour::Sptr FromJson(const nlohmann::json& blob);
+	MAKE_TYPENAME(TargetBehaviour);
+
+	float MaxHealth;
 
 protected:
-	GLFWwindow* _window;
+	float _health;
 };
+

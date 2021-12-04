@@ -14,6 +14,7 @@
 #include "Graphics/DebugDraw.h"
 #include "Graphics/TextureCube.h"
 #include "Graphics/VertexArrayObject.h"
+#include <Gameplay/Components/EnemyBehaviour.h>
 
 namespace Gameplay {
 	Scene::Scene() :
@@ -44,6 +45,29 @@ namespace Gameplay {
 	Scene::~Scene() {
 		_objects.clear();
 		_CleanupPhysics();
+	}
+
+	GameObject::Sptr Scene::FindTarget()
+	{
+		if (Targets.size() != 0) {
+			GameObject::Sptr Target = Targets.at(rand() % Targets.size());
+			return Target;
+		}
+		return nullptr;
+	}
+
+	void Scene::DeleteTarget(const GameObject::Sptr& object)
+	{
+		std::vector<GameObject::Sptr>::iterator it = std::find(Targets.begin(), Targets.end(), object);
+		if (it != Targets.end())
+		{
+			int index = std::distance(Targets.begin(), it);
+			Targets.erase(Targets.begin() + index);
+			RemoveGameObject(object);
+		}
+		FindObjectByName("Enemy")->Get<EnemyBehaviour>()->NewTarget();
+		FindObjectByName("FastEnemy")->Get<EnemyBehaviour>()->NewTarget();
+		FindObjectByName("LargeEnemy")->Get<EnemyBehaviour>()->NewTarget();
 	}
 
 	void Scene::SetPhysicsDebugDrawMode(BulletDebugMode mode) {
