@@ -32,7 +32,6 @@ namespace Gameplay {
 	/// </summary>
 	class Scene {
 	public:
-		std::vector<GameObject::Sptr> Targets;
 
 		typedef std::shared_ptr<Scene> Sptr;
 
@@ -51,7 +50,14 @@ namespace Gameplay {
 
 		// Whether the application is in "play mode", lets us leverage editors!
 		bool                       IsPlaying;
+		/// Things I added for our game
+		std::vector<GameObject::Sptr> Targets;
+		std::vector<GameObject::Sptr> Enemies;
 		bool					   IsPaused;
+		bool GameOver;
+		int GameRound;
+		int EnemiesKilled;
+		GLFWwindow* _window;
 
 
 		Scene();
@@ -61,6 +67,8 @@ namespace Gameplay {
 		/////// METHODS I ADD ////
 		GameObject::Sptr FindTarget();
 		void DeleteTarget(const GameObject::Sptr& object);
+		void LevellCheck();
+		void GameStart();
 		///
 
 		void SetPhysicsDebugDrawMode(BulletDebugMode mode);

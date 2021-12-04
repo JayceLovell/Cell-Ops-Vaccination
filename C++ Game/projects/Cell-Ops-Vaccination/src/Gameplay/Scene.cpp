@@ -15,6 +15,7 @@
 #include "Graphics/TextureCube.h"
 #include "Graphics/VertexArrayObject.h"
 #include <Gameplay/Components/EnemyBehaviour.h>
+#include <Gameplay/Components/TargetBehaviour.h>
 
 namespace Gameplay {
 	Scene::Scene() :
@@ -22,7 +23,10 @@ namespace Gameplay {
 		_deletionQueue(std::vector<std::weak_ptr<GameObject>>()),
 		Lights(std::vector<Light>()),
 		IsPlaying(false),
-		IsPaused(true),
+		IsPaused(false),
+		GameOver(false),
+		GameRound(1),
+		EnemiesKilled(0),
 		MainCamera(nullptr),
 		DefaultMaterial(nullptr),
 		_isAwake(false),
@@ -53,6 +57,8 @@ namespace Gameplay {
 			GameObject::Sptr Target = Targets.at(rand() % Targets.size());
 			return Target;
 		}
+		else
+			GameOver = true;
 		return nullptr;
 	}
 
@@ -68,6 +74,85 @@ namespace Gameplay {
 		FindObjectByName("Enemy")->Get<EnemyBehaviour>()->NewTarget();
 		FindObjectByName("FastEnemy")->Get<EnemyBehaviour>()->NewTarget();
 		FindObjectByName("LargeEnemy")->Get<EnemyBehaviour>()->NewTarget();
+	}
+
+	void Scene::LevellCheck()
+	{
+		switch (EnemiesKilled)
+		{
+		case 10:
+			for each (GameObject::Sptr var in Targets)
+			{
+				var->Get<TargetBehaviour>()->MaxHealth += 100;
+				var->Get<TargetBehaviour>()->Heal();
+			}
+			for each (GameObject::Sptr var in Enemies)
+			{
+				var->Get<EnemyBehaviour>()->_speed++;
+			}
+			EnemiesKilled++;
+			GameRound++;
+			break;
+		case 20:
+			for each (GameObject::Sptr var in Targets)
+			{
+				var->Get<TargetBehaviour>()->MaxHealth += 100;
+				var->Get<TargetBehaviour>()->Heal();
+			}
+			for each (GameObject::Sptr var in Enemies)
+			{
+				var->Get<EnemyBehaviour>()->_speed++;
+			}
+			EnemiesKilled++;
+			GameRound++;
+			break;
+		case 30:
+			for each (GameObject::Sptr var in Targets)
+			{
+				var->Get<TargetBehaviour>()->MaxHealth += 100;
+				var->Get<TargetBehaviour>()->Heal();
+			}
+			for each (GameObject::Sptr var in Enemies)
+			{
+				var->Get<EnemyBehaviour>()->_speed++;
+			}
+			EnemiesKilled++;
+			GameRound++;
+			break;
+		case 40:
+			for each (GameObject::Sptr var in Targets)
+			{
+				var->Get<TargetBehaviour>()->MaxHealth += 100;
+				var->Get<TargetBehaviour>()->Heal();
+			}
+			for each (GameObject::Sptr var in Enemies)
+			{
+				var->Get<EnemyBehaviour>()->_speed++;
+			}
+			EnemiesKilled++;
+			GameRound++;
+			break;
+		case 50:
+			for each (GameObject::Sptr var in Targets)
+			{
+				var->Get<TargetBehaviour>()->MaxHealth += 100;
+				var->Get<TargetBehaviour>()->Heal();
+			}
+			for each (GameObject::Sptr var in Enemies)
+			{
+				var->Get<EnemyBehaviour>()->_speed++;
+			}
+			EnemiesKilled++;
+			GameRound++;
+			break;
+		default:
+			break;
+		}
+	}
+
+	void Scene::GameStart()
+	{
+		RemoveGameObject(FindObjectByName("UI Canvas"));
 	}
 
 	void Scene::SetPhysicsDebugDrawMode(BulletDebugMode mode) {
@@ -159,6 +244,8 @@ namespace Gameplay {
 		SetupShaderAndLights();
 
 		_isAwake = true;
+
+		_window = Window;
 	}
 
 	void Scene::DoPhysics(float dt) {
@@ -187,13 +274,32 @@ namespace Gameplay {
 	}
 
 	void Scene::Update(float dt) {
-		_FlushDeleteQueue();
-		if (IsPlaying) {
-			for (auto& obj : _objects) {
-				obj->Update(dt);
+		if (!GameOver)
+		{
+			if (glfwGetKey(_window, GLFW_KEY_ESCAPE)) {
+				if (IsPaused)
+					IsPaused = false;
+				else
+					IsPaused = true;
 			}
+			LevellCheck();
+			_FlushDeleteQueue();
+			if (IsPlaying) {
+				if (!IsPaused) {
+					for (auto& obj : _objects) {
+						obj->Update(dt);
+					}
+				}
+			}
+			_FlushDeleteQueue();
 		}
-		_FlushDeleteQueue();
+		else {
+			FindObjectByName("Main Camera")->SetPostion(glm::vec3(0.0f));
+			FindObjectByName("Main Camera")->SetRotation(glm::vec3(0.0f));
+			FindObjectByName("GameOver")->SetPostion(glm::vec3(0.0f, -0.900f, -6.550f));
+			FindObjectByName("GameOver")->SetRotation(FindObjectByName("Main Camera")->GetRotation());
+			//exit(0);
+		}
 	}
 
 	void Scene::PreRender() {

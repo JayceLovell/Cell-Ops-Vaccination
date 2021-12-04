@@ -23,6 +23,7 @@ public:
 	virtual nlohmann::json ToJson() const override;
 	static TargetBehaviour::Sptr FromJson(const nlohmann::json& blob);
 	MAKE_TYPENAME(TargetBehaviour);
+	void Heal();
 
 	float MaxHealth;
 

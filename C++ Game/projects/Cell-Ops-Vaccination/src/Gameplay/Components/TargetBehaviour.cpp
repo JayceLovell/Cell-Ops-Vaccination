@@ -54,3 +54,8 @@ TargetBehaviour::Sptr TargetBehaviour::FromJson(const nlohmann::json& blob)
 	result->MaxHealth = blob["MaxHealth"];
 	return result;
 }
+
+void TargetBehaviour::Heal()
+{
+	_health = MaxHealth;
+}

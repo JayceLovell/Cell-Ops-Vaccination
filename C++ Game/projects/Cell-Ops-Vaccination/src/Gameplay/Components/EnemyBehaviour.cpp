@@ -18,6 +18,8 @@ void EnemyBehaviour::Awake()
 	_health = _maxHealth;
 	RespawnPosition = GetGameObject()->GetPosition();
 	Target = GetGameObject()->GetScene()->FindTarget();
+	GetGameObject()->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+	GetGameObject()->LookAt(Target.get()->GetPosition());
 }
 void EnemyBehaviour::RenderImGui() {
 	LABEL_LEFT(ImGui::DragFloat, "Speed", &_speed, 1.0f);
@@ -57,7 +59,6 @@ EnemyBehaviour::Sptr EnemyBehaviour::FromJson(const nlohmann::json & blob) {
 
 void EnemyBehaviour::Update(float deltaTime)
 {
-	GetGameObject()->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
 	lerpTimer += deltaTime * _speed;
 	if (lerpTimer >= lerpTimerMax) {
 		lerpTimer = 0;
@@ -84,6 +85,7 @@ void EnemyBehaviour::TakeDamage()
 	_health = _health - 1;
 	if (_health <= 0) {
 		//GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
+		GetGameObject()->GetScene()->EnemiesKilled++;
 		Reset();
 	}
 	LOG_INFO("I {} Took Damage",EnemyType);
@@ -92,6 +94,11 @@ void EnemyBehaviour::TakeDamage()
 void EnemyBehaviour::Reset()
 {
 	_health = _maxHealth;
+	float x = (float)(rand() % 50 + (-25));
+	float y = (float)(rand() % 50 + (-25));
+	float z = (float)(rand() % 50 + (-25));
+	RespawnPosition = glm::vec3(x, y, z);
 	GetGameObject()->SetPostion(RespawnPosition);
 	NewTarget();
+	GetGameObject()->LookAt(Target.get()->GetPosition());
 }

@@ -23,6 +23,8 @@ public:
 	static PlayerBehaviour::Sptr FromJson(const nlohmann::json& blob);
 	MAKE_TYPENAME(PlayerBehaviour);
 
+	int EnemiesKilled;
+
 protected:
 	GLFWwindow* _window;
 };
