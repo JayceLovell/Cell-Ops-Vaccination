@@ -290,6 +290,11 @@ void CreateScene() {
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/toon_shading.glsl" }
 		});
 
+		Shader::Sptr BackgroundShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
+			{ ShaderPartType::Vertex, "shaders/vertex_shaders/animation.glsl" },
+			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_animation.glsl" }
+		});
+
 
 		/////////////////////////////////////////// MESHES ////////////////////////////////////////////////
 		// Load in the meshes
@@ -419,37 +424,37 @@ void CreateScene() {
 			LungMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		// Background Materials
-		Material::Sptr APCMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr APCMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			APCMaterial->Name = "APCMaterial";
 			APCMaterial->Set("u_Material.Diffuse", APCTexture);
 			APCMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr APC2Material = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr APC2Material = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			APC2Material->Name = "APC2Material";
 			APC2Material->Set("u_Material.Diffuse", APC2Texture);
 			APC2Material->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr BronchiMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr BronchiMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			BronchiMaterial->Name = "BronchiMateriall";
 			BronchiMaterial->Set("u_Material.Diffuse", BronchiTexture);
 			BronchiMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr CellMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr CellMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			CellMaterial->Name = "CellMateriall";
 			CellMaterial->Set("u_Material.Diffuse", CellTexture);
 			CellMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr Cell2Material = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr Cell2Material = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			Cell2Material->Name = "Cell2Materiall";
 			Cell2Material->Set("u_Material.Diffuse", Cell2Texture);
 			Cell2Material->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr Co2Material = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr Co2Material = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			Co2Material->Name = "Co2Material";
 			Co2Material->Set("u_Material.Diffuse", Co2Texture);
@@ -461,31 +466,31 @@ void CreateScene() {
 			FloorVeinANDVeinMaterial->Set("u_Material.Diffuse", FloorVeinANDVeinTexture);
 			FloorVeinANDVeinMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr LL37Material = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr LL37Material = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			LL37Material->Name = "LL37Material";
 			LL37Material->Set("u_Material.Diffuse", LL37Texture);
 			LL37Material->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr McaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr McaMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			McaMaterial->Name = "McaMaterial";
 			McaMaterial->Set("u_Material.Diffuse", McaTexture);
 			McaMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr MicrobiotaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr MicrobiotaMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			MicrobiotaMaterial->Name = "MicrobiotaMaterial";
 			MicrobiotaMaterial->Set("u_Material.Diffuse", MicrotbiotaTexture);
 			MicrobiotaMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr NewGermMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr NewGermMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			NewGermMaterial->Name = "NewGermMaterial";
 			NewGermMaterial->Set("u_Material.Diffuse", NewGermTexture);
 			NewGermMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr OxygenMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr OxygenMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			OxygenMaterial->Name = "OxygenMaterial";
 			OxygenMaterial->Set("u_Material.Diffuse", OxygenTexture);
@@ -497,19 +502,19 @@ void CreateScene() {
 			PipeMaterial->Set("u_Material.Diffuse", PipeTexture);
 			PipeMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr SmokeplaqueMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr SmokeplaqueMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			SmokeplaqueMaterial->Name = "SmokeplaqueMaterial";
 			SmokeplaqueMaterial->Set("u_Material.Diffuse", SmokeplaqueTexture);
 			SmokeplaqueMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr SymbiontMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr SymbiontMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			SymbiontMaterial->Name = "SymbiontMaterial";
 			SymbiontMaterial->Set("u_Material.Diffuse", SymbiontTexture);
 			SymbiontMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr Symbiont2Material = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr Symbiont2Material = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			Symbiont2Material->Name = "Symbiont2Material";
 			Symbiont2Material->Set("u_Material.Diffuse", Symbiont2Texture);
@@ -527,7 +532,7 @@ void CreateScene() {
 			WhiteBloodCell2Material->Set("u_Material.Diffuse", WhiteBloodCell2Texture);
 			WhiteBloodCell2Material->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr YellowMicrobiotaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr YellowMicrobiotaMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
 			YellowMicrobiotaMaterial->Name = "YellowMicrobiotaMaterial";
 			YellowMicrobiotaMaterial->Set("u_Material.Diffuse", YellowMBiotaTexture);
