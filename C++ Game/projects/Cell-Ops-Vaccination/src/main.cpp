@@ -299,6 +299,10 @@ void CreateScene() {
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/Morph.glsl" },
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_blinn_phong_textured.glsl" }
 		});
+		Shader::Sptr Animation2Shader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
+			{ ShaderPartType::Vertex, "shaders/vertex_shaders/Morph.glsl" },
+			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_animation.glsl" }
+		});
 
 		/////////////////////////////////////////// MESHES ////////////////////////////////////////////////
 		// Load in the meshes
@@ -306,9 +310,13 @@ void CreateScene() {
 		// Enemy Meshes
 		MeshResource::Sptr LargeEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/LargeEnemy/LargeEnemy_001.obj");
 		MeshResource::Sptr FastEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Fast Enemy.obj");
-		MeshResource::Sptr NormalEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Normal Enemy.obj");
+		//MeshResource::Sptr FastEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/FastIdle/FastEnemy_001.obj");
+
+		MeshResource::Sptr NormalEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/NormalIdle/NormalEnemy_001.obj");
+		
 		// Target Mesh
 		MeshResource::Sptr LungsTargetMesh = ResourceManager::CreateAsset<MeshResource>("models/LungsTarget.obj");
+		//MeshResource::Sptr LungsTargetMesh = ResourceManager::CreateAsset<MeshResource>("models/Lungs/Lungs_001.obj");
 		// Background Meshes
 		MeshResource::Sptr APCMesh = ResourceManager::CreateAsset<MeshResource>("models/APC.obj");
 		MeshResource::Sptr APC2Mesh = ResourceManager::CreateAsset<MeshResource>("models/APC2.obj");
@@ -390,6 +398,28 @@ void CreateScene() {
 			LargeEnemyFrames.push_back(ResourceManager::CreateAsset<MeshResource>("models/LargeEnemy/LargeEnemy_00" + std::to_string(i) + ".obj"));
 		}
 
+		std::vector<MeshResource::Sptr> NormalEnemyFrames;
+
+		for (int i = 1; i < 5; i++) {
+			NormalEnemyFrames.push_back(ResourceManager::CreateAsset<MeshResource>("models/NormalIdle/NormalEnemy_00" + std::to_string(i) + ".obj"));
+		}
+
+		/*std::vector<MeshResource::Sptr> LungFrames;
+
+		for (int i = 1; i < 5; i++) {
+			LungFrames.push_back(ResourceManager::CreateAsset<MeshResource>("models/Lungs/Lungs_00" + std::to_string(i) + ".obj"));
+		}*/
+
+		/*std::vector<MeshResource::Sptr> FastEnemyFrames;
+
+		for (int i = 1; i < 5; i++) {
+			FastEnemyFrames.push_back(ResourceManager::CreateAsset<MeshResource>("models/FastIdle/FastEnemy_00" + std::to_string(i) + ".obj"));
+		}*/
+
+		/*std::vector<MeshResource::Sptr> Symbiont2Frames;
+		for (int i = 1; i < 5; i++) {
+			Symbiont2Frames.push_back(ResourceManager::CreateAsset<MeshResource>("models/SymbiontIdle/Symbiont2_00" + std::to_string(i) + ".obj"));
+		}*/
 
 		// Create an empty scene
 		scene = std::make_shared<Scene>();
@@ -415,7 +445,7 @@ void CreateScene() {
 			LargeEnemyMaterial->Set("u_Material.Diffuse", LargeEnemyTexture);
 			LargeEnemyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr NormalEnemyMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr NormalEnemyMaterial = ResourceManager::CreateAsset<Material>(AnimationShader);
 		{
 			NormalEnemyMaterial->Name = "NormalEnemyMaterial";
 			NormalEnemyMaterial->Set("u_Material.Diffuse", NormalEnemyTexture);
@@ -676,6 +706,12 @@ void CreateScene() {
 			Target->Get<TargetBehaviour>()->TenPercentHp = Health10Texture;
 			Target->Get<TargetBehaviour>()->NoHp = Health0Texture;
 
+			/*MorphAnimator::Sptr animation = Target->Add<MorphAnimator>();
+
+			animation->AddClip(LungFrames, 0.7f, "Idle");
+
+			animation->ActivateAnim("Idle");*/
+
  			scene->Targets.push_back(Target);
 		}
 		GameObject::Sptr Target1 = scene->CreateGameObject("Target1");
@@ -713,6 +749,12 @@ void CreateScene() {
 			Target1->Get<TargetBehaviour>()->TwentyPercentHp = Health20Texture;
 			Target1->Get<TargetBehaviour>()->TenPercentHp = Health10Texture;
 			Target1->Get<TargetBehaviour>()->NoHp = Health0Texture;
+
+			/*MorphAnimator::Sptr animation = Target1->Add<MorphAnimator>();
+
+			animation->AddClip(LungFrames, 0.7f, "Idle");
+
+			animation->ActivateAnim("Idle");*/
 
 			scene->Targets.push_back(Target1);
 		}
@@ -781,6 +823,12 @@ void CreateScene() {
 			FastEnemy->Get<EnemyBehaviour>()->_maxHealth = 1;
 			FastEnemy->Get<EnemyBehaviour>()->_speed = 3;
 
+			/*MorphAnimator::Sptr animation = FastEnemy->Add<MorphAnimator>();
+
+			animation->AddClip(FastEnemyFrames, 0.7f, "Idle");
+
+			animation->ActivateAnim("Idle");*/
+
 			scene->Enemies.push_back(FastEnemy);
 		}
 
@@ -810,6 +858,12 @@ void CreateScene() {
 			Enemy->Get<EnemyBehaviour>()->EnemyType = "Normal Enemy";
 			Enemy->Get<EnemyBehaviour>()->_maxHealth = 3;
 			Enemy->Get<EnemyBehaviour>()->_speed = 1.5f;
+
+			MorphAnimator::Sptr animation = Enemy->Add<MorphAnimator>();
+
+			animation->AddClip(NormalEnemyFrames, 0.7f, "Idle");
+
+			animation->ActivateAnim("Idle");
 
 			scene->Enemies.push_back(Enemy);
 		}
@@ -1039,13 +1093,19 @@ void CreateScene() {
 			float z = (float)(rand() % 100 + (-50));
 			Symbiont2->SetPostion(glm::vec3(x, y, z));
 
-
 			// Add a render component
 			RenderComponent::Sptr renderer = Symbiont2->Add<RenderComponent>();
 			renderer->SetMesh(Symbiont2Mesh);
 			renderer->SetMaterial(Symbiont2Material);
 
 			Symbiont2->Add<BackgroundObjectsBehaviour>();
+
+			/*MorphAnimator::Sptr animation2 = Symbiont2->Add<MorphAnimator>();
+
+			animation2->AddClip(Symbiont2Frames, 0.7f, "Idle");
+
+			animation2->ActivateAnim("Idle"); */
+
 			BackgroundObjects->AddChild(Symbiont2);
 		}
 		GameObject::Sptr Vein = scene->CreateGameObject("Vein");

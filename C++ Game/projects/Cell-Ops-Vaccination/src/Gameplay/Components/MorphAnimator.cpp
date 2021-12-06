@@ -5,6 +5,7 @@
 #include "Utils/JsonGlmHelpers.h"
 #include "Utils/ImGuiHelper.h"
 
+//Based on Morph Lab......Enjoy
 MorphAnimator::MorphAnimator()
 	: IComponent(),
 	switchClip(false),
@@ -56,18 +57,14 @@ void MorphAnimator::Update(float deltaTime)
 	std::vector<BufferAttribute> pos0 = currentClip.frames[currentClip.currentFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->Attributes;
 	std::vector<BufferAttribute> pos1 = currentClip.frames[currentClip.nextFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->Attributes;
 
-	//Resize the buffer attributes of the first frame to only hold the position
+	
 	pos0.resize(1);
-
-	//Change the position's slot to 4, which is equal to inPosition2 in the shader
+	//Changed to slot of inPosition2
 	pos1[0].Slot = static_cast<GLint>(4);
-	//Resize this frame's buffer attributes to only hold the position as well
 	pos1.resize(1);
 
 	thisObject->AddVertexBuffer(currentClip.frames[currentClip.currentFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->Buffer, pos0);
 	thisObject->AddVertexBuffer(currentClip.frames[currentClip.nextFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->Buffer, pos1);
-
-	//Pass the lerp param as a uniform
 	this->GetComponent<RenderComponent>()->GetMaterial()->Set("t", t);
 }
 
@@ -78,14 +75,13 @@ void MorphAnimator::AddClip(std::vector<Gameplay::MeshResource::Sptr> inFrames, 
 	//Make a temporary string
 	std::string tempStr = "";
 
-	//Go through the input name, convert it to lowercase, and add each lowercase character to tempStr
-	//Note: converted to lowercase to make it easier to search for names
+	//Take the input name
 	for (int i = 0; i < inName.length(); i++)
 	{
 		tempStr += std::tolower(inName[i]);
 	}
 
-	//Assign all the variables
+	//Assigned all the variables
 	clip.animName = tempStr;
 	clip.frames = inFrames;
 	clip.frameDuration = dur;
