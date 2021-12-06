@@ -307,6 +307,7 @@ void CreateScene() {
 		MeshResource::Sptr CellMesh = ResourceManager::CreateAsset<MeshResource>("models/Cell.obj");
 		MeshResource::Sptr Cell2Mesh = ResourceManager::CreateAsset<MeshResource>("models/Cell2.obj");
 		MeshResource::Sptr Co2Mesh = ResourceManager::CreateAsset<MeshResource>("models/Co2.obj");
+		MeshResource::Sptr LL37Mesh = ResourceManager::CreateAsset<MeshResource>("models/LL37.obj");
 		MeshResource::Sptr McaMesh = ResourceManager::CreateAsset<MeshResource>("models/Mca.obj");
 		MeshResource::Sptr MicrobiotaMesh = ResourceManager::CreateAsset<MeshResource>("models/Microbiota.obj");
 		MeshResource::Sptr NewGermMesh = ResourceManager::CreateAsset<MeshResource>("models/New Germ.obj");
@@ -316,6 +317,8 @@ void CreateScene() {
 		MeshResource::Sptr SymbiontMesh = ResourceManager::CreateAsset<MeshResource>("models/Symbiont.obj");
 		MeshResource::Sptr Symbiont2Mesh = ResourceManager::CreateAsset<MeshResource>("models/Symbiont2.obj");
 		MeshResource::Sptr VeinMesh = ResourceManager::CreateAsset<MeshResource>("models/Vein.obj");
+		MeshResource::Sptr VeinStickMesh = ResourceManager::CreateAsset<MeshResource>("models/VeinStick.obj");
+		MeshResource::Sptr VeinYMesh = ResourceManager::CreateAsset<MeshResource>("models/VeinY.obj");
 		MeshResource::Sptr WhiteBloodCellMesh = ResourceManager::CreateAsset<MeshResource>("models/White Blood Cell.obj");
 		MeshResource::Sptr WhiteBloodCell2Mesh = ResourceManager::CreateAsset<MeshResource>("models/White Blood Cell2.obj");
 		MeshResource::Sptr YellowMicrobiotaMesh = ResourceManager::CreateAsset<MeshResource>("models/YellowMicrobiota.obj");
@@ -337,6 +340,8 @@ void CreateScene() {
 		Texture2D::Sptr	CellTexture = ResourceManager::CreateAsset<Texture2D>("textures/Cell.png");
 		Texture2D::Sptr	Cell2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Cell2.png");
 		Texture2D::Sptr	Co2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Co2.png");
+		Texture2D::Sptr	FloorVeinANDVeinTexture = ResourceManager::CreateAsset<Texture2D>("textures/FloorVeinANDVein.png");
+		Texture2D::Sptr	LL37Texture = ResourceManager::CreateAsset<Texture2D>("textures/LL37.png");
 		Texture2D::Sptr	McaTexture = ResourceManager::CreateAsset<Texture2D>("textures/Mca.png");
 		Texture2D::Sptr	MicrotbiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/Microbiota.png");
 		Texture2D::Sptr	NewGermTexture = ResourceManager::CreateAsset<Texture2D>("textures/NewGerm.png");
@@ -345,16 +350,26 @@ void CreateScene() {
 		Texture2D::Sptr SmokeplaqueTexture = ResourceManager::CreateAsset<Texture2D>("textures/Smokeplaque.png");
 		Texture2D::Sptr	SymbiontTexture = ResourceManager::CreateAsset<Texture2D>("textures/Symbiont.png");
 		Texture2D::Sptr	Symbiont2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Symbiont2.png");
-		Texture2D::Sptr	VeinTexture = ResourceManager::CreateAsset<Texture2D>("textures/Vein.png");
 		Texture2D::Sptr WhiteBloodCellTexture = ResourceManager::CreateAsset<Texture2D>("textures/White Blood Cell.png");
 		Texture2D::Sptr WhiteBloodCell2Texture = ResourceManager::CreateAsset<Texture2D>("textures/White Blood Cell2.png");
 		Texture2D::Sptr YellowMBiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/YellowMBiota.png");
 		// UI Textures
 		Texture2D::Sptr GameOverTexture = ResourceManager::CreateAsset<Texture2D>("textures/GameOver.png");
-		Texture2D::Sptr TitleTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/cell_ops_title_box.png");
+		Texture2D::Sptr Health100Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_100.png");
+		Texture2D::Sptr Health90Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_90.png");
+		Texture2D::Sptr Health80Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_80.png");
+		Texture2D::Sptr Health70Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_70.png");
+		Texture2D::Sptr Health60Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_60.png");
+		Texture2D::Sptr Health50Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_50.png");
+		Texture2D::Sptr Health40Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_40.png");
+		Texture2D::Sptr Health30Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_30.png");
+		Texture2D::Sptr Health20Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_20.png");
+		Texture2D::Sptr Health10Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_10.png");
+		Texture2D::Sptr Health0Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_0.png");
+		Texture2D::Sptr TitleTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/Title.png");
 
 		// Here we'll load in the cubemap, as well as a special shader to handle drawing the skybox
-		TextureCube::Sptr testCubemap = ResourceManager::CreateAsset<TextureCube>("cubemaps/ocean/ocean.jpg");
+		TextureCube::Sptr testCubemap = ResourceManager::CreateAsset<TextureCube>("cubemaps/ocean/lung.png");
 		Shader::Sptr      skyboxShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/skybox_vert.glsl" },
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/skybox_frag.glsl" }
@@ -440,6 +455,18 @@ void CreateScene() {
 			Co2Material->Set("u_Material.Diffuse", Co2Texture);
 			Co2Material->Set("u_Material.Shininess", 0.1f);
 		}
+		Material::Sptr FloorVeinANDVeinMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			FloorVeinANDVeinMaterial->Name = "FloorVeinANDVeinMaterial";
+			FloorVeinANDVeinMaterial->Set("u_Material.Diffuse", FloorVeinANDVeinTexture);
+			FloorVeinANDVeinMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr LL37Material = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			LL37Material->Name = "LL37Material";
+			LL37Material->Set("u_Material.Diffuse", LL37Texture);
+			LL37Material->Set("u_Material.Shininess", 0.1f);
+		}
 		Material::Sptr McaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			McaMaterial->Name = "McaMaterial";
@@ -487,12 +514,6 @@ void CreateScene() {
 			Symbiont2Material->Name = "Symbiont2Material";
 			Symbiont2Material->Set("u_Material.Diffuse", Symbiont2Texture);
 			Symbiont2Material->Set("u_Material.Shininess", 0.1f);
-		}
-		Material::Sptr VeinMaterial = ResourceManager::CreateAsset<Material>(basicShader);
-		{
-			VeinMaterial->Name = "VeinMaterial";
-			VeinMaterial->Set("u_Material.Diffuse", VeinTexture);
-			VeinMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		Material::Sptr WhiteBloodCellMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
@@ -627,6 +648,17 @@ void CreateScene() {
 
 			Target->Add<TargetBehaviour>();
 			Target->Get<TargetBehaviour>()->MaxHealth = 100;
+			Target->Get<TargetBehaviour>()->FullHp = Health100Texture;
+			Target->Get<TargetBehaviour>()->NintyPercentHp = Health90Texture;
+			Target->Get<TargetBehaviour>()->EightyPercentHp = Health80Texture;
+			Target->Get<TargetBehaviour>()->SeventyPercentHp = Health70Texture;
+			Target->Get<TargetBehaviour>()->SixtyPercentHp = Health60Texture;
+			Target->Get<TargetBehaviour>()->HalfHp = Health50Texture;
+			Target->Get<TargetBehaviour>()->FortyPercentHp = Health40Texture;
+			Target->Get<TargetBehaviour>()->ThirtyPercentHp = Health30Texture;
+			Target->Get<TargetBehaviour>()->TwentyPercentHp = Health20Texture;
+			Target->Get<TargetBehaviour>()->TenPercentHp = Health10Texture;
+			Target->Get<TargetBehaviour>()->NoHp = Health0Texture;
 
  			scene->Targets.push_back(Target);
 		}
@@ -654,6 +686,17 @@ void CreateScene() {
 
 			Target1->Add<TargetBehaviour>();
 			Target1->Get<TargetBehaviour>()->MaxHealth = 100;
+			Target1->Get<TargetBehaviour>()->FullHp = Health100Texture;
+			Target1->Get<TargetBehaviour>()->NintyPercentHp = Health90Texture;
+			Target1->Get<TargetBehaviour>()->EightyPercentHp = Health80Texture;
+			Target1->Get<TargetBehaviour>()->SeventyPercentHp = Health70Texture;
+			Target1->Get<TargetBehaviour>()->SixtyPercentHp = Health60Texture;
+			Target1->Get<TargetBehaviour>()->HalfHp = Health50Texture;
+			Target1->Get<TargetBehaviour>()->FortyPercentHp = Health40Texture;
+			Target1->Get<TargetBehaviour>()->ThirtyPercentHp = Health30Texture;
+			Target1->Get<TargetBehaviour>()->TwentyPercentHp = Health20Texture;
+			Target1->Get<TargetBehaviour>()->TenPercentHp = Health10Texture;
+			Target1->Get<TargetBehaviour>()->NoHp = Health0Texture;
 
 			scene->Targets.push_back(Target1);
 		}
@@ -921,7 +964,7 @@ void CreateScene() {
 		GameObject::Sptr Pipe = scene->CreateGameObject("Pipe");
 		{
 			
-			Pipe->SetPostion(glm::vec3(0.0f, 0.0f, 75.0f));
+			Pipe->SetPostion(glm::vec3(0.0f, 0.0f, 100.0f));
 			Pipe->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
 			Pipe->SetScale(glm::vec3(5.0f));
 
@@ -930,6 +973,8 @@ void CreateScene() {
 			RenderComponent::Sptr renderer = Pipe->Add<RenderComponent>();
 			renderer->SetMesh(PipeMesh);
 			renderer->SetMaterial(PipeMaterial);
+
+			BackgroundObjects->AddChild(Pipe);
 		}
 		GameObject::Sptr Smokeplaque = scene->CreateGameObject("Smokeplaque");
 		{
@@ -985,35 +1030,44 @@ void CreateScene() {
 		{
 
 			Vein->SetPostion(glm::vec3(75.0f, 75.0f, 75.0f));
+			Vein->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
 
 
 			// Add a render component
 			RenderComponent::Sptr renderer = Vein->Add<RenderComponent>();
 			renderer->SetMesh(VeinMesh);
-			renderer->SetMaterial(VeinMaterial);
+			renderer->SetMaterial(FloorVeinANDVeinMaterial);
+
+			BackgroundObjects->AddChild(Vein);
 		}
-		//GameObject::Sptr Vein1 = scene->CreateGameObject("Vein1");
-		//{
+		GameObject::Sptr VeinY = scene->CreateGameObject("VeinY");
+		{
 
-		//	Vein1->SetPostion(glm::vec3(50.0f, 50.0f, -50.0f));
-
-
-		//	// Add a render component
-		//	RenderComponent::Sptr renderer = Vein1->Add<RenderComponent>();
-		//	renderer->SetMesh(Vein1Mesh);
-		//	renderer->SetMaterial(Vein1Material);
-		//}
-		//GameObject::Sptr Vein2 = scene->CreateGameObject("Vein2");
-		//{
-
-		//	Vein2->SetPostion(glm::vec3(-50.0f, 50.0f, 50.0f));
+			VeinY->SetPostion(glm::vec3(-75.0f, -75.0f, -75.0f));
+			VeinY->SetRotation(glm::vec3(0.0f, 90.0f, 0.0f));
 
 
-		//	// Add a render component
-		//	RenderComponent::Sptr renderer = Vein2->Add<RenderComponent>();
-		//	renderer->SetMesh(Vein2Mesh);
-		//	renderer->SetMaterial(Vein2Material);
-		//}
+			// Add a render component
+			RenderComponent::Sptr renderer = VeinY->Add<RenderComponent>();
+			renderer->SetMesh(VeinYMesh);
+			renderer->SetMaterial(FloorVeinANDVeinMaterial);
+
+			BackgroundObjects->AddChild(VeinY);
+		}
+		GameObject::Sptr VeinStick = scene->CreateGameObject("VeinStick");
+		{
+
+			VeinStick->SetPostion(glm::vec3(0.0f, 20.0f, 75.0f));
+			VeinStick->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = VeinStick->Add<RenderComponent>();
+			renderer->SetMesh(VeinStickMesh);
+			renderer->SetMaterial(FloorVeinANDVeinMaterial);
+
+			BackgroundObjects->AddChild(VeinStick);
+		}
 		GameObject::Sptr WhiteBloodCell = scene->CreateGameObject("WhiteBloodCell");
 		{
 			float x = (float)(rand() % 100 + (-50));
@@ -1077,73 +1131,90 @@ void CreateScene() {
 			renderer->SetMaterial(GameOverMaterial);
 		}
 		/////////////////////////// UI //////////////////////////////
-		GameObject::Sptr canvas = scene->CreateGameObject("UI Canvas");
+		GameObject::Sptr EnemiesKilled = scene->CreateGameObject("EnemiesKilled");
 		{
-			RectTransform::Sptr transform = canvas->Add<RectTransform>();
-			transform->SetMin({ 16, 16 });
-			transform->SetMax({ 256, 256 });
-			transform->SetPosition(glm::vec2(400.0f));
-			transform->SetSize({ 100,-100 });
 
-			GuiPanel::Sptr panel = canvas->Add<GuiPanel>();
-			panel->SetTexture(TitleTexture);
+			RectTransform::Sptr transform = EnemiesKilled->Add<RectTransform>();
+			transform->SetSize({ 10,10 });
+			transform->SetMin({ -119,-39 });
 
-			//GuiPanel::Sptr canPanel = canvas->Add<GuiPanel>();
+			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
+			font->Bake();
 
-			/*GameObject::Sptr subPanel = scene->CreateGameObject("Sub Item");
-			{
-				RectTransform::Sptr transform = subPanel->Add<RectTransform>();
-				transform->SetMin({ 10, 10 });
-				transform->SetMax({ 128, 128 });				
+			GuiText::Sptr EnemiesKilledText = EnemiesKilled->Add<GuiText>();
+			EnemiesKilledText->SetText("Enemies Killed: 0");
+			EnemiesKilledText->SetFont(font);
+			EnemiesKilledText->SetColor(glm::vec4(1.0f));
 
-				GuiPanel::Sptr panel = subPanel->Add<GuiPanel>();
-				panel->SetTexture(TitleTexture);
-
-				Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 16.0f);
-				font->Bake();
-
-				GuiText::Sptr GameRoundText = subPanel->Add<GuiText>();
-				GameRoundText->SetText("Round: ");
-				GameRoundText->SetFont(font);
-			}*/
-
-			//canvas->AddChild(subPanel);
 		}
 		GameObject::Sptr Rounds = scene->CreateGameObject("Rounds");
 		{
 
 			RectTransform::Sptr transform = Rounds->Add<RectTransform>();
-			transform->SetMin({ 16, 16 });
-			transform->SetMax({ 256, 256 });
-			transform->SetPosition(glm::vec2(400.0f));
-			transform->SetSize({ 100,-100 });
+			transform->SetSize({ 10,10 });
+			transform->SetMin({ -1501, -29 });
+			//transform->SetMax({ 256, 256 });
+			//transform->SetPosition({ 100 ,0});
 
-			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 20.0f);
+			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
 			font->Bake();
 
 			GuiText::Sptr GameRoundText = Rounds->Add<GuiText>();
-			GameRoundText->SetText("Round: ");
+			GameRoundText->SetText("Round: 0");
 			GameRoundText->SetFont(font);
 			GameRoundText->SetColor(glm::vec4(1.0f));
-			
+
 		}
-		//GameObject::Sptr EnemiesKilled = scene->CreateGameObject("EnemiesKilled");
-		//{
+		GameObject::Sptr TargetHealth = scene->CreateGameObject("Lung 1 Health");
+		{
+			RectTransform::Sptr transform = TargetHealth->Add<RectTransform>();
+			transform->SetSize({ 185,102 });
+			transform->SetMin({ 15,673 });
+			transform->SetMax({ 200,775 });
 
-		//	RectTransform::Sptr transform = EnemiesKilled->Add<RectTransform>();
-		//	transform->SetMin({ 10, 10 });
-		//	transform->SetMax({ 128, 128 });
-		//	//transform->SetPosition(glm::vec2(400.0f));
+			GuiPanel::Sptr Health = TargetHealth->Add<GuiPanel>();
+			Health->SetTexture(Health100Texture);
 
-		//	Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 16.0f);
-		//	font->Bake();
+			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
+			font->Bake();
 
-		//	GuiText::Sptr EnemiesKilledText = EnemiesKilled->Add<GuiText>();
-		//	EnemiesKilledText->SetText("EnemiesKilled: ");
-		//	EnemiesKilledText->SetFont(font);
-		//	EnemiesKilledText->SetColor(glm::vec4(1.0f));
+			GuiText::Sptr TargetHealthNumber = TargetHealth->Add<GuiText>();
+			TargetHealthNumber->SetText("Lung 1 Health 100%");
+			TargetHealthNumber->SetFont(font);
+			TargetHealthNumber->SetColor(glm::vec4(1.0f));
 
-		//}
+			Target->Get<TargetBehaviour>()->HealthUI = TargetHealth;
+		}
+		GameObject::Sptr Target1Health = scene->CreateGameObject("Lung 2 Health");
+		{
+			RectTransform::Sptr transform = Target1Health->Add<RectTransform>();
+			transform->SetSize({ 185,102 });
+			transform->SetMin({ 15,725 });
+			transform->SetMax({ 200,829 });
+
+			GuiPanel::Sptr Health = Target1Health->Add<GuiPanel>();
+			Health->SetTexture(Health100Texture);
+
+			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
+			font->Bake();
+
+			GuiText::Sptr Target1HealthNumber = Target1Health->Add<GuiText>();
+			Target1HealthNumber->SetText("Lung 2 Health 100%");
+			Target1HealthNumber->SetFont(font);
+			Target1HealthNumber->SetColor(glm::vec4(1.0f));
+
+			Target1->Get<TargetBehaviour>()->HealthUI = Target1Health;
+		}
+		GameObject::Sptr canvas = scene->CreateGameObject("UI Canvas");
+		{
+			RectTransform::Sptr transform = canvas->Add<RectTransform>();
+			transform->SetSize({ 800,800 });
+			transform->SetMin({ 0,0 });
+			transform->SetMax({ 800,800 });
+
+			GuiPanel::Sptr Title = canvas->Add<GuiPanel>();
+			Title->SetTexture(TitleTexture);
+		}
 
 		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/cell_ops_title_box.png"));
 		GuiBatcher::SetDefaultBorderRadius(8);
@@ -1295,7 +1366,7 @@ int main() {
 		// Draw our material properties window!
 		DrawMaterialsWindow();
 
-		// Showcasing how to use the imGui library!
+		//Showcasing how to use the imGui library!
 		bool isDebugWindowOpen = ImGui::Begin("Debugging");
 		if (isDebugWindowOpen) {
 			// Draws a button to control whether or not the game is currently playing
@@ -1308,8 +1379,8 @@ int main() {
 				}
 
 				// Toggle state
-				scene->IsPlaying = !scene->IsPlaying;
 				scene->GameStart();
+				scene->IsPlaying = !scene->IsPlaying;
 
 				// If we've gone from playing to not playing, restore the state from before we started playing
 				if (!scene->IsPlaying) {

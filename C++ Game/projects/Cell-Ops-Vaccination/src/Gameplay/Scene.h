@@ -53,10 +53,13 @@ namespace Gameplay {
 		/// Things I added for our game
 		std::vector<GameObject::Sptr> Targets;
 		std::vector<GameObject::Sptr> Enemies;
+		GameObject::Sptr EnemiesKilledUI;
+		GameObject::Sptr RoundUI;
 		bool					   IsPaused;
 		bool GameOver;
 		int GameRound;
 		int EnemiesKilled;
+		int EnemiesThreshold;
 		GLFWwindow* _window;
 
 
@@ -69,6 +72,7 @@ namespace Gameplay {
 		void DeleteTarget(const GameObject::Sptr& object);
 		void LevellCheck();
 		void GameStart();
+		void UpdateUI();
 		///
 
 		void SetPhysicsDebugDrawMode(BulletDebugMode mode);

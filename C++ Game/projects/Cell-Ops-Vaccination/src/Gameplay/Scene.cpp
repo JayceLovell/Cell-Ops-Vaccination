@@ -16,6 +16,7 @@
 #include "Graphics/VertexArrayObject.h"
 #include <Gameplay/Components/EnemyBehaviour.h>
 #include <Gameplay/Components/TargetBehaviour.h>
+#include <Gameplay/Components/GUI/GuiText.h>
 
 namespace Gameplay {
 	Scene::Scene() :
@@ -25,8 +26,9 @@ namespace Gameplay {
 		IsPlaying(false),
 		IsPaused(false),
 		GameOver(false),
-		GameRound(1),
+		GameRound(0),
 		EnemiesKilled(0),
+		EnemiesThreshold(10),
 		MainCamera(nullptr),
 		DefaultMaterial(nullptr),
 		_isAwake(false),
@@ -78,81 +80,114 @@ namespace Gameplay {
 
 	void Scene::LevellCheck()
 	{
-		switch (EnemiesKilled)
-		{
-		case 10:
-			for each (GameObject::Sptr var in Targets)
+		if (EnemiesKilled > EnemiesThreshold) {
+			EnemiesThreshold = EnemiesThreshold + 10;
+			switch (GameRound)
 			{
-				var->Get<TargetBehaviour>()->MaxHealth += 100;
-				var->Get<TargetBehaviour>()->Heal();
+			case 1:
+
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				for each (GameObject::Sptr var in Enemies)
+				{
+					var->Get<EnemyBehaviour>()->_speed++;
+				}
+				GameRound++;
+				UpdateUI();
+				break;
+			case 2:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				for each (GameObject::Sptr var in Enemies)
+				{
+					var->Get<EnemyBehaviour>()->_speed++;
+				}
+				GameRound++;
+				UpdateUI();
+				break;
+			case 3:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				for each (GameObject::Sptr var in Enemies)
+				{
+					var->Get<EnemyBehaviour>()->_speed++;
+				}
+				GameRound++;
+				UpdateUI();
+				break;
+			case 4:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				for each (GameObject::Sptr var in Enemies)
+				{
+					var->Get<EnemyBehaviour>()->_speed++;
+				}
+				GameRound++;
+				UpdateUI();
+				break;
+			case 5:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				for each (GameObject::Sptr var in Enemies)
+				{
+					var->Get<EnemyBehaviour>()->_speed++;
+				}
+				GameRound++;
+				UpdateUI();
+				break;
+			case 6:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				for each (GameObject::Sptr var in Enemies)
+				{
+					var->Get<EnemyBehaviour>()->_speed++;
+				}
+				GameRound++;
+				UpdateUI();
+				break;
+			default:
+				break;
 			}
-			for each (GameObject::Sptr var in Enemies)
-			{
-				var->Get<EnemyBehaviour>()->_speed++;
-			}
-			EnemiesKilled++;
-			GameRound++;
-			break;
-		case 20:
-			for each (GameObject::Sptr var in Targets)
-			{
-				var->Get<TargetBehaviour>()->MaxHealth += 100;
-				var->Get<TargetBehaviour>()->Heal();
-			}
-			for each (GameObject::Sptr var in Enemies)
-			{
-				var->Get<EnemyBehaviour>()->_speed++;
-			}
-			EnemiesKilled++;
-			GameRound++;
-			break;
-		case 30:
-			for each (GameObject::Sptr var in Targets)
-			{
-				var->Get<TargetBehaviour>()->MaxHealth += 100;
-				var->Get<TargetBehaviour>()->Heal();
-			}
-			for each (GameObject::Sptr var in Enemies)
-			{
-				var->Get<EnemyBehaviour>()->_speed++;
-			}
-			EnemiesKilled++;
-			GameRound++;
-			break;
-		case 40:
-			for each (GameObject::Sptr var in Targets)
-			{
-				var->Get<TargetBehaviour>()->MaxHealth += 100;
-				var->Get<TargetBehaviour>()->Heal();
-			}
-			for each (GameObject::Sptr var in Enemies)
-			{
-				var->Get<EnemyBehaviour>()->_speed++;
-			}
-			EnemiesKilled++;
-			GameRound++;
-			break;
-		case 50:
-			for each (GameObject::Sptr var in Targets)
-			{
-				var->Get<TargetBehaviour>()->MaxHealth += 100;
-				var->Get<TargetBehaviour>()->Heal();
-			}
-			for each (GameObject::Sptr var in Enemies)
-			{
-				var->Get<EnemyBehaviour>()->_speed++;
-			}
-			EnemiesKilled++;
-			GameRound++;
-			break;
-		default:
-			break;
 		}
 	}
 
 	void Scene::GameStart()
 	{
 		RemoveGameObject(FindObjectByName("UI Canvas"));
+		EnemiesKilledUI = FindObjectByName("EnemiesKilled");
+		RoundUI= FindObjectByName("Rounds");
+		GameRound = 1;
+		std::string RoundText = "Round: ";
+		RoundText += std::to_string(GameRound);
+		RoundUI->Get<GuiText>()->SetText(RoundText);
+	}
+
+	void Scene::UpdateUI()
+	{
+		std::string RoundText = "Round: ";
+		RoundText += std::to_string(GameRound);
+		std::string EnemiesText = "Enemies Killed: ";
+		EnemiesText += std::to_string(EnemiesKilled);
+		RoundUI->Get<GuiText>()->SetText(RoundText);
+		EnemiesKilledUI->Get<GuiText>()->SetText(EnemiesText);
 	}
 
 	void Scene::SetPhysicsDebugDrawMode(BulletDebugMode mode) {
@@ -283,6 +318,15 @@ namespace Gameplay {
 					IsPaused = false;
 				else
 					IsPaused = true;
+			}
+			if (glfwGetKey(_window, GLFW_KEY_ENTER)) {
+				if (IsPlaying)
+					IsPlaying = false;
+				else
+				{
+					IsPlaying = true;
+					GameStart();
+				}
 			}
 			LevellCheck();
 			_FlushDeleteQueue();

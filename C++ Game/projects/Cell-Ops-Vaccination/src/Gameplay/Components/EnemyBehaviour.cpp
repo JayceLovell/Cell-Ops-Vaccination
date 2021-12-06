@@ -75,20 +75,16 @@ void EnemyBehaviour::NewTarget()
 	Target = GetGameObject()->GetScene()->FindTarget();
 }
 
-//void EnemyBehaviour::OnLeavingTrigger(const std::shared_ptr<Gameplay::Physics::TriggerVolume>& trigger)
-//{
-//	LOG_INFO("Leaving {}", EnemyType);
-//}
-
 void EnemyBehaviour::TakeDamage()
 {
+	LOG_INFO("I {} Took Damage", EnemyType);
 	_health = _health - 1;
 	if (_health <= 0) {
-		//GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
+		LOG_INFO("Killed {}", EnemyType);
 		GetGameObject()->GetScene()->EnemiesKilled++;
+		GetGameObject()->GetScene()->UpdateUI();
 		Reset();
 	}
-	LOG_INFO("I {} Took Damage",EnemyType);
 }
 
 void EnemyBehaviour::Reset()
