@@ -255,20 +255,22 @@ namespace Gameplay {
 		ComponentManager::Each<Gameplay::Physics::TriggerVolume>([=](const std::shared_ptr<Gameplay::Physics::TriggerVolume>& body) {
 			body->PhysicsPreStep(dt);
 			});
+		if (!GameOver)
+		{
+			if (IsPlaying) {
 
-		if (IsPlaying) {
+				_physicsWorld->stepSimulation(dt, 15);
 
-			_physicsWorld->stepSimulation(dt, 15);
-
-			ComponentManager::Each<Gameplay::Physics::RigidBody>([=](const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
-				body->PhysicsPostStep(dt);
-				});
-			ComponentManager::Each<Gameplay::Physics::TriggerVolume>([=](const std::shared_ptr<Gameplay::Physics::TriggerVolume>& body) {
-				body->PhysicsPostStep(dt);
-				});
-			if (_bulletDebugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug) {
-				_physicsWorld->debugDrawWorld();
-				DebugDrawer::Get().FlushAll();
+				ComponentManager::Each<Gameplay::Physics::RigidBody>([=](const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
+					body->PhysicsPostStep(dt);
+					});
+				ComponentManager::Each<Gameplay::Physics::TriggerVolume>([=](const std::shared_ptr<Gameplay::Physics::TriggerVolume>& body) {
+					body->PhysicsPostStep(dt);
+					});
+				if (_bulletDebugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug) {
+					_physicsWorld->debugDrawWorld();
+					DebugDrawer::Get().FlushAll();
+				}
 			}
 		}
 	}

@@ -294,50 +294,62 @@ void CreateScene() {
 		/////////////////////////////////////////// MESHES ////////////////////////////////////////////////
 		// Load in the meshes
 		MeshResource::Sptr PlayerMesh = ResourceManager::CreateAsset<MeshResource>("models/Player.obj");
-
-		MeshResource::Sptr LargeEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Lower Poly Large Enemy.obj");
-		MeshResource::Sptr FastEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Lower Poly Fast Enemy.obj");
-		MeshResource::Sptr NormalEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Lower Poly Normal Enemy.obj");
-
-
+		// Enemy Meshes
+		MeshResource::Sptr LargeEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Large Enemy.obj");
+		MeshResource::Sptr FastEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Fast Enemy.obj");
+		MeshResource::Sptr NormalEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Normal Enemy.obj");
+		// Target Mesh
 		MeshResource::Sptr LungsTargetMesh = ResourceManager::CreateAsset<MeshResource>("models/LungsTarget.obj");
+		// Background Meshes
+		MeshResource::Sptr APCMesh = ResourceManager::CreateAsset<MeshResource>("models/APC.obj");
+		MeshResource::Sptr APC2Mesh = ResourceManager::CreateAsset<MeshResource>("models/APC2.obj");
+		MeshResource::Sptr BronchiMesh = ResourceManager::CreateAsset<MeshResource>("models/Bronchi.obj");
 		MeshResource::Sptr CellMesh = ResourceManager::CreateAsset<MeshResource>("models/Cell.obj");
 		MeshResource::Sptr Cell2Mesh = ResourceManager::CreateAsset<MeshResource>("models/Cell2.obj");
 		MeshResource::Sptr Co2Mesh = ResourceManager::CreateAsset<MeshResource>("models/Co2.obj");
+		MeshResource::Sptr McaMesh = ResourceManager::CreateAsset<MeshResource>("models/Mca.obj");
+		MeshResource::Sptr MicrobiotaMesh = ResourceManager::CreateAsset<MeshResource>("models/Microbiota.obj");
+		MeshResource::Sptr NewGermMesh = ResourceManager::CreateAsset<MeshResource>("models/New Germ.obj");
 		MeshResource::Sptr OxygenMesh = ResourceManager::CreateAsset<MeshResource>("models/Oxygen.obj");
-		MeshResource::Sptr APCMesh = ResourceManager::CreateAsset<MeshResource>("models/APC.obj");
-		MeshResource::Sptr APC2Mesh = ResourceManager::CreateAsset<MeshResource>("models/APC2.obj");
+		MeshResource::Sptr PipeMesh = ResourceManager::CreateAsset<MeshResource>("models/Pipe.obj");
+		MeshResource::Sptr SmokeplaqueMesh = ResourceManager::CreateAsset<MeshResource>("models/Smoke plaque.obj");
 		MeshResource::Sptr SymbiontMesh = ResourceManager::CreateAsset<MeshResource>("models/Symbiont.obj");
 		MeshResource::Sptr Symbiont2Mesh = ResourceManager::CreateAsset<MeshResource>("models/Symbiont2.obj");
 		MeshResource::Sptr VeinMesh = ResourceManager::CreateAsset<MeshResource>("models/Vein.obj");
-		MeshResource::Sptr MicrobiotaMesh = ResourceManager::CreateAsset<MeshResource>("models/Microbiota.obj");
-		MeshResource::Sptr SmokeplaqueMesh = ResourceManager::CreateAsset<MeshResource>("models/Smoke plaque.obj");
-		MeshResource::Sptr YellowMicrobiotaMesh = ResourceManager::CreateAsset<MeshResource>("models/Smoke plaque.obj");
+		MeshResource::Sptr WhiteBloodCellMesh = ResourceManager::CreateAsset<MeshResource>("models/White Blood Cell.obj");
+		MeshResource::Sptr WhiteBloodCell2Mesh = ResourceManager::CreateAsset<MeshResource>("models/White Blood Cell2.obj");
+		MeshResource::Sptr YellowMicrobiotaMesh = ResourceManager::CreateAsset<MeshResource>("models/YellowMicrobiota.obj");
 
 
 		/////////////////////////////////////////// TEXTURES ////////////////////////////////////////////////
 		// Load in some textures
 		Texture2D::Sptr PlayerTexture = ResourceManager::CreateAsset<Texture2D>("textures/tempWhiteCell.jpg");
-
+		// Enemy Textures
 		Texture2D::Sptr	LargeEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Large Enemy.png");
 		Texture2D::Sptr	FastEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Fast Enemy.png");
 		Texture2D::Sptr	NormalEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Normal Enemy.png");
-
+		// Target Textures
 		Texture2D::Sptr	LungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
-
+		// Background Texture
+		Texture2D::Sptr	APCTexture = ResourceManager::CreateAsset<Texture2D>("textures/APC.png");
+		Texture2D::Sptr	APC2Texture = ResourceManager::CreateAsset<Texture2D>("textures/APC2.png");
+		Texture2D::Sptr	BronchiTexture = ResourceManager::CreateAsset<Texture2D>("textures/Bronchi.png");
 		Texture2D::Sptr	CellTexture = ResourceManager::CreateAsset<Texture2D>("textures/Cell.png");
 		Texture2D::Sptr	Cell2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Cell2.png");
 		Texture2D::Sptr	Co2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Co2.png");
+		Texture2D::Sptr	McaTexture = ResourceManager::CreateAsset<Texture2D>("textures/Mca.png");
+		Texture2D::Sptr	MicrotbiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/Microbiota.png");
+		Texture2D::Sptr	NewGermTexture = ResourceManager::CreateAsset<Texture2D>("textures/NewGerm.png");
 		Texture2D::Sptr	OxygenTexture = ResourceManager::CreateAsset<Texture2D>("textures/Oxygen.png");
-		Texture2D::Sptr	APCTexture = ResourceManager::CreateAsset<Texture2D>("textures/APC.png");
-		Texture2D::Sptr	APC2Texture = ResourceManager::CreateAsset<Texture2D>("textures/APC2.png");
+		Texture2D::Sptr	PipeTexture = ResourceManager::CreateAsset<Texture2D>("textures/Pipe.png");
+		Texture2D::Sptr SmokeplaqueTexture = ResourceManager::CreateAsset<Texture2D>("textures/Smokeplaque.png");
 		Texture2D::Sptr	SymbiontTexture = ResourceManager::CreateAsset<Texture2D>("textures/Symbiont.png");
 		Texture2D::Sptr	Symbiont2Texture = ResourceManager::CreateAsset<Texture2D>("textures/Symbiont2.png");
 		Texture2D::Sptr	VeinTexture = ResourceManager::CreateAsset<Texture2D>("textures/Vein.png");
-		Texture2D::Sptr	MicrobiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/Microbiota.png");
-		Texture2D::Sptr SmokeplaqueTexture = ResourceManager::CreateAsset<Texture2D>("textures/Smokeplaque.png");
+		Texture2D::Sptr WhiteBloodCellTexture = ResourceManager::CreateAsset<Texture2D>("textures/White Blood Cell.png");
+		Texture2D::Sptr WhiteBloodCell2Texture = ResourceManager::CreateAsset<Texture2D>("textures/White Blood Cell2.png");
 		Texture2D::Sptr YellowMBiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/YellowMBiota.png");
-
+		// UI Textures
 		Texture2D::Sptr GameOverTexture = ResourceManager::CreateAsset<Texture2D>("textures/GameOver.png");
 		Texture2D::Sptr TitleTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/cell_ops_title_box.png");
 
@@ -358,43 +370,58 @@ void CreateScene() {
 		scene->SetSkyboxRotation(glm::rotate(MAT4_IDENTITY, glm::half_pi<float>(), glm::vec3(1.0f, 0.0f, 0.0f)));
 
 		// Create our materials
-		// This will be our box material, with no environment reflections
-
+		// Player Material
 		Material::Sptr PlayerMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			PlayerMaterial->Name = "PlayerMaterial";
 			PlayerMaterial->Set("u_Material.Diffuse", PlayerTexture);
 			PlayerMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-
+		// Enemy Materials
 		Material::Sptr LargeEnemyMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			LargeEnemyMaterial->Name = "LargeEnemyMaterial";
 			LargeEnemyMaterial->Set("u_Material.Diffuse", LargeEnemyTexture);
 			LargeEnemyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-
 		Material::Sptr NormalEnemyMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			NormalEnemyMaterial->Name = "NormalEnemyMaterial";
 			NormalEnemyMaterial->Set("u_Material.Diffuse", NormalEnemyTexture);
 			NormalEnemyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-
 		Material::Sptr FastEnemyMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			FastEnemyMaterial->Name = "FastEnemyMaterial";
 			FastEnemyMaterial->Set("u_Material.Diffuse", FastEnemyTexture);
 			FastEnemyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-
+		// Target Material
 		Material::Sptr LungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			LungMaterial->Name = "LungMaterial";
 			LungMaterial->Set("u_Material.Diffuse",LungTexture);
 			LungMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-
+		// Background Materials
+		Material::Sptr APCMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			APCMaterial->Name = "APCMaterial";
+			APCMaterial->Set("u_Material.Diffuse", APCTexture);
+			APCMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr APC2Material = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			APC2Material->Name = "APC2Material";
+			APC2Material->Set("u_Material.Diffuse", APC2Texture);
+			APC2Material->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr BronchiMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			BronchiMaterial->Name = "BronchiMateriall";
+			BronchiMaterial->Set("u_Material.Diffuse", BronchiTexture);
+			BronchiMaterial->Set("u_Material.Shininess", 0.1f);
+		}
 		Material::Sptr CellMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			CellMaterial->Name = "CellMateriall";
@@ -407,12 +434,29 @@ void CreateScene() {
 			Cell2Material->Set("u_Material.Diffuse", Cell2Texture);
 			Cell2Material->Set("u_Material.Shininess", 0.1f);
 		}
-
 		Material::Sptr Co2Material = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			Co2Material->Name = "Co2Material";
 			Co2Material->Set("u_Material.Diffuse", Co2Texture);
 			Co2Material->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr McaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			McaMaterial->Name = "McaMaterial";
+			McaMaterial->Set("u_Material.Diffuse", McaTexture);
+			McaMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr MicrobiotaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			MicrobiotaMaterial->Name = "MicrobiotaMaterial";
+			MicrobiotaMaterial->Set("u_Material.Diffuse", MicrotbiotaTexture);
+			MicrobiotaMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr NewGermMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			NewGermMaterial->Name = "NewGermMaterial";
+			NewGermMaterial->Set("u_Material.Diffuse", NewGermTexture);
+			NewGermMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		Material::Sptr OxygenMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
@@ -420,17 +464,17 @@ void CreateScene() {
 			OxygenMaterial->Set("u_Material.Diffuse", OxygenTexture);
 			OxygenMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr APCMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr PipeMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
-			APCMaterial->Name = "APCMaterial";
-			APCMaterial->Set("u_Material.Diffuse", APCTexture);
-			APCMaterial->Set("u_Material.Shininess", 0.1f);
+			PipeMaterial->Name = "PipeMaterial";
+			PipeMaterial->Set("u_Material.Diffuse", PipeTexture);
+			PipeMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr APC2Material = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr SmokeplaqueMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
-			APC2Material->Name = "APC2Material";
-			APC2Material->Set("u_Material.Diffuse", APC2Texture);
-			APC2Material->Set("u_Material.Shininess", 0.1f);
+			SmokeplaqueMaterial->Name = "SmokeplaqueMaterial";
+			SmokeplaqueMaterial->Set("u_Material.Diffuse", SmokeplaqueTexture);
+			SmokeplaqueMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		Material::Sptr SymbiontMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
@@ -450,17 +494,17 @@ void CreateScene() {
 			VeinMaterial->Set("u_Material.Diffuse", VeinTexture);
 			VeinMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr MicrobiotaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr WhiteBloodCellMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
-			MicrobiotaMaterial->Name = "MicrobiotaMaterial";
-			MicrobiotaMaterial->Set("u_Material.Diffuse", MicrobiotaTexture);
-			MicrobiotaMaterial->Set("u_Material.Shininess", 0.1f);
+			WhiteBloodCellMaterial->Name = "WhiteBloodCellMaterial";
+			WhiteBloodCellMaterial->Set("u_Material.Diffuse", WhiteBloodCellTexture);
+			WhiteBloodCellMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr SmokeplaqueMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr WhiteBloodCell2Material = ResourceManager::CreateAsset<Material>(basicShader);
 		{
-			SmokeplaqueMaterial->Name = "SmokeplaqueMaterial";
-			SmokeplaqueMaterial->Set("u_Material.Diffuse", SmokeplaqueTexture);
-			SmokeplaqueMaterial->Set("u_Material.Shininess", 0.1f);
+			WhiteBloodCell2Material->Name = "WhiteBloodCell2Material";
+			WhiteBloodCell2Material->Set("u_Material.Diffuse", WhiteBloodCell2Texture);
+			WhiteBloodCell2Material->Set("u_Material.Shininess", 0.1f);
 		}
 		Material::Sptr YellowMicrobiotaMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
@@ -468,6 +512,7 @@ void CreateScene() {
 			YellowMicrobiotaMaterial->Set("u_Material.Diffuse", YellowMBiotaTexture);
 			YellowMicrobiotaMaterial->Set("u_Material.Shininess", 0.1f);
 		}
+		// UI Material
 		Material::Sptr GameOverMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
 			GameOverMaterial->Name = "GameOverMaterial";
@@ -528,7 +573,7 @@ void CreateScene() {
 		 //Set up the scene's camera For Debugging
 		GameObject::Sptr camera = scene->CreateGameObject("Main Camera");
 		{
-			camera->SetPostion(glm::vec3(5.0f));
+			camera->SetPostion(glm::vec3(0.0f));
 			camera->SetRotation(glm::vec3(112.735f, 0.0f, -72.0f));
 
 			camera->Add<SimpleCameraControl>();
@@ -556,24 +601,8 @@ void CreateScene() {
 
 			trigger->AddCollider(collider);
 		}
-
-		//GameObject::Sptr Level = scene->CreateGameObject("Level");
-		//{
-
-		//	// Make a big tiled mesh
-		//	MeshResource::Sptr tiledMesh = ResourceManager::CreateAsset<MeshResource>();
-		//	tiledMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(100.0f), glm::vec2(20.0f)));
-		//	tiledMesh->GenerateMesh();
-
-		//	RenderComponent::Sptr renderer =Level->Add<RenderComponent>();
-		//	renderer->SetMesh(tiledMesh);
-		//	renderer->SetMaterial(LevelMaterial);
-
-		//	// Attach a plane collider that extends infinitely along the X / Y axis
-		//	RigidBody::Sptr physics = Level->Add<RigidBody>(/*static by default*/);
-		//	physics->AddCollider(BoxCollider::Create(glm::vec3(50.0f, 50.0f, 1.0f)))->SetPosition({ 0,0,-1 });
-		//}
-		/////////////////////////TARGETS////////////////////////// 10 max
+		//OBJECTS BELOW HAVE A SPAWN RANGE OF - (X,Y,Z) TO + (X,Y,Z)
+		/////////////////////////TARGETS////////////////////////// 25 max range
 		GameObject::Sptr Target = scene->CreateGameObject("Target");
 		{
 			float x = (float)(rand() % 50 + (-25));
@@ -629,7 +658,7 @@ void CreateScene() {
 			scene->Targets.push_back(Target1);
 		}
 
-		////////////////////////Enemies/////////////////////////////// 25 max
+		////////////////////////Enemies/////////////////////////////// 50 max range
 		GameObject::Sptr LargeEnemy = scene->CreateGameObject("LargeEnemy");
 		{
 			float x = (float)(rand() % 100 + (-50));
@@ -720,10 +749,60 @@ void CreateScene() {
 			scene->Enemies.push_back(Enemy);
 		}
 
-		//////////////// Background Objects ///// 50 max
+		//////////////// Background Objects ///// 50 max range
 
 		GameObject::Sptr BackgroundObjects = scene->CreateGameObject("BackgroundObjects");
 
+		GameObject::Sptr APC = scene->CreateGameObject("APC");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			APC->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = APC->Add<RenderComponent>();
+			renderer->SetMesh(APCMesh);
+			renderer->SetMaterial(APCMaterial);
+
+			APC->Add<BackgroundObjectsBehaviour>();
+			APC->Get<BackgroundObjectsBehaviour>()->BezierMode = true;
+			BackgroundObjects->AddChild(APC);
+		}
+		GameObject::Sptr APC2 = scene->CreateGameObject("APC2");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			APC2->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = APC2->Add<RenderComponent>();
+			renderer->SetMesh(APC2Mesh);
+			renderer->SetMaterial(APC2Material);
+
+			APC2->Add<BackgroundObjectsBehaviour>();
+			BackgroundObjects->AddChild(APC2);
+		}
+		GameObject::Sptr Bronchi = scene->CreateGameObject("Bronchi");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Bronchi->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = Bronchi->Add<RenderComponent>();
+			renderer->SetMesh(BronchiMesh);
+			renderer->SetMaterial(BronchiMaterial);
+
+			Bronchi->Add<BackgroundObjectsBehaviour>();
+			Bronchi->Get<BackgroundObjectsBehaviour>()->BezierMode = true;
+			BackgroundObjects->AddChild(Bronchi);
+		}
 		GameObject::Sptr Cell = scene->CreateGameObject("Cell");
 		{
 			float x = (float)(rand() % 100 + (-50));
@@ -774,6 +853,55 @@ void CreateScene() {
 			Co2->Get<BackgroundObjectsBehaviour>()->BezierMode = true;
 			BackgroundObjects->AddChild(Co2);
 		}
+		GameObject::Sptr Mca = scene->CreateGameObject("Mca");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Mca->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = Mca->Add<RenderComponent>();
+			renderer->SetMesh(McaMesh);
+			renderer->SetMaterial(McaMaterial);
+
+			Mca->Add<BackgroundObjectsBehaviour>();
+			Mca->Get<BackgroundObjectsBehaviour>()->BezierMode = true;
+			BackgroundObjects->AddChild(Mca);
+		}
+		GameObject::Sptr Microbiota = scene->CreateGameObject("Microbiota");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			Microbiota->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = Microbiota->Add<RenderComponent>();
+			renderer->SetMesh(MicrobiotaMesh);
+			renderer->SetMaterial(MicrobiotaMaterial);
+
+			Microbiota->Add<BackgroundObjectsBehaviour>();
+			BackgroundObjects->AddChild(Microbiota);
+		}
+		GameObject::Sptr NewGerm = scene->CreateGameObject("NewGerm");
+		{
+			float x = (float)(rand() % 100 + (-50));
+			float y = (float)(rand() % 100 + (-50));
+			float z = (float)(rand() % 100 + (-50));
+			NewGerm->SetPostion(glm::vec3(x, y, z));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = NewGerm->Add<RenderComponent>();
+			renderer->SetMesh(NewGermMesh);
+			renderer->SetMaterial(NewGermMaterial);
+
+			NewGerm->Add<BackgroundObjectsBehaviour>();
+			BackgroundObjects->AddChild(NewGerm);
+		}
 		GameObject::Sptr Oxygen = scene->CreateGameObject("Oxygen");
 		{
 			float x = (float)(rand() % 100 + (-50));
@@ -790,38 +918,35 @@ void CreateScene() {
 			Oxygen->Add<BackgroundObjectsBehaviour>();
 			BackgroundObjects->AddChild(Oxygen);
 		}
-		GameObject::Sptr APC = scene->CreateGameObject("APC");
+		GameObject::Sptr Pipe = scene->CreateGameObject("Pipe");
 		{
-			float x = (float)(rand() % 100 + (-50));
-			float y = (float)(rand() % 100 + (-50));
-			float z = (float)(rand() % 100 + (-50));
-			APC->SetPostion(glm::vec3(x, y, z));
+			
+			Pipe->SetPostion(glm::vec3(0.0f, 0.0f, 75.0f));
+			Pipe->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
+			Pipe->SetScale(glm::vec3(5.0f));
 
 
 			// Add a render component
-			RenderComponent::Sptr renderer = APC->Add<RenderComponent>();
-			renderer->SetMesh(APCMesh);
-			renderer->SetMaterial(APCMaterial);
-
-			APC->Add<BackgroundObjectsBehaviour>();
-			APC->Get<BackgroundObjectsBehaviour>()->BezierMode = true;
-			BackgroundObjects->AddChild(APC);
+			RenderComponent::Sptr renderer = Pipe->Add<RenderComponent>();
+			renderer->SetMesh(PipeMesh);
+			renderer->SetMaterial(PipeMaterial);
 		}
-		GameObject::Sptr APC2 = scene->CreateGameObject("APC2");
+		GameObject::Sptr Smokeplaque = scene->CreateGameObject("Smokeplaque");
 		{
 			float x = (float)(rand() % 100 + (-50));
 			float y = (float)(rand() % 100 + (-50));
 			float z = (float)(rand() % 100 + (-50));
-			APC2->SetPostion(glm::vec3(x, y, z));
+			Smokeplaque->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
-			RenderComponent::Sptr renderer = APC2->Add<RenderComponent>();
-			renderer->SetMesh(APC2Mesh);
-			renderer->SetMaterial(APC2Material);
+			RenderComponent::Sptr renderer = Smokeplaque->Add<RenderComponent>();
+			renderer->SetMesh(SmokeplaqueMesh);
+			renderer->SetMaterial(SmokeplaqueMaterial);
 
-			APC2->Add<BackgroundObjectsBehaviour>();
-			BackgroundObjects->AddChild(APC2);
+			Smokeplaque->Add<BackgroundObjectsBehaviour>();
+			Smokeplaque->Get<BackgroundObjectsBehaviour>()->BezierMode = true;
+			BackgroundObjects->AddChild(Smokeplaque);
 		}
 		GameObject::Sptr Symbiont = scene->CreateGameObject("Symbiont");
 		{
@@ -858,53 +983,69 @@ void CreateScene() {
 		}
 		GameObject::Sptr Vein = scene->CreateGameObject("Vein");
 		{
-			float x = (float)(rand() % 100 + (-50));
-			float y = (float)(rand() % 100 + (-50));
-			float z = (float)(rand() % 100 + (-50));
-			Vein->SetPostion(glm::vec3(x, y, z));
+
+			Vein->SetPostion(glm::vec3(75.0f, 75.0f, 75.0f));
 
 
 			// Add a render component
 			RenderComponent::Sptr renderer = Vein->Add<RenderComponent>();
 			renderer->SetMesh(VeinMesh);
 			renderer->SetMaterial(VeinMaterial);
-
-			Vein->Add<BackgroundObjectsBehaviour>();
-			Vein->Get<BackgroundObjectsBehaviour>()->BezierMode = true;
-			BackgroundObjects->AddChild(Vein);
 		}
-		GameObject::Sptr Microbiota = scene->CreateGameObject("Microbiota");
+		//GameObject::Sptr Vein1 = scene->CreateGameObject("Vein1");
+		//{
+
+		//	Vein1->SetPostion(glm::vec3(50.0f, 50.0f, -50.0f));
+
+
+		//	// Add a render component
+		//	RenderComponent::Sptr renderer = Vein1->Add<RenderComponent>();
+		//	renderer->SetMesh(Vein1Mesh);
+		//	renderer->SetMaterial(Vein1Material);
+		//}
+		//GameObject::Sptr Vein2 = scene->CreateGameObject("Vein2");
+		//{
+
+		//	Vein2->SetPostion(glm::vec3(-50.0f, 50.0f, 50.0f));
+
+
+		//	// Add a render component
+		//	RenderComponent::Sptr renderer = Vein2->Add<RenderComponent>();
+		//	renderer->SetMesh(Vein2Mesh);
+		//	renderer->SetMaterial(Vein2Material);
+		//}
+		GameObject::Sptr WhiteBloodCell = scene->CreateGameObject("WhiteBloodCell");
 		{
 			float x = (float)(rand() % 100 + (-50));
 			float y = (float)(rand() % 100 + (-50));
 			float z = (float)(rand() % 100 + (-50));
-			Microbiota->SetPostion(glm::vec3(x, y, z));
+			WhiteBloodCell->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
-			RenderComponent::Sptr renderer = Microbiota->Add<RenderComponent>();
-			renderer->SetMesh(MicrobiotaMesh);
-			renderer->SetMaterial(MicrobiotaMaterial);
+			RenderComponent::Sptr renderer = WhiteBloodCell->Add<RenderComponent>();
+			renderer->SetMesh(WhiteBloodCellMesh);
+			renderer->SetMaterial(WhiteBloodCellMaterial);
 
-			Microbiota->Add<BackgroundObjectsBehaviour>();
-			BackgroundObjects->AddChild(Microbiota);
+			WhiteBloodCell->Add<BackgroundObjectsBehaviour>();
+			WhiteBloodCell->Get<BackgroundObjectsBehaviour>()->BezierMode = true;
+			BackgroundObjects->AddChild(WhiteBloodCell);
 		}
-		GameObject::Sptr Smokeplaque = scene->CreateGameObject("Smokeplaque");
+		GameObject::Sptr WhiteBloodCell2 = scene->CreateGameObject("WhiteBloodCell2");
 		{
 			float x = (float)(rand() % 100 + (-50));
 			float y = (float)(rand() % 100 + (-50));
 			float z = (float)(rand() % 100 + (-50));
-			Smokeplaque->SetPostion(glm::vec3(x, y, z));
+			WhiteBloodCell2->SetPostion(glm::vec3(x, y, z));
 
 
 			// Add a render component
-			RenderComponent::Sptr renderer = Smokeplaque->Add<RenderComponent>();
-			renderer->SetMesh(SmokeplaqueMesh);
-			renderer->SetMaterial(SmokeplaqueMaterial);
+			RenderComponent::Sptr renderer = WhiteBloodCell2->Add<RenderComponent>();
+			renderer->SetMesh(WhiteBloodCell2Mesh);
+			renderer->SetMaterial(WhiteBloodCell2Material);
 
-			Smokeplaque->Add<BackgroundObjectsBehaviour>();
-			Smokeplaque->Get<BackgroundObjectsBehaviour>()->BezierMode = true;
-			BackgroundObjects->AddChild(Smokeplaque);
+			WhiteBloodCell2->Add<BackgroundObjectsBehaviour>();			
+			BackgroundObjects->AddChild(WhiteBloodCell2);
 		}
 		GameObject::Sptr YellowMicrobiota = scene->CreateGameObject("YellowMicrobiota");
 		{
@@ -968,6 +1109,41 @@ void CreateScene() {
 
 			//canvas->AddChild(subPanel);
 		}
+		GameObject::Sptr Rounds = scene->CreateGameObject("Rounds");
+		{
+
+			RectTransform::Sptr transform = Rounds->Add<RectTransform>();
+			transform->SetMin({ 16, 16 });
+			transform->SetMax({ 256, 256 });
+			transform->SetPosition(glm::vec2(400.0f));
+			transform->SetSize({ 100,-100 });
+
+			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 20.0f);
+			font->Bake();
+
+			GuiText::Sptr GameRoundText = Rounds->Add<GuiText>();
+			GameRoundText->SetText("Round: ");
+			GameRoundText->SetFont(font);
+			GameRoundText->SetColor(glm::vec4(1.0f));
+			
+		}
+		//GameObject::Sptr EnemiesKilled = scene->CreateGameObject("EnemiesKilled");
+		//{
+
+		//	RectTransform::Sptr transform = EnemiesKilled->Add<RectTransform>();
+		//	transform->SetMin({ 10, 10 });
+		//	transform->SetMax({ 128, 128 });
+		//	//transform->SetPosition(glm::vec2(400.0f));
+
+		//	Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 16.0f);
+		//	font->Bake();
+
+		//	GuiText::Sptr EnemiesKilledText = EnemiesKilled->Add<GuiText>();
+		//	EnemiesKilledText->SetText("EnemiesKilled: ");
+		//	EnemiesKilledText->SetFont(font);
+		//	EnemiesKilledText->SetColor(glm::vec4(1.0f));
+
+		//}
 
 		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/cell_ops_title_box.png"));
 		GuiBatcher::SetDefaultBorderRadius(8);
