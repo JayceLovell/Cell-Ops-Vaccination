@@ -23,9 +23,14 @@ namespace Gameplay {
 		_objects(std::vector<GameObject::Sptr>()),
 		_deletionQueue(std::vector<std::weak_ptr<GameObject>>()),
 		Lights(std::vector<Light>()),
+		PlayerLastPosition(glm::vec3(0.0f)),
 		IsPlaying(false),
 		IsPaused(false),
+		PauseUIUp(false),
 		GameOver(false),
+		GameWon(false),
+		GameStarted(false),
+		IsCheatActivated(false),
 		GameRound(0),
 		EnemiesKilled(0),
 		EnemiesThreshold(10),
@@ -60,7 +65,10 @@ namespace Gameplay {
 			return Target;
 		}
 		else
+		{
+			RemoveGameObject(FindObjectByName("Player"));
 			GameOver = true;
+		}
 		return nullptr;
 	}
 
@@ -77,10 +85,12 @@ namespace Gameplay {
 		FindObjectByName("FastEnemy")->Get<EnemyBehaviour>()->NewTarget();
 		FindObjectByName("LargeEnemy")->Get<EnemyBehaviour>()->NewTarget();
 	}
-
+	/// <summary>
+	/// Level Difficulty Controller
+	/// </summary>
 	void Scene::LevellCheck()
 	{
-		if (EnemiesKilled > EnemiesThreshold) {
+		if (EnemiesKilled >= EnemiesThreshold) {
 			EnemiesThreshold = EnemiesThreshold + 10;
 			switch (GameRound)
 			{
@@ -166,6 +176,14 @@ namespace Gameplay {
 			default:
 				break;
 			}
+			IsCheatActivated = false;
+		}
+		else if (EnemiesKilled > 50) {
+			RemoveGameObject(FindObjectByName("Player"));
+			RemoveGameObject(FindObjectByName("GameOver"));
+			RemoveGameObject(FindObjectByName("GamePause"));
+			GameWon = true;
+			GameOver = true;
 		}
 	}
 
@@ -178,6 +196,7 @@ namespace Gameplay {
 		std::string RoundText = "Round: ";
 		RoundText += std::to_string(GameRound);
 		RoundUI->Get<GuiText>()->SetText(RoundText);
+		GameStarted = true;
 	}
 
 	void Scene::UpdateUI()
@@ -188,6 +207,23 @@ namespace Gameplay {
 		EnemiesText += std::to_string(EnemiesKilled);
 		RoundUI->Get<GuiText>()->SetText(RoundText);
 		EnemiesKilledUI->Get<GuiText>()->SetText(EnemiesText);
+	}
+
+	void Scene::GamePause(bool IsPaused)
+	{
+		if (IsPaused && !PauseUIUp) {
+			PlayerLastPosition = FindObjectByName("Main Camera")->GetPosition();
+			FindObjectByName("Main Camera")->SetPostion(glm::vec3(0.0f));
+			FindObjectByName("Main Camera")->SetRotation(glm::vec3(0.0f));
+			FindObjectByName("GamePause")->SetPostion(glm::vec3(0.0f, -0.900f, -6.550f));
+			FindObjectByName("GamePause")->SetRotation(FindObjectByName("Main Camera")->GetRotation());
+			PauseUIUp = true;
+		}
+		else {
+			FindObjectByName("Main Camera")->SetPostion(PlayerLastPosition);
+			FindObjectByName("GamePause")->SetPostion(glm::vec3(300000));
+			PauseUIUp = false;
+		}
 	}
 
 	void Scene::SetPhysicsDebugDrawMode(BulletDebugMode mode) {
@@ -313,38 +349,61 @@ namespace Gameplay {
 	void Scene::Update(float dt) {
 		if (!GameOver)
 		{
-			if (glfwGetKey(_window, GLFW_KEY_ESCAPE)) {
-				if (IsPaused)
-					IsPaused = false;
-				else
-					IsPaused = true;
+			//Cheats
+			if (glfwGetKey(_window, GLFW_KEY_F2) && IsPaused){
+				if (!IsCheatActivated) {
+					EnemiesKilled = EnemiesThreshold;
+					UpdateUI();
+					IsCheatActivated = true;
+				}
 			}
-			if (glfwGetKey(_window, GLFW_KEY_ENTER)) {
-				if (IsPlaying)
-					IsPlaying = false;
+			// Pause
+			if (glfwGetKey(_window, GLFW_KEY_ESCAPE)) {
+				if (IsPaused && PauseUIUp)
+				{
+					IsPaused = false;
+					GamePause(IsPaused);
+				}
 				else
 				{
+					IsPaused = true;
+					GamePause(IsPaused);
+				}
+
+			}
+			//Start
+			if (glfwGetKey(_window, GLFW_KEY_ENTER)) {
+				if (!IsPlaying && !GameStarted)
+				{
 					IsPlaying = true;
+					GameStarted = true;
 					GameStart();
 				}
 			}
-			LevellCheck();
 			_FlushDeleteQueue();
 			if (IsPlaying) {
 				if (!IsPaused) {
 					for (auto& obj : _objects) {
 						obj->Update(dt);
 					}
+					LevellCheck();
 				}
 			}
 			_FlushDeleteQueue();
 		}
 		else {
-			FindObjectByName("Main Camera")->SetPostion(glm::vec3(0.0f));
-			FindObjectByName("Main Camera")->SetRotation(glm::vec3(0.0f));
-			FindObjectByName("GameOver")->SetPostion(glm::vec3(0.0f, -0.900f, -6.550f));
-			FindObjectByName("GameOver")->SetRotation(FindObjectByName("Main Camera")->GetRotation());
-			//exit(0);
+			if (GameWon) {
+				FindObjectByName("Main Camera")->SetPostion(glm::vec3(0.0f));
+				FindObjectByName("Main Camera")->SetRotation(glm::vec3(0.0f));
+				FindObjectByName("GameWin")->SetPostion(glm::vec3(0.0f, -0.900f, -6.550f));
+				FindObjectByName("GameWin")->SetRotation(FindObjectByName("Main Camera")->GetRotation());
+			}
+			else {
+				FindObjectByName("Main Camera")->SetPostion(glm::vec3(0.0f));
+				FindObjectByName("Main Camera")->SetRotation(glm::vec3(0.0f));
+				FindObjectByName("GameOver")->SetPostion(glm::vec3(0.0f, -0.900f, -6.550f));
+				FindObjectByName("GameOver")->SetRotation(FindObjectByName("Main Camera")->GetRotation());
+			}
 		}
 	}
 

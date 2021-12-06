@@ -55,8 +55,13 @@ namespace Gameplay {
 		std::vector<GameObject::Sptr> Enemies;
 		GameObject::Sptr EnemiesKilledUI;
 		GameObject::Sptr RoundUI;
+		glm::vec3 PlayerLastPosition;
 		bool					   IsPaused;
+		bool PauseUIUp;
 		bool GameOver;
+		bool GameWon;
+		bool GameStarted;
+		bool IsCheatActivated;
 		int GameRound;
 		int EnemiesKilled;
 		int EnemiesThreshold;
@@ -73,6 +78,7 @@ namespace Gameplay {
 		void LevellCheck();
 		void GameStart();
 		void UpdateUI();
+		void GamePause(bool IsPaused);
 		///
 
 		void SetPhysicsDebugDrawMode(BulletDebugMode mode);

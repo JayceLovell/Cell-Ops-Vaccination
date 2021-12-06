@@ -262,10 +262,6 @@ void CreateScene() {
 		////////////////////////////// SHADERS  ////////////////////////////////
 		// This time we'll have 2 different shaders, and share data between both of them using the UBO
 		// This shader will handle reflective materials 
-		Shader::Sptr reflectiveShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
-			{ ShaderPartType::Vertex, "shaders/vertex_shaders/basic.glsl" },
-			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_environment_reflective.glsl" }
-		});
 
 		// This shader handles our basic materials without reflections (cause they expensive)
 		Shader::Sptr basicShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
@@ -273,27 +269,13 @@ void CreateScene() {
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_blinn_phong_textured.glsl" }
 		});
 
-		// This shader handles our basic materials without reflections (cause they expensive)
-		Shader::Sptr specShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
-			{ ShaderPartType::Vertex, "shaders/vertex_shaders/basic.glsl" },
-			{ ShaderPartType::Fragment, "shaders/fragment_shaders/textured_specular.glsl" }
-		});
-
-		// This shader handles our foliage vertex shader example
-		Shader::Sptr foliageShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
-			{ ShaderPartType::Vertex, "shaders/vertex_shaders/foliage.glsl" },
-			{ ShaderPartType::Fragment, "shaders/fragment_shaders/screendoor_transparency.glsl" }
-		});
-
-		// This shader handles our cel shading example
-		Shader::Sptr toonShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
-			{ ShaderPartType::Vertex, "shaders/vertex_shaders/basic.glsl" },
-			{ ShaderPartType::Fragment, "shaders/fragment_shaders/toon_shading.glsl" }
-		});
-
 		Shader::Sptr BackgroundShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/animation.glsl" },
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_animation.glsl" }
+		});
+		Shader::Sptr BreathingShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
+			{ ShaderPartType::Vertex, "shaders/vertex_shaders/breathing.glsl" },
+			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_shader.glsl" }
 		});
 		Shader::Sptr AnimationShader = ResourceManager::CreateAsset<Shader>(std::unordered_map<ShaderPartType, std::string>{
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/Morph.glsl" },
@@ -372,6 +354,8 @@ void CreateScene() {
 		Texture2D::Sptr YellowMBiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/YellowMBiota.png");
 		// UI Textures
 		Texture2D::Sptr GameOverTexture = ResourceManager::CreateAsset<Texture2D>("textures/GameOver.png");
+		Texture2D::Sptr GameWinTexture = ResourceManager::CreateAsset<Texture2D>("textures/GameWin.png");
+		Texture2D::Sptr GamePauseTexture = ResourceManager::CreateAsset<Texture2D>("textures/GamePause.png");
 		Texture2D::Sptr Health100Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_100.png");
 		Texture2D::Sptr Health90Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_90.png");
 		Texture2D::Sptr Health80Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_80.png");
@@ -404,22 +388,6 @@ void CreateScene() {
 			NormalEnemyFrames.push_back(ResourceManager::CreateAsset<MeshResource>("models/NormalIdle/NormalEnemy_00" + std::to_string(i) + ".obj"));
 		}
 
-		/*std::vector<MeshResource::Sptr> LungFrames;
-
-		for (int i = 1; i < 5; i++) {
-			LungFrames.push_back(ResourceManager::CreateAsset<MeshResource>("models/Lungs/Lungs_00" + std::to_string(i) + ".obj"));
-		}*/
-
-		/*std::vector<MeshResource::Sptr> FastEnemyFrames;
-
-		for (int i = 1; i < 5; i++) {
-			FastEnemyFrames.push_back(ResourceManager::CreateAsset<MeshResource>("models/FastIdle/FastEnemy_00" + std::to_string(i) + ".obj"));
-		}*/
-
-		/*std::vector<MeshResource::Sptr> Symbiont2Frames;
-		for (int i = 1; i < 5; i++) {
-			Symbiont2Frames.push_back(ResourceManager::CreateAsset<MeshResource>("models/SymbiontIdle/Symbiont2_00" + std::to_string(i) + ".obj"));
-		}*/
 
 		// Create an empty scene
 		scene = std::make_shared<Scene>();
@@ -585,6 +553,18 @@ void CreateScene() {
 			GameOverMaterial->Name = "GameOverMaterial";
 			GameOverMaterial->Set("u_Material.Diffuse", GameOverTexture);
 			GameOverMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr GameWinMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			GameWinMaterial->Name = "GameWinMaterial";
+			GameWinMaterial->Set("u_Material.Diffuse", GameWinTexture);
+			GameWinMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr GamePauseMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			GamePauseMaterial->Name = "GamePauseMaterial";
+			GamePauseMaterial->Set("u_Material.Diffuse", GamePauseTexture);
+			GamePauseMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 
 		/////////////// MAP MATERIALS ////////////////////
@@ -778,7 +758,7 @@ void CreateScene() {
 			physics->SetMass(0.0f);
 			BoxCollider::Sptr collider = BoxCollider::Create();
 			collider->SetScale(glm::vec3(3.04f, 4.23f, 3.44f));
-			collider->SetPosition(glm::vec3(0.0f, 0.0f, 2.0f));
+			collider->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
 			physics->AddCollider(collider);
 
 
@@ -850,7 +830,7 @@ void CreateScene() {
 			physics->SetMass(0.0f);
 			BoxCollider::Sptr collider = BoxCollider::Create();
 			collider->SetScale(glm::vec3(1.130f, 1.120f, 1.790f));
-			collider->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
+			collider->SetPosition(glm::vec3(0.0f, 0.9f, 0.1f));
 			physics->AddCollider(collider);
 
 
@@ -1112,7 +1092,7 @@ void CreateScene() {
 		{
 
 			Vein->SetPostion(glm::vec3(75.0f, 75.0f, 75.0f));
-			Vein->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
+			Vein->SetRotation(glm::vec3(130.0f, 40.0f, 0.0f));
 
 
 			// Add a render component
@@ -1125,8 +1105,8 @@ void CreateScene() {
 		GameObject::Sptr VeinY = scene->CreateGameObject("VeinY");
 		{
 
-			VeinY->SetPostion(glm::vec3(-75.0f, -75.0f, -75.0f));
-			VeinY->SetRotation(glm::vec3(0.0f, 90.0f, 0.0f));
+			VeinY->SetPostion(glm::vec3(-80.0f, -90.0f, -100.0f));
+			VeinY->SetRotation(glm::vec3(75.0f, 63.0f, 18.0f));
 
 
 			// Add a render component
@@ -1139,8 +1119,8 @@ void CreateScene() {
 		GameObject::Sptr VeinStick = scene->CreateGameObject("VeinStick");
 		{
 
-			VeinStick->SetPostion(glm::vec3(0.0f, 20.0f, 75.0f));
-			VeinStick->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
+			VeinStick->SetPostion(glm::vec3(0.0f, 20.0f, 100.0f));
+			VeinStick->SetRotation(glm::vec3(-90.0f, 0.0f, 0.0f));
 
 
 			// Add a render component
@@ -1204,13 +1184,39 @@ void CreateScene() {
 			GameOver->SetPostion(glm::vec3(100000.0f));
 			GameOver->SetScale(glm::vec3(15.0f, 15.0f, 1.0f));
 			 //Make a big tiled mesh
-				MeshResource::Sptr tiledMesh = ResourceManager::CreateAsset<MeshResource>();
-			tiledMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
-			tiledMesh->GenerateMesh();
+				MeshResource::Sptr GameOverMesh = ResourceManager::CreateAsset<MeshResource>();
+			GameOverMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
+			GameOverMesh->GenerateMesh();
 
 			RenderComponent::Sptr renderer = GameOver->Add<RenderComponent>();
-			renderer->SetMesh(tiledMesh);
+			renderer->SetMesh(GameOverMesh);
 			renderer->SetMaterial(GameOverMaterial);
+		}
+		///////////////////////// GAME WIN ///////////////////////////
+		GameObject::Sptr GameWin = scene->CreateGameObject("GameWin"); {
+			GameWin->SetPostion(glm::vec3(200000.0f));
+			GameWin->SetScale(glm::vec3(15.0f, 15.0f, 1.0f));
+			//Make a big tiled mesh
+			MeshResource::Sptr GameWinMesh = ResourceManager::CreateAsset<MeshResource>();
+			GameWinMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
+			GameWinMesh->GenerateMesh();
+
+			RenderComponent::Sptr renderer = GameWin->Add<RenderComponent>();
+			renderer->SetMesh(GameWinMesh);
+			renderer->SetMaterial(GameWinMaterial);
+		}
+		////////////////////////// GAME PAUSE ///////////////////////
+		GameObject::Sptr GamePause = scene->CreateGameObject("GamePause"); {
+		GamePause->SetPostion(glm::vec3(300000.0f));
+		GamePause->SetScale(glm::vec3(15.0f, 15.0f, 1.0f));
+		//Make a big tiled mesh
+		MeshResource::Sptr GamePauseMesh = ResourceManager::CreateAsset<MeshResource>();
+		GamePauseMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
+		GamePauseMesh->GenerateMesh();
+
+		RenderComponent::Sptr renderer = GamePause->Add<RenderComponent>();
+		renderer->SetMesh(GamePauseMesh);
+		renderer->SetMaterial(GamePauseMaterial);
 		}
 		/////////////////////////// UI //////////////////////////////
 		GameObject::Sptr EnemiesKilled = scene->CreateGameObject("EnemiesKilled");

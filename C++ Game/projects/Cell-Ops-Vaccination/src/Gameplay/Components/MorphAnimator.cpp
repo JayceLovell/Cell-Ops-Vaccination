@@ -5,7 +5,6 @@
 #include "Utils/JsonGlmHelpers.h"
 #include "Utils/ImGuiHelper.h"
 
-//Based on Morph Lab......Enjoy
 MorphAnimator::MorphAnimator()
 	: IComponent(),
 	switchClip(false),
