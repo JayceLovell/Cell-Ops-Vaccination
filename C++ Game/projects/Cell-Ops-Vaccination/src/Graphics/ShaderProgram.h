@@ -7,38 +7,22 @@
 #include <GLM/gtc/type_ptr.hpp> // for glm::value_ptr
 #include <Logging.h>            // for the logging functions
 #include <EnumToString.h>
+
 #include "Utils/ResourceManager/IResource.h"
 #include "Graphics/GlEnums.h"
-
-// We can use an enum to make our code more readable and restrict
-// values to only ones we want to accept
-ENUM(ShaderPartType, GLint,
-	 Vertex       = GL_VERTEX_SHADER,
-	 Fragment     = GL_FRAGMENT_SHADER,
-	 TessControl  = GL_TESS_CONTROL_SHADER,
-	 TessEval     = GL_TESS_EVALUATION_SHADER,
-	 Geometry     = GL_GEOMETRY_SHADER,
-	 Unknown      = GL_NONE // Usually good practice to have an "unknown" or "none" state for enums
-);
+#include "Graphics/IGraphicsResource.h"
 
 /// <summary>
 /// This class will wrap around an OpenGL shader program
 /// </summary>
-class Shader final : public IResource
+class ShaderProgram final : public IGraphicsResource, public IResource
 {
 public:
-	typedef std::shared_ptr<Shader> Sptr;
+	DEFINE_RESOURCE(ShaderProgram);
 
 	static inline Sptr Create() {
-		return std::make_shared<Shader>();
+		return std::make_shared<ShaderProgram>();
 	}
-
-	// We'll disallow moving and copying, since we want to manually control when the destructor is called
-	// We'll use these classes via pointers
-	Shader(const Shader& other) = delete;
-	Shader(Shader&& other) = delete;
-	Shader& operator=(const Shader& other) = delete;
-	Shader& operator=(Shader&& other) = delete;
 
 public:
 	// Stores information about a uniform in the shader
@@ -76,12 +60,12 @@ public:
 	/// <summary>
 	/// Creates a new empty shader object
 	/// </summary>
-	Shader();
+	ShaderProgram();
 
-	Shader(const std::unordered_map<ShaderPartType, std::string>& filePaths);
+	ShaderProgram(const std::unordered_map<ShaderPartType, std::string>& filePaths);
 
 	// Note, we don't need to make this virtual since this class is marked final (basically it can't be used as a base class)
-	~Shader();
+	~ShaderProgram();
 
 	/// <summary>
 	/// Loads a single shader stage into this shader object (ex: Vertex Shader or Fragment Shader)
@@ -113,13 +97,14 @@ public:
 	/// </summary>
 	static void Unbind();
 
-	/// <summary>
-	/// Gets the underlying OpenGL handle that this class is wrapping
-	/// </summary>
-	GLuint GetHandle() const { return _handle; }
+	// Inherited from IGraphicsResource
+
+	virtual GlResourceType GetResourceClass() const override;
+
+	// Inherited from IResource
 
 	virtual nlohmann::json ToJson() const override;
-	static Shader::Sptr FromJson(const nlohmann::json& data);
+	static ShaderProgram::Sptr FromJson(const nlohmann::json& data);
 
 public:
 	bool FindUniform(const std::string& name, UniformInfo* out);
@@ -180,9 +165,6 @@ public:
 	void BindUniformBlockToSlot(const std::string& name, int uboSlot);
 
 protected:
-	// Stores the shader program handle
-	GLuint _handle;
-
 	// Stores all the handles to our shaders until we
 	// are ready to compile them into a program
 	std::unordered_map<ShaderPartType, int> _handles;

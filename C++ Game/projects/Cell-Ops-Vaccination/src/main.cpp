@@ -23,7 +23,7 @@
 #include "Graphics/IndexBuffer.h"
 #include "Graphics/VertexBuffer.h"
 #include "Graphics/VertexArrayObject.h"
-#include "Graphics/Shader.h"
+#include "Graphics/ShaderProgram.h"
 #include "Graphics/Texture2D.h"
 #include "Graphics/TextureCube.h"
 #include "Graphics/VertexTypes.h"

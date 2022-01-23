@@ -15,8 +15,8 @@ Texture2D::Sptr GuiBatcher::__defaultUITexture = nullptr;
 int GuiBatcher::__defaultEdgeRadius = 0;
 
 VertexBuffer::Sptr GuiBatcher::__vbo = nullptr;
-Shader::Sptr GuiBatcher::__shader = nullptr;
-Shader::Sptr GuiBatcher::__fontShader = nullptr;
+ShaderProgram::Sptr GuiBatcher::__shader = nullptr;
+ShaderProgram::Sptr GuiBatcher::__fontShader = nullptr;
 glm::ivec2 GuiBatcher::__windowSize = {0, 0};
 glm::mat4 GuiBatcher::__projection = glm::mat4(1.0f);
 glm::mat3 GuiBatcher::__model = glm::mat3(1.0f);
@@ -43,10 +43,10 @@ void GuiBatcher::PushRect(const glm::vec2& min, const glm::vec2& max, const glm:
 	}
 
 	// Copy over UV coords
-	verts[0].UV = glm::vec2(uvMin.x, uvMin.y);
-	verts[1].UV = glm::vec2(uvMin.x, uvMax.y);
-	verts[2].UV = glm::vec2(uvMax.x, uvMax.y);
-	verts[3].UV = glm::vec2(uvMax.x, uvMin.y);
+	verts[0].UV = glm::vec2(uvMin.x, uvMax.y);
+	verts[1].UV = glm::vec2(uvMin.x, uvMin.y);
+	verts[2].UV = glm::vec2(uvMax.x, uvMin.y);
+	verts[3].UV = glm::vec2(uvMax.x, uvMax.y);
 
 	// Add vertices and indices to range
 	uint32_t ix = mesh.Builder.AddVertexRange(verts, 4);
@@ -77,19 +77,19 @@ void GuiBatcher::PushRect(const glm::vec2& min, const glm::vec2& max, const glm:
 		float uMaxYS = 1.0f - edgeOffset.y;
 
 		// Left column
-		PushRect(glm::vec2(min.x, min.y),  glm::vec2(eMinXS, eMinYS), color, tex, glm::vec2(0.0f, 0.0f),   glm::vec2(uMinXS, uMinYS));
+		PushRect(glm::vec2(min.x, min.y),  glm::vec2(eMinXS, eMinYS), color, tex, glm::vec2(0.0f, uMaxYS),   glm::vec2(uMinXS, 1.0f));
 		PushRect(glm::vec2(min.x, eMinYS), glm::vec2(eMinXS, eMaxYS), color, tex, glm::vec2(0.0f, uMinYS), glm::vec2(uMinXS, uMaxYS));
-		PushRect(glm::vec2(min.x, eMaxYS), glm::vec2(eMinXS, max.y),  color, tex, glm::vec2(0.0f, uMaxYS), glm::vec2(uMinXS, 1.0f));
+		PushRect(glm::vec2(min.x, eMaxYS), glm::vec2(eMinXS, max.y),  color, tex, glm::vec2(0.0f, 0.0f), glm::vec2(uMinXS, uMinYS));
 
 		// Center column
-		PushRect(glm::vec2(eMinXS, min.y),  glm::vec2(eMaxXS, eMinYS), color, tex, glm::vec2(uMinXS, 0.0f),   glm::vec2(uMaxXS, uMinYS));
+		PushRect(glm::vec2(eMinXS, min.y),  glm::vec2(eMaxXS, eMinYS), color, tex, glm::vec2(uMinXS, uMaxYS),   glm::vec2(uMaxXS, 1.0f));
 		PushRect(glm::vec2(eMinXS, eMinYS), glm::vec2(eMaxXS, eMaxYS), color, tex, glm::vec2(uMinXS, uMinYS), glm::vec2(uMaxXS, uMaxYS));
-		PushRect(glm::vec2(eMinXS, eMaxYS), glm::vec2(eMaxXS, max.y), color, tex,  glm::vec2(uMinXS, uMaxYS), glm::vec2(uMaxXS, 1.0f));
+		PushRect(glm::vec2(eMinXS, eMaxYS), glm::vec2(eMaxXS, max.y), color, tex,  glm::vec2(uMinXS, 0.0f), glm::vec2(uMaxXS, uMinYS));
 
 		// Right column
-		PushRect(glm::vec2(eMaxXS, min.y),  glm::vec2(max.x, eMinYS), color, tex, glm::vec2(uMaxXS, 0.0f),   glm::vec2(1.0f, uMinYS));
+		PushRect(glm::vec2(eMaxXS, min.y),  glm::vec2(max.x, eMinYS), color, tex, glm::vec2(uMaxXS, uMaxYS),   glm::vec2(1.0f, 1.0f));
 		PushRect(glm::vec2(eMaxXS, eMinYS), glm::vec2(max.x, eMaxYS), color, tex, glm::vec2(uMaxXS, uMinYS), glm::vec2(1.0f, uMaxYS));
-		PushRect(glm::vec2(eMaxXS, eMaxYS), glm::vec2(max.x, max.y),  color, tex, glm::vec2(uMaxXS, uMaxYS), glm::vec2(1.0f, 1.0f));
+		PushRect(glm::vec2(eMaxXS, eMaxYS), glm::vec2(max.x, max.y),  color, tex, glm::vec2(uMaxXS, 0.0f), glm::vec2(1.0f, uMinYS));
 	}
 }
 
@@ -105,7 +105,7 @@ void GuiBatcher::RenderText(const std::wstring& text, const Font::Sptr& font, co
 	glm::vec2 offset = glm::vec2(0.0f);
 
 	// Transform the origin based off the model transform
-	glm::vec2 origin = __model * glm::vec3(position, 1.0f);
+	glm::vec2 origin = position;
 
 	// Gets the texture used to render the font
 	Texture2D::Sptr atlas = font->GetAtlas();
@@ -120,6 +120,8 @@ void GuiBatcher::RenderText(const std::wstring& text, const Font::Sptr& font, co
 	verts[1].Color = color;
 	verts[2].Color = color;
 	verts[3].Color = color;
+
+	float depth = mesh.Builder.GetVertexCount() / 1000.0f;
 
 	// Iterate over all characters in string
 	for (int i = 0; i < length; i++) {
@@ -143,14 +145,16 @@ void GuiBatcher::RenderText(const std::wstring& text, const Font::Sptr& font, co
 		}
 		// All other characters get rendered
 		else {
-			verts[0].Position = glm::vec3(origin + (offset + glyph.Positions[0]) * scale, 0.0f);
-			verts[1].Position = glm::vec3(origin + (offset + glyph.Positions[1]) * scale, 0.0f);
-			verts[2].Position = glm::vec3(origin + (offset + glyph.Positions[2]) * scale, 0.0f);
-			verts[3].Position = glm::vec3(origin + (offset + glyph.Positions[3]) * scale, 0.0f);
+			verts[0].Position = __model * glm::vec3(origin + (offset + glyph.Positions[0]) * scale, 1.0f);
+			verts[1].Position = __model * glm::vec3(origin + (offset + glyph.Positions[1]) * scale, 1.0f);
+			verts[2].Position = __model * glm::vec3(origin + (offset + glyph.Positions[2]) * scale, 1.0f);
+			verts[3].Position = __model * glm::vec3(origin + (offset + glyph.Positions[3]) * scale, 1.0f);
 			verts[0].UV = glyph.UVs[0];
 			verts[1].UV = glyph.UVs[1];
 			verts[2].UV = glyph.UVs[2];
 			verts[3].UV = glyph.UVs[3];
+
+			verts[0].Position.z = verts[1].Position.z = verts[2].Position.z = verts[3].Position.z = depth;
 
 			uint32_t ix = mesh.Builder.AddVertexRange(verts, 4);
 			mesh.Builder.AddIndexTri(ix + 0, ix + 1, ix + 2);
@@ -194,7 +198,7 @@ void GuiBatcher::Flush()
 
 			// Bind texture, send uniforms to shader
 			tex->Bind(0);
-			Shader::Sptr shader = value.IsFont ? __fontShader : __shader;
+			ShaderProgram::Sptr shader = value.IsFont ? __fontShader : __shader;
 			shader->Bind();
 			shader->SetUniformMatrix(0, &__projection, 1, false);
 
@@ -209,13 +213,13 @@ void GuiBatcher::Flush()
 
 void GuiBatcher::PushModelTransform(const glm::mat3& transform) {
 	__modelTransformStack.push_back(transform);
-	__model = transform * __model;
+	__model = __model * transform;
 }
 
 void GuiBatcher::PopModelTransform()
 {
 	LOG_ASSERT(__modelTransformStack.size() > 0, "Transform push/pop mismatch");
-	__model = glm::inverse(__modelTransformStack.back()) * __model;
+	__model = __model * glm::inverse(__modelTransformStack.back());
 	__modelTransformStack.pop_back();
 }
 
@@ -227,7 +231,7 @@ void GuiBatcher::__StaticInit()
 {
 	static bool needsInit = true;
 	if (needsInit) {
-		__shader = Shader::Create();
+		__shader = ShaderProgram::Create();
 		__shader->LoadShaderPart(R"LIT(#version 460
 					layout(location = 0) in vec3 inPos;
 					layout(location = 1) in vec4 inColor;
@@ -260,7 +264,7 @@ void GuiBatcher::__StaticInit()
 
 		__shader->Link();
 
-		__fontShader = Shader::Create();
+		__fontShader = ShaderProgram::Create();
 		__fontShader->LoadShaderPart(R"LIT(#version 460
 					layout(location = 0) in vec3 inPos;
 					layout(location = 1) in vec4 inColor;
@@ -303,7 +307,7 @@ void GuiBatcher::__StaticInit()
 
 		// Generate a simple white texture with a black border
 		if (__defaultUITexture == nullptr) {
-			Texture2DDescription desc;
+			Texture2DDescription desc = Texture2DDescription();
 			desc.Width = 16;
 			desc.Height = 16;
 			desc.MinificationFilter = MinFilter::Nearest;

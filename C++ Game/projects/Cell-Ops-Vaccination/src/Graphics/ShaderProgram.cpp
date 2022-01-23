@@ -1,4 +1,4 @@
-#include "Shader.h"
+#include "ShaderProgram.h"
 #include "Logging.h"
 #include <fstream>
 #include <sstream>
@@ -6,33 +6,32 @@
 
 #include "Utils/FileHelpers.h"
 
-Shader::Shader() : 
-	IResource(),
-	// We zero out all of our members so we don't have garbage data in our class
-	_handle(0)
+ShaderProgram::ShaderProgram() : 
+	IGraphicsResource(),
+	IResource()
 {
-	_handle = glCreateProgram();
+	_rendererId = glCreateProgram();
 }
 
-Shader::Shader(const std::unordered_map<ShaderPartType, std::string>& filePaths) :
-	IResource(),
-	_handle(0)
+ShaderProgram::ShaderProgram(const std::unordered_map<ShaderPartType, std::string>& filePaths) :
+	IGraphicsResource(),
+	IResource()
 {
-	_handle = glCreateProgram();
+	_rendererId = glCreateProgram();
 	for (auto& [type, path] : filePaths) {
 		LoadShaderPartFromFile(path.c_str(), type);
 	}
 	Link();
 }
 
-Shader::~Shader() {
-	if (_handle != 0) {
-		glDeleteProgram(_handle);
-		_handle = 0;
+ShaderProgram::~ShaderProgram() {
+	if (_rendererId != 0) {
+		glDeleteProgram(_rendererId);
+		_rendererId = 0;
 	}
 }
 
-bool Shader::LoadShaderPart(const char* source, ShaderPartType type) {
+bool ShaderProgram::LoadShaderPart(const char* source, ShaderPartType type) {
 	// Creates a new shader part (VS, FS, GS, etc...)
 	GLuint handle = glCreateShader((GLenum)type);
 
@@ -82,7 +81,7 @@ bool Shader::LoadShaderPart(const char* source, ShaderPartType type) {
 	return status != GL_FALSE;
 }
 
-bool Shader::LoadShaderPartFromFile(const char* path, ShaderPartType type) {
+bool ShaderProgram::LoadShaderPartFromFile(const char* path, ShaderPartType type) {
 	// Make sure that the file exists before we try reading
 	if (std::filesystem::exists(path)) {
 		// Load the source from the file, using our helper that will
@@ -102,25 +101,25 @@ bool Shader::LoadShaderPartFromFile(const char* path, ShaderPartType type) {
 	}
 }
 
-bool Shader::Link() {
+bool ShaderProgram::Link() {
 	LOG_ASSERT(_handles[ShaderPartType::Vertex] != 0 && _handles[ShaderPartType::Fragment] != 0, "Must attach both a vertex and fragment shader!");
 
 	LOG_TRACE("Starting shader link:");
 	// Attach all our shaders
 	for (auto& [type, id] : _handles) {
 		if (id != 0) {
-			glAttachShader(_handle, id);
+			glAttachShader(_rendererId, id);
 			LOG_TRACE("\t{} - {}", ~type, _fileSourceMap[type].IsFilePath ? _fileSourceMap[type].Source : "<from source>");
 		}
 	}
 
 	// Perform linking
-	glLinkProgram(_handle);
+	glLinkProgram(_rendererId);
 
 	// Remove shader parts to save space (we can do this since we only needed the shader parts to compile an actual shader program)
 	for (auto& [type, id] : _handles) { 
 		if (id != 0) {
-			glDetachShader(_handle, id);
+			glDetachShader(_rendererId, id);
 			glDeleteShader(id);
 		}
 	}
@@ -128,19 +127,19 @@ bool Shader::Link() {
 	_handles.clear();
 
 	GLint status = 0;
-	glGetProgramiv(_handle, GL_LINK_STATUS, &status);
+	glGetProgramiv(_rendererId, GL_LINK_STATUS, &status);
 
 	// If linking failed, figure out why
 	if (status == GL_FALSE)
 	{
 		// Get the length of the log
 		GLint length = 0;
-		glGetProgramiv(_handle, GL_INFO_LOG_LENGTH, &length);
+		glGetProgramiv(_rendererId, GL_INFO_LOG_LENGTH, &length);
 
 		if (length > 0) {
 			// Read the log from openGL
 			char* log = new char[length];
-			glGetProgramInfoLog(_handle, length, &length, log);
+			glGetProgramInfoLog(_rendererId, length, &length, log);
 			LOG_ERROR("Shader failed to link:\n{}", log);
 			delete[] log;
 		} else {
@@ -156,103 +155,103 @@ bool Shader::Link() {
 	return status != GL_FALSE;
 }
 
-void Shader::Bind() {
+void ShaderProgram::Bind() {
 	// Simply calls glUseProgram with our shader handle
-	glUseProgram(_handle);
+	glUseProgram(_rendererId);
 }
 
-void Shader::Unbind() {
+void ShaderProgram::Unbind() {
 	// We unbind a shader program by using the default program (0)
 	glUseProgram(0);
 }
 
-void Shader::SetUniformMatrix(int location, const glm::mat3* value, int count, bool transposed) {
-	glProgramUniformMatrix3fv(_handle, location, count, transposed, glm::value_ptr(*value));
+void ShaderProgram::SetUniformMatrix(int location, const glm::mat3* value, int count, bool transposed) {
+	glProgramUniformMatrix3fv(_rendererId, location, count, transposed, glm::value_ptr(*value));
 }
-void Shader::SetUniformMatrix(int location, const glm::mat4* value, int count, bool transposed) {
-	glProgramUniformMatrix4fv(_handle, location, count, transposed, glm::value_ptr(*value));
-}
-
-void Shader::SetUniform(int location, const float* value, int count) {
-	glProgramUniform1fv(_handle, location, count, value);
-}
-void Shader::SetUniform(int location, const glm::vec2* value, int count) {
-	glProgramUniform2fv(_handle, location, count, glm::value_ptr(*value));
-}
-void Shader::SetUniform(int location, const glm::vec3* value, int count) {
-	glProgramUniform3fv(_handle, location, count, glm::value_ptr(*value));
-}
-void Shader::SetUniform(int location, const glm::vec4* value, int count) {
-	glProgramUniform4fv(_handle, location, count, glm::value_ptr(*value));
+void ShaderProgram::SetUniformMatrix(int location, const glm::mat4* value, int count, bool transposed) {
+	glProgramUniformMatrix4fv(_rendererId, location, count, transposed, glm::value_ptr(*value));
 }
 
-void Shader::SetUniform(int location, const int* value, int count) {
-	glProgramUniform1iv(_handle, location, count, value);
+void ShaderProgram::SetUniform(int location, const float* value, int count) {
+	glProgramUniform1fv(_rendererId, location, count, value);
 }
-void Shader::SetUniform(int location, const glm::ivec2* value, int count) {
-	glProgramUniform2iv(_handle, location, count, glm::value_ptr(*value));
+void ShaderProgram::SetUniform(int location, const glm::vec2* value, int count) {
+	glProgramUniform2fv(_rendererId, location, count, glm::value_ptr(*value));
 }
-void Shader::SetUniform(int location, const glm::ivec3* value, int count) {
-	glProgramUniform3iv(_handle, location, count, glm::value_ptr(*value));
+void ShaderProgram::SetUniform(int location, const glm::vec3* value, int count) {
+	glProgramUniform3fv(_rendererId, location, count, glm::value_ptr(*value));
 }
-void Shader::SetUniform(int location, const glm::ivec4* value, int count) {
-	glProgramUniform4iv(_handle, location, count, glm::value_ptr(*value));
+void ShaderProgram::SetUniform(int location, const glm::vec4* value, int count) {
+	glProgramUniform4fv(_rendererId, location, count, glm::value_ptr(*value));
 }
 
-void Shader::SetUniform(int location, const bool* value, int count) {
+void ShaderProgram::SetUniform(int location, const int* value, int count) {
+	glProgramUniform1iv(_rendererId, location, count, value);
+}
+void ShaderProgram::SetUniform(int location, const glm::ivec2* value, int count) {
+	glProgramUniform2iv(_rendererId, location, count, glm::value_ptr(*value));
+}
+void ShaderProgram::SetUniform(int location, const glm::ivec3* value, int count) {
+	glProgramUniform3iv(_rendererId, location, count, glm::value_ptr(*value));
+}
+void ShaderProgram::SetUniform(int location, const glm::ivec4* value, int count) {
+	glProgramUniform4iv(_rendererId, location, count, glm::value_ptr(*value));
+}
+
+void ShaderProgram::SetUniform(int location, const bool* value, int count) {
 	LOG_ASSERT(count == 1, "SetUniform for bools only supports setting single values at a time!");
 	glProgramUniform1i(location, *value, 1);
 }
-void Shader::SetUniform(int location, const glm::bvec2* value, int count) {
+void ShaderProgram::SetUniform(int location, const glm::bvec2* value, int count) {
 	LOG_ASSERT(count == 1, "SetUniform for bools only supports setting single values at a time!");
 	glProgramUniform2i(location, value->x, value->y, 1);
 }
-void Shader::SetUniform(int location, const glm::bvec3* value, int count) {
+void ShaderProgram::SetUniform(int location, const glm::bvec3* value, int count) {
 	LOG_ASSERT(count == 1, "SetUniform for bools only supports setting single values at a time!");
 	glProgramUniform3i(location, value->x, value->y, value->z, 1);
 }
-void Shader::SetUniform(int location, const glm::bvec4* value, int count) {
+void ShaderProgram::SetUniform(int location, const glm::bvec4* value, int count) {
 	LOG_ASSERT(count == 1, "SetUniform for bools only supports setting single values at a time!");
 	glProgramUniform4i(location, value->x, value->y, value->z, value->w, 1);
 }
 
-void Shader::SetUniform(int location, ShaderDataType type, void* data, int count /*= 1*/, bool transposed  /* =false*/) {
+void ShaderProgram::SetUniform(int location, ShaderDataType type, void* data, int count /*= 1*/, bool transposed  /* =false*/) {
 	switch (type)
 	{
-		case ShaderDataType::Float:   glProgramUniform1fv(_handle, location, count, static_cast<const float*>(data)); break;
-		case ShaderDataType::Float2:  glProgramUniform2fv(_handle, location, count, static_cast<const float*>(data)); break;
-		case ShaderDataType::Float3:  glProgramUniform3fv(_handle, location, count, static_cast<const float*>(data)); break;
-		case ShaderDataType::Float4:  glProgramUniform4fv(_handle, location, count, static_cast<const float*>(data)); break;
-		case ShaderDataType::Mat2:    glProgramUniformMatrix2fv(_handle, location, count, transposed, static_cast<const float*>(data)); break;
-		case ShaderDataType::Mat3:    glProgramUniformMatrix3fv(_handle, location, count, transposed, static_cast<const float*>(data)); break;
-		case ShaderDataType::Mat4:    glProgramUniformMatrix4fv(_handle, location, count, transposed, static_cast<const float*>(data)); break;
-		case ShaderDataType::Mat2x3:  glProgramUniformMatrix2x3fv(_handle, location, count, transposed, static_cast<const float*>(data)); break;
-		case ShaderDataType::Mat2x4:  glProgramUniformMatrix2x4fv(_handle, location, count, transposed, static_cast<const float*>(data)); break;
-		case ShaderDataType::Mat3x2:  glProgramUniformMatrix3x2fv(_handle, location, count, transposed, static_cast<const float*>(data)); break;
-		case ShaderDataType::Mat3x4:  glProgramUniformMatrix3x4fv(_handle, location, count, transposed, static_cast<const float*>(data)); break;
-		case ShaderDataType::Mat4x2:  glProgramUniformMatrix4x2fv(_handle, location, count, transposed, static_cast<const float*>(data)); break;
-		case ShaderDataType::Mat4x3:  glProgramUniformMatrix4x3fv(_handle, location, count, transposed, static_cast<const float*>(data)); break;
-		case ShaderDataType::Int:     glProgramUniform1iv(_handle, location, count, static_cast<const int*>(data)); break;
-		case ShaderDataType::Int2:    glProgramUniform2iv(_handle, location, count, static_cast<const int*>(data)); break;
-		case ShaderDataType::Int3:    glProgramUniform3iv(_handle, location, count, static_cast<const int*>(data)); break;
-		case ShaderDataType::Int4:    glProgramUniform4iv(_handle, location, count, static_cast<const int*>(data)); break;
-		case ShaderDataType::Uint:    glProgramUniform1uiv(_handle, location, count, static_cast<const uint32_t*>(data));  break;
-		case ShaderDataType::Uint2:   glProgramUniform2uiv(_handle, location, count, static_cast<const uint32_t*>(data)); break;
-		case ShaderDataType::Uint3:   glProgramUniform3uiv(_handle, location, count, static_cast<const uint32_t*>(data)); break;
-		case ShaderDataType::Uint4:   glProgramUniform4uiv(_handle, location, count, static_cast<const uint32_t*>(data)); break;
-		case ShaderDataType::Double:  glProgramUniform1dv(_handle, location, count, static_cast<const double*>(data)); break;
-		case ShaderDataType::Double2: glProgramUniform2dv(_handle, location, count, static_cast<const double*>(data)); break;
-		case ShaderDataType::Double3: glProgramUniform3dv(_handle, location, count, static_cast<const double*>(data)); break;
-		case ShaderDataType::Double4: glProgramUniform4dv(_handle, location, count, static_cast<const double*>(data)); break;
-		case ShaderDataType::Dmat2:   glProgramUniformMatrix2dv(_handle, location, count, transposed, static_cast<const double*>(data)); break;
-		case ShaderDataType::Dmat3:   glProgramUniformMatrix3dv(_handle, location, count, transposed, static_cast<const double*>(data)); break;
-		case ShaderDataType::Dmat4:   glProgramUniformMatrix4dv(_handle, location, count, transposed, static_cast<const double*>(data)); break;
-		case ShaderDataType::Dmat2x3: glProgramUniformMatrix2x3dv(_handle, location, count, transposed, static_cast<const double*>(data)); break;
-		case ShaderDataType::Dmat2x4: glProgramUniformMatrix2x4dv(_handle, location, count, transposed, static_cast<const double*>(data)); break;
-		case ShaderDataType::Dmat3x2: glProgramUniformMatrix3x2dv(_handle, location, count, transposed, static_cast<const double*>(data)); break;
-		case ShaderDataType::Dmat3x4: glProgramUniformMatrix3x4dv(_handle, location, count, transposed, static_cast<const double*>(data)); break;
-		case ShaderDataType::Dmat4x2: glProgramUniformMatrix4x2dv(_handle, location, count, transposed, static_cast<const double*>(data)); break;
-		case ShaderDataType::Dmat4x3: glProgramUniformMatrix4x3dv(_handle, location, count, transposed, static_cast<const double*>(data)); break;
+		case ShaderDataType::Float:   glProgramUniform1fv(_rendererId, location, count, static_cast<const float*>(data)); break;
+		case ShaderDataType::Float2:  glProgramUniform2fv(_rendererId, location, count, static_cast<const float*>(data)); break;
+		case ShaderDataType::Float3:  glProgramUniform3fv(_rendererId, location, count, static_cast<const float*>(data)); break;
+		case ShaderDataType::Float4:  glProgramUniform4fv(_rendererId, location, count, static_cast<const float*>(data)); break;
+		case ShaderDataType::Mat2:    glProgramUniformMatrix2fv(_rendererId, location, count, transposed, static_cast<const float*>(data)); break;
+		case ShaderDataType::Mat3:    glProgramUniformMatrix3fv(_rendererId, location, count, transposed, static_cast<const float*>(data)); break;
+		case ShaderDataType::Mat4:    glProgramUniformMatrix4fv(_rendererId, location, count, transposed, static_cast<const float*>(data)); break;
+		case ShaderDataType::Mat2x3:  glProgramUniformMatrix2x3fv(_rendererId, location, count, transposed, static_cast<const float*>(data)); break;
+		case ShaderDataType::Mat2x4:  glProgramUniformMatrix2x4fv(_rendererId, location, count, transposed, static_cast<const float*>(data)); break;
+		case ShaderDataType::Mat3x2:  glProgramUniformMatrix3x2fv(_rendererId, location, count, transposed, static_cast<const float*>(data)); break;
+		case ShaderDataType::Mat3x4:  glProgramUniformMatrix3x4fv(_rendererId, location, count, transposed, static_cast<const float*>(data)); break;
+		case ShaderDataType::Mat4x2:  glProgramUniformMatrix4x2fv(_rendererId, location, count, transposed, static_cast<const float*>(data)); break;
+		case ShaderDataType::Mat4x3:  glProgramUniformMatrix4x3fv(_rendererId, location, count, transposed, static_cast<const float*>(data)); break;
+		case ShaderDataType::Int:     glProgramUniform1iv(_rendererId, location, count, static_cast<const int*>(data)); break;
+		case ShaderDataType::Int2:    glProgramUniform2iv(_rendererId, location, count, static_cast<const int*>(data)); break;
+		case ShaderDataType::Int3:    glProgramUniform3iv(_rendererId, location, count, static_cast<const int*>(data)); break;
+		case ShaderDataType::Int4:    glProgramUniform4iv(_rendererId, location, count, static_cast<const int*>(data)); break;
+		case ShaderDataType::Uint:    glProgramUniform1uiv(_rendererId, location, count, static_cast<const uint32_t*>(data));  break;
+		case ShaderDataType::Uint2:   glProgramUniform2uiv(_rendererId, location, count, static_cast<const uint32_t*>(data)); break;
+		case ShaderDataType::Uint3:   glProgramUniform3uiv(_rendererId, location, count, static_cast<const uint32_t*>(data)); break;
+		case ShaderDataType::Uint4:   glProgramUniform4uiv(_rendererId, location, count, static_cast<const uint32_t*>(data)); break;
+		case ShaderDataType::Double:  glProgramUniform1dv(_rendererId, location, count, static_cast<const double*>(data)); break;
+		case ShaderDataType::Double2: glProgramUniform2dv(_rendererId, location, count, static_cast<const double*>(data)); break;
+		case ShaderDataType::Double3: glProgramUniform3dv(_rendererId, location, count, static_cast<const double*>(data)); break;
+		case ShaderDataType::Double4: glProgramUniform4dv(_rendererId, location, count, static_cast<const double*>(data)); break;
+		case ShaderDataType::Dmat2:   glProgramUniformMatrix2dv(_rendererId, location, count, transposed, static_cast<const double*>(data)); break;
+		case ShaderDataType::Dmat3:   glProgramUniformMatrix3dv(_rendererId, location, count, transposed, static_cast<const double*>(data)); break;
+		case ShaderDataType::Dmat4:   glProgramUniformMatrix4dv(_rendererId, location, count, transposed, static_cast<const double*>(data)); break;
+		case ShaderDataType::Dmat2x3: glProgramUniformMatrix2x3dv(_rendererId, location, count, transposed, static_cast<const double*>(data)); break;
+		case ShaderDataType::Dmat2x4: glProgramUniformMatrix2x4dv(_rendererId, location, count, transposed, static_cast<const double*>(data)); break;
+		case ShaderDataType::Dmat3x2: glProgramUniformMatrix3x2dv(_rendererId, location, count, transposed, static_cast<const double*>(data)); break;
+		case ShaderDataType::Dmat3x4: glProgramUniformMatrix3x4dv(_rendererId, location, count, transposed, static_cast<const double*>(data)); break;
+		case ShaderDataType::Dmat4x2: glProgramUniformMatrix4x2dv(_rendererId, location, count, transposed, static_cast<const double*>(data)); break;
+		case ShaderDataType::Dmat4x3: glProgramUniformMatrix4x3dv(_rendererId, location, count, transposed, static_cast<const double*>(data)); break;
 		case ShaderDataType::Tex1D:
 		case ShaderDataType::Tex1D_Array:
 		case ShaderDataType::Tex1D_Shadow:
@@ -289,7 +288,7 @@ void Shader::SetUniform(int location, ShaderDataType type, void* data, int count
 		case ShaderDataType::BufferTexture:
 		case ShaderDataType::BufferTextureInt:
 		case ShaderDataType::BufferTextureUint:
-			glProgramUniform1iv(_handle, location, count, static_cast<const int*>(data));
+			glProgramUniform1iv(_rendererId, location, count, static_cast<const int*>(data));
 		case ShaderDataType::None: break;
 		default:
 		{
@@ -302,14 +301,14 @@ void Shader::SetUniform(int location, ShaderDataType type, void* data, int count
 	}
 }
 
-int Shader::__GetUniformLocation(const std::string& name) {
+int ShaderProgram::__GetUniformLocation(const std::string& name) {
 	// Since the default constructor for UniformInfo sets location to -1,
 	// we can simply index the map and if it doesn't exist, the default
 	// will be used
 	return _uniforms[name].Location;
 }
 
-nlohmann::json Shader::ToJson() const {
+nlohmann::json ShaderProgram::ToJson() const {
 	nlohmann::json result;
 	for (auto& [key, value] : _fileSourceMap) {
 		result[~key][value.IsFilePath ? "path" : "source"] = value.Source;
@@ -318,8 +317,8 @@ nlohmann::json Shader::ToJson() const {
 
 }
 
-Shader::Sptr Shader::FromJson(const nlohmann::json& data) {
-	Shader::Sptr result = std::make_shared<Shader>();
+ShaderProgram::Sptr ShaderProgram::FromJson(const nlohmann::json& data) {
+	ShaderProgram::Sptr result = std::make_shared<ShaderProgram>();
 	for (auto& [key, blob] : data.items()) {
 		// Get the shader part type from the key
 		ShaderPartType type = ParseShaderPartType(key, ShaderPartType::Unknown);
@@ -340,15 +339,15 @@ Shader::Sptr Shader::FromJson(const nlohmann::json& data) {
 	return result;
 }
 
-void Shader::_Introspect() {
+void ShaderProgram::_Introspect() {
 	_IntrospectUniforms();
 	_IntrospectUnifromBlocks();
 }
 
-void Shader::_IntrospectUniforms() {
+void ShaderProgram::_IntrospectUniforms() {
 	// Query the program for how many active uniforms we have
 	int numInputs = 0;
-	glGetProgramInterfaceiv(_handle, GL_UNIFORM, GL_ACTIVE_RESOURCES, &numInputs);
+	glGetProgramInterfaceiv(_rendererId, GL_UNIFORM, GL_ACTIVE_RESOURCES, &numInputs);
 
 	// Iterate over all uniforms and extract some information
 	for (int ix = 0; ix < numInputs; ix++) {
@@ -363,7 +362,7 @@ void Shader::_IntrospectUniforms() {
 		int numProps = 0;
 		int props[4];
 		// Query the program about our uniform, passing data out to props
-		glGetProgramResourceiv(_handle, GL_UNIFORM, ix, 4, pNames, 4, &numProps, props);
+		glGetProgramResourceiv(_rendererId, GL_UNIFORM, ix, 4, pNames, 4, &numProps, props);
 
 		// If location is -1, this is probably a uniform block element, ignore it
 		if (props[3] == -1)
@@ -375,7 +374,7 @@ void Shader::_IntrospectUniforms() {
 
 		// Query uniform name from the program
 		int length = 0;
-		glGetProgramResourceName(_handle, GL_UNIFORM, ix, props[0], &length, &e.Name[0]);
+		glGetProgramResourceName(_rendererId, GL_UNIFORM, ix, props[0], &length, &e.Name[0]);
 
 		// Store the other properties we got into the uniform info
 		e.Type = FromGLShaderDataType(props[1]);
@@ -394,10 +393,10 @@ void Shader::_IntrospectUniforms() {
 	}
 }
 
-void Shader::_IntrospectUnifromBlocks() {
+void ShaderProgram::_IntrospectUnifromBlocks() {
 	// Query program for the number of uniform blocks
 	int numBlocks = 0;
-	glGetProgramInterfaceiv(_handle, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &numBlocks);
+	glGetProgramInterfaceiv(_rendererId, GL_UNIFORM_BLOCK, GL_ACTIVE_RESOURCES, &numBlocks);
 
 	// Iterate over all blocks
 	for (int ix = 0; ix < numBlocks; ix++) {
@@ -410,7 +409,7 @@ void Shader::_IntrospectUnifromBlocks() {
 		};
 		// Query the program for our information
 		int results[4];
-		glGetProgramResourceiv(_handle, GL_UNIFORM_BLOCK, ix, 4, pNamesBlockProperties, 4, NULL, results);
+		glGetProgramResourceiv(_rendererId, GL_UNIFORM_BLOCK, ix, 4, pNamesBlockProperties, 4, NULL, results);
 
 		// If this block has no active uniforms, skip it
 		if (!results[0])
@@ -423,7 +422,7 @@ void Shader::_IntrospectUnifromBlocks() {
 		// We can use a vector to store results, initializing it's size to the number of
 		// active uniforms
 		std::vector<int> activeVars(results[0]);
-		glGetProgramResourceiv(_handle, GL_UNIFORM_BLOCK, ix, 1, pNamesActiveVars, results[0], NULL, activeVars.data());
+		glGetProgramResourceiv(_rendererId, GL_UNIFORM_BLOCK, ix, 1, pNamesActiveVars, results[0], NULL, activeVars.data());
 
 		// Create the block and copy in the info from the shader
 		UniformBlockInfo block = UniformBlockInfo();
@@ -435,10 +434,10 @@ void Shader::_IntrospectUnifromBlocks() {
 
 		// Query block name from the program
 		block.Name.resize(results[3] - 1);
-		glGetProgramResourceName(_handle, GL_UNIFORM_BLOCK, ix, results[3], NULL, &block.Name[0]);
+		glGetProgramResourceName(_rendererId, GL_UNIFORM_BLOCK, ix, results[3], NULL, &block.Name[0]);
 
 		// This is our block index for use when we bind uniform buffers to the block
-		block.BlockIndex = glGetUniformBlockIndex(_handle, block.Name.c_str());
+		block.BlockIndex = glGetUniformBlockIndex(_rendererId, block.Name.c_str());
 
 		LOG_TRACE("\tDetected a new uniform block \"{}\" with {} variables bound at {} ", block.Name, block.NumVariables, block.DefaultBinding);
 
@@ -453,7 +452,7 @@ void Shader::_IntrospectUnifromBlocks() {
 			};
 			// Query data from the program
 			int props[4];
-			glGetProgramResourceiv(_handle, GL_UNIFORM, activeVars[v], 4, pNames, 4, NULL, props);
+			glGetProgramResourceiv(_rendererId, GL_UNIFORM, activeVars[v], 4, pNames, 4, NULL, props);
 
 			// Store properties into the UniformInfo
 			UniformInfo var = UniformInfo();
@@ -463,7 +462,7 @@ void Shader::_IntrospectUnifromBlocks() {
 
 			// Get the uniform name
 			var.Name.resize(props[0] - 1);
-			glGetProgramResourceName(_handle, GL_UNIFORM, activeVars[v], props[0], NULL, &var.Name[0]);
+			glGetProgramResourceName(_rendererId, GL_UNIFORM, activeVars[v], props[0], NULL, &var.Name[0]);
 
 			// If uuniform is array, remove the [0]
 			if (var.ArraySize > 1) {
@@ -480,17 +479,17 @@ void Shader::_IntrospectUnifromBlocks() {
 	}
 }
 
-void Shader::BindUniformBlockToSlot(const std::string& name, int uboSlot)
+void ShaderProgram::BindUniformBlockToSlot(const std::string& name, int uboSlot)
 {
 	auto& it = _uniformBlocks.find(name);
 	if (it != _uniformBlocks.end()) {
 		UniformBlockInfo& block = it->second;
-		glUniformBlockBinding(_handle, block.BlockIndex, uboSlot);
+		glUniformBlockBinding(_rendererId, block.BlockIndex, uboSlot);
 		block.CurrentBinding = uboSlot;
 	}
 }
 
-bool Shader::FindUniform(const std::string& name, UniformInfo* out) {
+bool ShaderProgram::FindUniform(const std::string& name, UniformInfo* out) {
 	for (auto& [key, uniform] : _uniforms) {
 		if (uniform.Name == name) {
 			if (out != nullptr) {
@@ -500,4 +499,8 @@ bool Shader::FindUniform(const std::string& name, UniformInfo* out) {
 		}
 	}
 	return false;
+}
+
+GlResourceType ShaderProgram::GetResourceClass() const {
+	return GlResourceType::ShaderProgram;
 }

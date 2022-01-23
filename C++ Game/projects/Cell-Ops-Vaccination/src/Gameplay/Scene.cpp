@@ -17,6 +17,7 @@
 #include <Gameplay/Components/EnemyBehaviour.h>
 #include <Gameplay/Components/TargetBehaviour.h>
 #include <Gameplay/Components/GUI/GuiText.h>
+#include "Application/Application.h"
 
 namespace Gameplay {
 	Scene::Scene() :
