@@ -13,11 +13,6 @@ PlayerBehaviour::PlayerBehaviour() :
 
 PlayerBehaviour::~PlayerBehaviour() = default;
 
-void PlayerBehaviour::Awake()
-{
-	_window = GetGameObject()->GetScene()->Window;
-}
-
 void PlayerBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body)
 {
 	//LOG_INFO("Player Entered trigger: {}", body->GetGameObject()->Name);

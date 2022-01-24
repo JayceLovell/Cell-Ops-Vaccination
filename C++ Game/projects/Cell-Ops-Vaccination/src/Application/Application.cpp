@@ -58,8 +58,8 @@
 Application* Application::_singleton = nullptr;
 std::string Application::_applicationName = "Cell Ops Vaccination";
 
-#define DEFAULT_WINDOW_WIDTH 800
-#define DEFAULT_WINDOW_HEIGHT 800
+#define DEFAULT_WINDOW_WIDTH 1600
+#define DEFAULT_WINDOW_HEIGHT 1600
 
 Application::Application() :
 	_window(nullptr),
@@ -257,6 +257,11 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<MaterialSwapBehaviour>();
 	ComponentManager::RegisterType<TriggerVolumeEnterBehaviour>();
 	ComponentManager::RegisterType<SimpleCameraControl>();
+	ComponentManager::RegisterType<PlayerBehaviour>();
+	ComponentManager::RegisterType<EnemyBehaviour>();
+	ComponentManager::RegisterType<TargetBehaviour>();
+	ComponentManager::RegisterType<BackgroundObjectsBehaviour>();
+	ComponentManager::RegisterType<MorphAnimator>();
 	ComponentManager::RegisterType<RectTransform>();
 	ComponentManager::RegisterType<GuiPanel>();
 	ComponentManager::RegisterType<GuiText>();
