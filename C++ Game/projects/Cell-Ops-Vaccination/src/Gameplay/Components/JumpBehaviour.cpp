@@ -3,6 +3,7 @@
 #include "Gameplay/GameObject.h"
 #include "Gameplay/Scene.h"
 #include "Utils/ImGuiHelper.h"
+#include "Gameplay/InputEngine.h"
 
 void JumpBehaviour::Awake()
 {
@@ -36,14 +37,12 @@ JumpBehaviour::Sptr JumpBehaviour::FromJson(const nlohmann::json& blob) {
 }
 
 void JumpBehaviour::Update(float deltaTime) {
-	bool pressed = glfwGetKey(GetGameObject()->GetScene()->Window, GLFW_KEY_SPACE);
-	if (pressed) {
-		if (_isPressed == false) {
-			_body->ApplyImpulse(glm::vec3(0.0f, 0.0f, _impulse));
+	if (InputEngine::GetKeyState(GLFW_KEY_SPACE) == ButtonState::Pressed) {
+		_body->ApplyImpulse(glm::vec3(0.0f, 0.0f, _impulse));
+		Gameplay::IComponent::Sptr ptr = Panel.lock();
+		if (ptr != nullptr) {
+			ptr->IsEnabled = !ptr->IsEnabled;
 		}
-		_isPressed = pressed;
-	} else {
-		_isPressed = false;
 	}
 }
 

@@ -17,6 +17,8 @@
 #include <Gameplay/Components/EnemyBehaviour.h>
 #include <Gameplay/Components/TargetBehaviour.h>
 #include <Gameplay/Components/GUI/GuiText.h>
+#include "Application/Application.h"
+#include <Gameplay/InputEngine.h>
 
 namespace Gameplay {
 	Scene::Scene() :
@@ -49,15 +51,25 @@ namespace Gameplay {
 		_lightingUbo->Update();
 		_lightingUbo->Bind(LIGHT_UBO_BINDING_SLOT);
 
+		GameObject::Sptr mainCam = CreateGameObject("Main Camera");
+		MainCamera = mainCam->Add<Camera>();
+
 		_InitPhysics();
 
 	}
 
 	Scene::~Scene() {
+		MainCamera = nullptr;
+		DefaultMaterial = nullptr;
+		_skyboxShader = nullptr;
+		_skyboxMesh = nullptr;
+		_skyboxTexture = nullptr;
 		_objects.clear();
+		Lights.clear();
 		_CleanupPhysics();
 	}
 
+	////// Code Added//
 	GameObject::Sptr Scene::FindTarget()
 	{
 		if (Targets.size() != 0) {
@@ -225,16 +237,21 @@ namespace Gameplay {
 			PauseUIUp = false;
 		}
 	}
-
+	
+	//////////// Default code
 	void Scene::SetPhysicsDebugDrawMode(BulletDebugMode mode) {
 		_bulletDebugDraw->setDebugMode((btIDebugDraw::DebugDrawModes)mode);
 	}
 
-	void Scene::SetSkyboxShader(const std::shared_ptr<Shader>& shader) {
+	BulletDebugMode Scene::GetPhysicsDebugDrawMode() const {
+		return (BulletDebugMode)_bulletDebugDraw->getDebugMode();
+	}
+
+	void Scene::SetSkyboxShader(const std::shared_ptr<ShaderProgram>& shader) {
 		_skyboxShader = shader;
 	}
 
-	std::shared_ptr<Shader> Scene::GetSkyboxShader() const {
+	std::shared_ptr<ShaderProgram> Scene::GetSkyboxShader() const {
 		return _skyboxShader;
 	}
 
@@ -296,9 +313,11 @@ namespace Gameplay {
 	void Scene::Awake() {
 		// Not a huge fan of this, but we need to get window size to notify our camera
 		// of the current screen size
-		int width, height;
-		glfwGetWindowSize(Window, &width, &height);
-		MainCamera->ResizeWindow(width, height);
+		Application& app = Application::Get();
+		glm::ivec2 windowSize = app.GetWindowSize();
+		if (MainCamera != nullptr) {
+			MainCamera->ResizeWindow(windowSize.x, windowSize.y);
+		}
 
 		if (_skyboxMesh == nullptr) {
 			_skyboxMesh = ResourceManager::CreateAsset<MeshResource>();
@@ -315,42 +334,41 @@ namespace Gameplay {
 		SetupShaderAndLights();
 
 		_isAwake = true;
-
-		_window = Window;
 	}
 
 	void Scene::DoPhysics(float dt) {
-		ComponentManager::Each<Gameplay::Physics::RigidBody>([=](const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
+		_components.Each<Gameplay::Physics::RigidBody>([=](const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
 			body->PhysicsPreStep(dt);
 			});
-		ComponentManager::Each<Gameplay::Physics::TriggerVolume>([=](const std::shared_ptr<Gameplay::Physics::TriggerVolume>& body) {
+		_components.Each<Gameplay::Physics::TriggerVolume>([=](const std::shared_ptr<Gameplay::Physics::TriggerVolume>& body) {
 			body->PhysicsPreStep(dt);
 			});
-		if (!GameOver)
-		{
-			if (IsPlaying) {
 
-				_physicsWorld->stepSimulation(dt, 15);
+		if (IsPlaying) {
 
-				ComponentManager::Each<Gameplay::Physics::RigidBody>([=](const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
-					body->PhysicsPostStep(dt);
-					});
-				ComponentManager::Each<Gameplay::Physics::TriggerVolume>([=](const std::shared_ptr<Gameplay::Physics::TriggerVolume>& body) {
-					body->PhysicsPostStep(dt);
-					});
-				if (_bulletDebugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug) {
-					_physicsWorld->debugDrawWorld();
-					DebugDrawer::Get().FlushAll();
-				}
-			}
+			_physicsWorld->stepSimulation(dt, 15);
+
+			_components.Each<Gameplay::Physics::RigidBody>([=](const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
+				body->PhysicsPostStep(dt);
+				});
+			_components.Each<Gameplay::Physics::TriggerVolume>([=](const std::shared_ptr<Gameplay::Physics::TriggerVolume>& body) {
+				body->PhysicsPostStep(dt);
+				});
 		}
 	}
 
+	void Scene::DrawPhysicsDebug() {
+		if (_bulletDebugDraw->getDebugMode() != btIDebugDraw::DBG_NoDebug) {
+			_physicsWorld->debugDrawWorld();
+			DebugDrawer::Get().FlushAll();
+		}
+	}
+	//Game Loop
 	void Scene::Update(float dt) {
 		if (!GameOver)
 		{
 			//Cheats
-			if (glfwGetKey(_window, GLFW_KEY_F2) && IsPaused){
+			if (InputEngine::IsKeyDown(GLFW_KEY_F2) && IsPaused){
 				if (!IsCheatActivated) {
 					EnemiesKilled = EnemiesThreshold;
 					UpdateUI();
@@ -358,7 +376,7 @@ namespace Gameplay {
 				}
 			}
 			// Pause
-			if (glfwGetKey(_window, GLFW_KEY_ESCAPE)) {
+			if (InputEngine::IsKeyDown(GLFW_KEY_ESCAPE)) {
 				if (IsPaused && PauseUIUp)
 				{
 					IsPaused = false;
@@ -372,7 +390,7 @@ namespace Gameplay {
 
 			}
 			//Start
-			if (glfwGetKey(_window, GLFW_KEY_ENTER)) {
+			if (InputEngine::IsKeyDown(GLFW_KEY_ENTER)) {
 				if (!IsPlaying && !GameStarted)
 				{
 					IsPlaying = true;
@@ -459,25 +477,28 @@ namespace Gameplay {
 
 	Scene::Sptr Scene::FromJson(const nlohmann::json& data)
 	{
+
 		Scene::Sptr result = std::make_shared<Scene>();
+		result->MainCamera = nullptr;
+		result->_objects.clear();
 		result->DefaultMaterial = ResourceManager::Get<Material>(Guid(data["default_material"]));
 
 		if (data.contains("ambient")) {
-			result->SetAmbientLight(ParseJsonVec3(data["ambient"]));
+			result->SetAmbientLight((data["ambient"]));
 		}
 
 		if (data.contains("skybox") && data["skybox"].is_object()) {
 			nlohmann::json& blob = data["skybox"].get<nlohmann::json>();
 			result->_skyboxMesh = ResourceManager::Get<MeshResource>(Guid(blob["mesh"]));
-			result->SetSkyboxShader(ResourceManager::Get<Shader>(Guid(blob["shader"])));
+			result->SetSkyboxShader(ResourceManager::Get<ShaderProgram>(Guid(blob["shader"])));
 			result->SetSkyboxTexture(ResourceManager::Get<TextureCube>(Guid(blob["texture"])));
-			result->SetSkyboxRotation(glm::mat3_cast(ParseJsonQuat(blob["orientation"])));
+			result->SetSkyboxRotation(glm::mat3_cast((glm::quat)(blob["orientation"])));
 		}
 
 		// Make sure the scene has objects, then load them all in!
 		LOG_ASSERT(data["objects"].is_array(), "Objects not present in scene!");
 		for (auto& object : data["objects"]) {
-			GameObject::Sptr obj = GameObject::FromJson(object);
+			GameObject::Sptr obj = GameObject::FromJson(result.get(), object);
 			obj->_scene = result.get();
 			obj->_parent.SceneContext = result.get();
 			obj->_selfRef = obj;
@@ -498,7 +519,7 @@ namespace Gameplay {
 		}
 
 		// Create and load camera config
-		result->MainCamera = ComponentManager::GetComponentByGUID<Camera>(Guid(data["main_camera"]));
+		result->MainCamera = result->_components.GetComponentByGUID<Camera>(Guid(data["main_camera"]));
 
 		return result;
 	}
@@ -509,13 +530,13 @@ namespace Gameplay {
 		// Save the default shader (really need a material class)
 		blob["default_material"] = DefaultMaterial ? DefaultMaterial->GetGUID().str() : "null";
 
-		blob["ambient"] = GlmToJson(GetAmbientLight());
+		blob["ambient"] = GetAmbientLight();
 
 		blob["skybox"] = nlohmann::json();
 		blob["skybox"]["mesh"] = _skyboxMesh ? _skyboxMesh->GetGUID().str() : "null";
 		blob["skybox"]["shader"] = _skyboxShader ? _skyboxShader->GetGUID().str() : "null";
 		blob["skybox"]["texture"] = _skyboxTexture ? _skyboxTexture->GetGUID().str() : "null";
-		blob["skybox"]["orientation"] = GlmToJson(_skyboxRotation);
+		blob["skybox"]["orientation"] = (glm::quat)_skyboxRotation;
 
 		// Save renderables
 		std::vector<nlohmann::json> objects;
@@ -557,7 +578,7 @@ namespace Gameplay {
 	}
 
 	int Scene::NumObjects() const {
-		return _objects.size();
+		return static_cast<int>(_objects.size());
 	}
 
 	GameObject::Sptr Scene::GetObjectByIndex(int index) const {

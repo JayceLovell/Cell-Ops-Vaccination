@@ -105,18 +105,18 @@ void GuiText::RenderImGui()
 
 nlohmann::json GuiText::ToJson() const {
 	return {
-		{ "color", GlmToJson(_color) },
+		{ "color", _color },
 		{ "text",  _text },
 		{ "scale", _textScale },
-		{ "font",  _font  ? _font->GetGUID().str() : "null" }
+		{ "font",  _font ? _font->GetGUID().str() : "null" }
 	};
 }
 
 GuiText::Sptr GuiText::FromJson(const nlohmann::json& blob) {
 	GuiText::Sptr result = std::make_shared<GuiText>();
-	result->_color     = ParseJsonVec4(blob["color"]);
-	result->_textScale = JsonGet(blob, "text", 1.0f);
-	result->_text      = JsonGet<std::wstring>(blob, "text", LR"()");
-	result->_font      = ResourceManager::Get<Font>(Guid(JsonGet<std::string>(blob, "font", "null")));
+	result->_color = JsonGet(blob, "color", result->_color);
+	result->_textScale = JsonGet(blob, "scale", 1.0f);
+	result->_text = JsonGet<std::wstring>(blob, "text", LR"()");
+	result->_font = ResourceManager::Get<Font>(Guid(JsonGet<std::string>(blob, "font", "null")));
 	return result;
 }

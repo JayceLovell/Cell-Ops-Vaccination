@@ -15,7 +15,6 @@ public:
 	PlayerBehaviour();
 	virtual ~PlayerBehaviour();
 
-	virtual void Awake() override;
 	virtual void Update(float deltaTime) override;
 	virtual void OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body) override;
 	virtual void RenderImGui() override;

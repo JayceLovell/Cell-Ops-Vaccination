@@ -20,20 +20,20 @@ namespace Gameplay::Physics {
 		_isDirty |= LABEL_LEFT(ImGui::DragFloat3, "Half Extents", &_extents.x, 0.1f, 0.01f);
 	}
 
-	void CylinderCollider::ToJson(nlohmann::json & blob) const {
-		blob["half_extents"] = GlmToJson(_extents);
+	void CylinderCollider::ToJson(nlohmann::json& blob) const {
+		blob["half_extents"] = (_extents);
 	}
 
-	void CylinderCollider::FromJson(const nlohmann::json & data)
+	void CylinderCollider::FromJson(const nlohmann::json& data)
 	{
-		_extents = ParseJsonVec3(data["half_extents"]);
+		_extents = (data["half_extents"]);
 	}
 
 	btCollisionShape* CylinderCollider::CreateShape() const {
 		return new btCylinderShapeZ(ToBt(_extents));
 	}
 
-	CylinderCollider* CylinderCollider::SetHalfExtents(const glm::vec3 & value) {
+	CylinderCollider* CylinderCollider::SetHalfExtents(const glm::vec3& value) {
 		_extents = value;
 		_isDirty = true;
 		return this;

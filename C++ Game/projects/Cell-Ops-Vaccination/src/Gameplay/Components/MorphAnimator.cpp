@@ -53,8 +53,8 @@ void MorphAnimator::Update(float deltaTime)
 	}
 
 	
-	std::vector<BufferAttribute> pos0 = currentClip.frames[currentClip.currentFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->Attributes;
-	std::vector<BufferAttribute> pos1 = currentClip.frames[currentClip.nextFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->Attributes;
+	std::vector<BufferAttribute> pos0 = currentClip.frames[currentClip.currentFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->GetAttributes();
+	std::vector<BufferAttribute> pos1 = currentClip.frames[currentClip.nextFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->GetAttributes();
 
 	
 	pos0.resize(1);
@@ -62,8 +62,8 @@ void MorphAnimator::Update(float deltaTime)
 	pos1[0].Slot = static_cast<GLint>(4);
 	pos1.resize(1);
 
-	thisObject->AddVertexBuffer(currentClip.frames[currentClip.currentFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->Buffer, pos0);
-	thisObject->AddVertexBuffer(currentClip.frames[currentClip.nextFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->Buffer, pos1);
+	thisObject->AddVertexBuffer(currentClip.frames[currentClip.currentFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->GetBuffer(), pos0);
+	thisObject->AddVertexBuffer(currentClip.frames[currentClip.nextFrame]->Mesh->GetBufferBinding(AttribUsage::Position)->GetBuffer(), pos1);
 	this->GetComponent<RenderComponent>()->GetMaterial()->Set("t", t);
 }
 
