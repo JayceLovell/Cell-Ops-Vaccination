@@ -17,7 +17,7 @@ int GuiBatcher::__defaultEdgeRadius = 0;
 VertexBuffer::Sptr GuiBatcher::__vbo = nullptr;
 ShaderProgram::Sptr GuiBatcher::__shader = nullptr;
 ShaderProgram::Sptr GuiBatcher::__fontShader = nullptr;
-glm::ivec2 GuiBatcher::__windowSize = {0, 0};
+glm::ivec2 GuiBatcher::__windowSize = { 0, 0 };
 glm::mat4 GuiBatcher::__projection = glm::mat4(1.0f);
 glm::mat3 GuiBatcher::__model = glm::mat3(1.0f);
 std::vector<glm::mat3> GuiBatcher::__modelTransformStack = std::vector<glm::mat3>();
@@ -30,7 +30,7 @@ void GuiBatcher::PushRect(const glm::vec2& min, const glm::vec2& max, const glm:
 	verts[1].Position = __model * glm::vec3(min.x, max.y, 1.0f);
 	verts[2].Position = __model * glm::vec3(max.x, max.y, 1.0f);
 	verts[3].Position = __model * glm::vec3(max.x, min.y, 1.0f);
-		
+
 	// Grab mesh info for the texture batch
 	MeshData& mesh = _meshBuilders[tex.get()];
 	// We can use the vertex count for depth, so that things drawn later have a bit of spacing
@@ -43,10 +43,10 @@ void GuiBatcher::PushRect(const glm::vec2& min, const glm::vec2& max, const glm:
 	}
 
 	// Copy over UV coords
-	verts[0].UV = glm::vec2(uvMin.x, uvMax.y);
-	verts[1].UV = glm::vec2(uvMin.x, uvMin.y);
-	verts[2].UV = glm::vec2(uvMax.x, uvMin.y);
-	verts[3].UV = glm::vec2(uvMax.x, uvMax.y);
+	verts[0].UV = glm::vec2(uvMin.x, uvMin.y);
+	verts[1].UV = glm::vec2(uvMin.x, uvMax.y);
+	verts[2].UV = glm::vec2(uvMax.x, uvMax.y);
+	verts[3].UV = glm::vec2(uvMax.x, uvMin.y);
 
 	// Add vertices and indices to range
 	uint32_t ix = mesh.Builder.AddVertexRange(verts, 4);
@@ -58,12 +58,12 @@ void GuiBatcher::PushRect(const glm::vec2& min, const glm::vec2& max, const glm:
 {
 	if (edgeRadius <= 0) {
 		PushRect(min, max, color, tex, { 0,0 }, { 1,1 });
-	} 
+	}
 	else {
 		glm::vec2 edgeOffset;
 		edgeOffset.x = edgeRadius / ((float)tex->GetWidth() - 2);
 		edgeOffset.y = edgeRadius / ((float)tex->GetHeight() - 2);
-		
+
 		// edge [min/max] [X,Y] screen
 		float eMinXS = min.x + edgeRadius;
 		float eMaxXS = max.x - edgeRadius;
@@ -77,19 +77,19 @@ void GuiBatcher::PushRect(const glm::vec2& min, const glm::vec2& max, const glm:
 		float uMaxYS = 1.0f - edgeOffset.y;
 
 		// Left column
-		PushRect(glm::vec2(min.x, min.y),  glm::vec2(eMinXS, eMinYS), color, tex, glm::vec2(0.0f, uMaxYS),   glm::vec2(uMinXS, 1.0f));
+		PushRect(glm::vec2(min.x, min.y), glm::vec2(eMinXS, eMinYS), color, tex, glm::vec2(0.0f, 0.0f), glm::vec2(uMinXS, uMinYS));
 		PushRect(glm::vec2(min.x, eMinYS), glm::vec2(eMinXS, eMaxYS), color, tex, glm::vec2(0.0f, uMinYS), glm::vec2(uMinXS, uMaxYS));
-		PushRect(glm::vec2(min.x, eMaxYS), glm::vec2(eMinXS, max.y),  color, tex, glm::vec2(0.0f, 0.0f), glm::vec2(uMinXS, uMinYS));
+		PushRect(glm::vec2(min.x, eMaxYS), glm::vec2(eMinXS, max.y), color, tex, glm::vec2(0.0f, uMaxYS), glm::vec2(uMinXS, 1.0f));
 
 		// Center column
-		PushRect(glm::vec2(eMinXS, min.y),  glm::vec2(eMaxXS, eMinYS), color, tex, glm::vec2(uMinXS, uMaxYS),   glm::vec2(uMaxXS, 1.0f));
+		PushRect(glm::vec2(eMinXS, min.y), glm::vec2(eMaxXS, eMinYS), color, tex, glm::vec2(uMinXS, 0.0f), glm::vec2(uMaxXS, uMinYS));
 		PushRect(glm::vec2(eMinXS, eMinYS), glm::vec2(eMaxXS, eMaxYS), color, tex, glm::vec2(uMinXS, uMinYS), glm::vec2(uMaxXS, uMaxYS));
-		PushRect(glm::vec2(eMinXS, eMaxYS), glm::vec2(eMaxXS, max.y), color, tex,  glm::vec2(uMinXS, 0.0f), glm::vec2(uMaxXS, uMinYS));
+		PushRect(glm::vec2(eMinXS, eMaxYS), glm::vec2(eMaxXS, max.y), color, tex, glm::vec2(uMinXS, uMaxYS), glm::vec2(uMaxXS, 1.0f));
 
 		// Right column
-		PushRect(glm::vec2(eMaxXS, min.y),  glm::vec2(max.x, eMinYS), color, tex, glm::vec2(uMaxXS, uMaxYS),   glm::vec2(1.0f, 1.0f));
+		PushRect(glm::vec2(eMaxXS, min.y), glm::vec2(max.x, eMinYS), color, tex, glm::vec2(uMaxXS, 0.0f), glm::vec2(1.0f, uMinYS));
 		PushRect(glm::vec2(eMaxXS, eMinYS), glm::vec2(max.x, eMaxYS), color, tex, glm::vec2(uMaxXS, uMinYS), glm::vec2(1.0f, uMaxYS));
-		PushRect(glm::vec2(eMaxXS, eMaxYS), glm::vec2(max.x, max.y),  color, tex, glm::vec2(uMaxXS, 0.0f), glm::vec2(1.0f, uMinYS));
+		PushRect(glm::vec2(eMaxXS, eMaxYS), glm::vec2(max.x, max.y), color, tex, glm::vec2(uMaxXS, uMaxYS), glm::vec2(1.0f, 1.0f));
 	}
 }
 
@@ -105,7 +105,7 @@ void GuiBatcher::RenderText(const std::wstring& text, const Font::Sptr& font, co
 	glm::vec2 offset = glm::vec2(0.0f);
 
 	// Transform the origin based off the model transform
-	glm::vec2 origin = position;
+	glm::vec2 origin = __model * glm::vec3(position, 1.0f);
 
 	// Gets the texture used to render the font
 	Texture2D::Sptr atlas = font->GetAtlas();
@@ -121,8 +121,6 @@ void GuiBatcher::RenderText(const std::wstring& text, const Font::Sptr& font, co
 	verts[2].Color = color;
 	verts[3].Color = color;
 
-	float depth = mesh.Builder.GetVertexCount() / 1000.0f;
-
 	// Iterate over all characters in string
 	for (int i = 0; i < length; i++) {
 		// Grab the glyph data for the character
@@ -130,7 +128,7 @@ void GuiBatcher::RenderText(const std::wstring& text, const Font::Sptr& font, co
 
 		// A newline will advance to the next line and return to the start of the line
 		if (text[i] == '\n') {
-			offset.y  += font->GetLineHeight() * scale;
+			offset.y += font->GetLineHeight() * scale;
 			offset.x = 0;
 		}
 		// A return character simply returns to the start of the line
@@ -145,16 +143,14 @@ void GuiBatcher::RenderText(const std::wstring& text, const Font::Sptr& font, co
 		}
 		// All other characters get rendered
 		else {
-			verts[0].Position = __model * glm::vec3(origin + (offset + glyph.Positions[0]) * scale, 1.0f);
-			verts[1].Position = __model * glm::vec3(origin + (offset + glyph.Positions[1]) * scale, 1.0f);
-			verts[2].Position = __model * glm::vec3(origin + (offset + glyph.Positions[2]) * scale, 1.0f);
-			verts[3].Position = __model * glm::vec3(origin + (offset + glyph.Positions[3]) * scale, 1.0f);
+			verts[0].Position = glm::vec3(origin + (offset + glyph.Positions[0]) * scale, 0.0f);
+			verts[1].Position = glm::vec3(origin + (offset + glyph.Positions[1]) * scale, 0.0f);
+			verts[2].Position = glm::vec3(origin + (offset + glyph.Positions[2]) * scale, 0.0f);
+			verts[3].Position = glm::vec3(origin + (offset + glyph.Positions[3]) * scale, 0.0f);
 			verts[0].UV = glyph.UVs[0];
 			verts[1].UV = glyph.UVs[1];
 			verts[2].UV = glyph.UVs[2];
 			verts[3].UV = glyph.UVs[3];
-
-			verts[0].Position.z = verts[1].Position.z = verts[2].Position.z = verts[3].Position.z = depth;
 
 			uint32_t ix = mesh.Builder.AddVertexRange(verts, 4);
 			mesh.Builder.AddIndexTri(ix + 0, ix + 1, ix + 2);
@@ -187,7 +183,7 @@ void GuiBatcher::Flush()
 	__StaticInit();
 
 	// Iterate over each texture and it's mesh
-	for (auto&[key, value] : _meshBuilders) {
+	for (auto& [key, value] : _meshBuilders) {
 		Texture2D* tex = key;
 		// If the texture exists and the mesh has data
 		if (tex != nullptr && value.Builder.GetIndexCount() > 0) {
@@ -213,13 +209,13 @@ void GuiBatcher::Flush()
 
 void GuiBatcher::PushModelTransform(const glm::mat3& transform) {
 	__modelTransformStack.push_back(transform);
-	__model = __model * transform;
+	__model = transform * __model;
 }
 
 void GuiBatcher::PopModelTransform()
 {
 	LOG_ASSERT(__modelTransformStack.size() > 0, "Transform push/pop mismatch");
-	__model = __model * glm::inverse(__modelTransformStack.back());
+	__model = glm::inverse(__modelTransformStack.back()) * __model;
 	__modelTransformStack.pop_back();
 }
 
@@ -236,12 +232,9 @@ void GuiBatcher::__StaticInit()
 					layout(location = 0) in vec3 inPos;
 					layout(location = 1) in vec4 inColor;
 					layout(location = 3) in vec2 inUV;
-
 					layout(location = 0) out vec4 outColor;
 					layout(location = 1) out vec2 outUV;
-
 					layout(location = 0) uniform mat4 u_Projection;
-
 					void main() {
 						outColor = inColor;
 						outUV = inUV;
@@ -252,11 +245,8 @@ void GuiBatcher::__StaticInit()
 		__shader->LoadShaderPart(R"LIT(#version 460
 					layout(location = 0) in vec4 inColor;
 					layout(location = 1) in vec2 inUV;
-
 					layout(location = 0) out vec4 outColor;
-
 					uniform layout(binding=0) sampler2D s_Texture;
-
 					void main() {
 						outColor = texture(s_Texture, inUV) * inColor;
 					}
@@ -269,12 +259,9 @@ void GuiBatcher::__StaticInit()
 					layout(location = 0) in vec3 inPos;
 					layout(location = 1) in vec4 inColor;
 					layout(location = 3) in vec2 inUV;
-
 					layout(location = 0) out vec4 outColor;
 					layout(location = 1) out vec2 outUV;
-
 					layout(location = 0) uniform mat4 u_Projection;
-
 					void main() {
 						outColor = inColor;
 						outUV = inUV;
@@ -285,16 +272,13 @@ void GuiBatcher::__StaticInit()
 		__fontShader->LoadShaderPart(R"LIT(#version 460
 					layout(location = 0) in vec4 inColor;
 					layout(location = 1) in vec2 inUV;
-
 					layout(location = 0) out vec4 outColor;
-
 					uniform layout(binding=0) sampler2D s_Texture;
-
 					void main() {
 						float fontPow = texture(s_Texture, inUV).r;
 						outColor = vec4(inColor.rgb, fontPow);
 					}
-				)LIT" , ShaderPartType::Fragment);
+				)LIT", ShaderPartType::Fragment);
 
 		__fontShader->Link();
 
@@ -307,7 +291,7 @@ void GuiBatcher::__StaticInit()
 
 		// Generate a simple white texture with a black border
 		if (__defaultUITexture == nullptr) {
-			Texture2DDescription desc = Texture2DDescription();
+			Texture2DDescription desc;
 			desc.Width = 16;
 			desc.Height = 16;
 			desc.MinificationFilter = MinFilter::Nearest;
@@ -322,7 +306,7 @@ void GuiBatcher::__StaticInit()
 			for (int ix = 0; ix < 16; ix++) {
 				for (int iy = 0; iy < 16; iy++) {
 					if (ix == 0 || iy == 0 || ix == 15 || iy == 15) {
-						data[ix * 16 + iy] ={ 0,0,0, 255 };
+						data[ix * 16 + iy] = { 0,0,0, 255 };
 					}
 				}
 			}
@@ -344,13 +328,13 @@ void GuiBatcher::PushScissorRect(const glm::vec2& min, const glm::vec2& max) {
 
 	// Convert NDC to screenspace
 	glm::ivec2 minWin = glm::floor(((minNDC + 1.0f) / 2.0f) * (glm::vec2)__windowSize);
-	glm::ivec2 maxWin = glm::ceil(((maxNDC + 1.0f) / 2.0f)  * (glm::vec2)__windowSize);
+	glm::ivec2 maxWin = glm::ceil(((maxNDC + 1.0f) / 2.0f) * (glm::vec2)__windowSize);
 
 	// Store the bounds
 	__scissorRects.push_back({ minWin, maxWin });
 
 	// Calculate the actual size
-	int width  = glm::max(maxWin.x, minWin.x) - glm::min(maxWin.x, minWin.x);
+	int width = glm::max(maxWin.x, minWin.x) - glm::min(maxWin.x, minWin.x);
 	int height = glm::max(maxWin.y, minWin.y) - glm::min(maxWin.y, minWin.y);
 
 	// Draw current geo with the current scissor, then update it
@@ -366,7 +350,7 @@ void GuiBatcher::PopScissorRect() {
 	IRect bounds = __scissorRects.size() > 0 ? __scissorRects.back() : IRect{ { 0, 0 }, { __windowSize.x, __windowSize.y } };
 
 	// Calculate the actual size
-	int width  = glm::max(bounds.Min.x, bounds.Max.x) - glm::min(bounds.Min.x, bounds.Max.x);
+	int width = glm::max(bounds.Min.x, bounds.Max.x) - glm::min(bounds.Min.x, bounds.Max.x);
 	int height = glm::max(bounds.Min.y, bounds.Max.y) - glm::min(bounds.Min.y, bounds.Max.y);
 
 	// Draw current geo with the current scissor, then update it

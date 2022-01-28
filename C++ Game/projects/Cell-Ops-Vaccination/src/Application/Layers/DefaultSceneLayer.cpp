@@ -1091,7 +1091,6 @@ void DefaultSceneLayer::_CreateScene()
 			transform->SetSize({ 800,800 });
 			transform->SetMin({ 0,0 });
 			transform->SetMax({ 800,800 });
-			transform->SetRotationDeg(180);
 
 			GuiPanel::Sptr Title = canvas->Add<GuiPanel>();
 			Title->SetTexture(TitleTexture);
