@@ -10,8 +10,8 @@
 #include <filesystem>
 
 // Graphics
-#include "Graphics/IndexBuffer.h"
-#include "Graphics/VertexBuffer.h"
+#include "Graphics/Buffers/IndexBuffer.h"
+#include "Graphics/Buffers/VertexBuffer.h"
 #include "Graphics/VertexArrayObject.h"
 #include "Graphics/ShaderProgram.h"
 #include "Graphics/Texture2D.h"
@@ -19,6 +19,7 @@
 #include "Graphics/VertexTypes.h"
 #include "Graphics/Font.h"
 #include "Graphics/GuiBatcher.h"
+#include "Graphics/Framebuffer.h"
 
 // Utilities
 #include "Utils/MeshBuilder.h"
@@ -71,6 +72,7 @@
 #include "Gameplay/InputEngine.h"
 
 #include "Application/Application.h"
+#include "Gameplay/Components/ParticleSystem.h"
 
 DefaultSceneLayer::DefaultSceneLayer() :
 	ApplicationLayer()
@@ -1094,7 +1096,7 @@ void DefaultSceneLayer::_CreateScene()
 			Title->SetTexture(TitleTexture);
 		}
 
-		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("textures/ui-sprite.png"));
+		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/cell_ops_title_box.png"));
 		GuiBatcher::SetDefaultBorderRadius(8);
 
 		// Save the asset manifest for all the resources we just loaded

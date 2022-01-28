@@ -13,8 +13,8 @@
 #include "Utils/ResourceManager/ResourceManager.h"
 
 // Graphics
-#include "Graphics/IndexBuffer.h"
-#include "Graphics/VertexBuffer.h"
+#include "Graphics/Buffers/IndexBuffer.h"
+#include "Graphics/Buffers/VertexBuffer.h"
 #include "Graphics/VertexArrayObject.h"
 #include "Graphics/ShaderProgram.h"
 #include "Graphics/Texture2D.h"
@@ -22,6 +22,7 @@
 #include "Graphics/VertexTypes.h"
 #include "Graphics/Font.h"
 #include "Graphics/GuiBatcher.h"
+#include "Graphics/Framebuffer.h"
 
 // Gameplay
 #include "Gameplay/Material.h"
@@ -58,8 +59,8 @@
 Application* Application::_singleton = nullptr;
 std::string Application::_applicationName = "Cell Ops Vaccination";
 
-#define DEFAULT_WINDOW_WIDTH 1600
-#define DEFAULT_WINDOW_HEIGHT 1600
+#define DEFAULT_WINDOW_WIDTH 800
+#define DEFAULT_WINDOW_HEIGHT 800
 
 Application::Application() :
 	_window(nullptr),
@@ -318,11 +319,16 @@ void Application::_PreRender()
 
 void Application::_RenderScene() {
 
+	Framebuffer::Sptr result = nullptr;
 	for (const auto& layer : _layers) {
 		if (layer->Enabled && *(layer->Overrides & AppLayerFunctions::OnRender)) {
-			layer->OnRender();
+			layer->OnRender(result);
+			Framebuffer::Sptr layerResult = layer->GetRenderOutput();
+			result = layerResult != nullptr ? layerResult : result;
 		}
 	}
+	_renderOutput = result;
+
 }
 
 void Application::_PostRender() {

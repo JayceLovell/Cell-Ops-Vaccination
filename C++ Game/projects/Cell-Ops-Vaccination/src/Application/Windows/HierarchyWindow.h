@@ -9,7 +9,7 @@ class HierarchyWindow : public IEditorWindow {
 public:
 	MAKE_PTRS(HierarchyWindow)
 
-	HierarchyWindow();
+		HierarchyWindow();
 	virtual ~HierarchyWindow();
 
 	// Inherited from IEditorWindow

@@ -7,13 +7,13 @@
 #include "imgui_internal.h"
 
 InspectorWindow::InspectorWindow() :
-	IEditorWindow() 
+	IEditorWindow()
 {
 
-	Name           = "Inspector";
-	ParentName     = "Hierarchy";
+	Name = "Inspector";
+	ParentName = "Hierarchy";
 	SplitDirection = ImGuiDir_::ImGuiDir_Down;
-	SplitDepth     = 0.5f;
+	SplitDepth = 0.5f;
 }
 InspectorWindow::~InspectorWindow() = default;
 
@@ -95,7 +95,7 @@ void InspectorWindow::Render()
 						selectedType = type;
 					}
 				}
-			});
+				});
 			ImGui::EndCombo();
 		}
 		ImGui::SameLine();
@@ -120,7 +120,7 @@ bool InspectorWindow::_RenderComponent(Gameplay::IComponent::Sptr component)
 	ImGuiID id = ImGui::GetID(component->ComponentTypeName().c_str());
 	bool isOpen = ImGui::CollapsingHeader(component->ComponentTypeName().c_str(), ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_ClipLabelForTrailingButton);
 	ImGuiHelper::HeaderCheckbox(id, &component->IsEnabled);
-	
+
 	if (ImGui::BeginPopupContextItem()) {
 		if (ImGui::MenuItem("Copy Values")) {
 
