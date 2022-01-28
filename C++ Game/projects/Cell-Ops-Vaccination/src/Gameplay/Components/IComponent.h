@@ -43,14 +43,14 @@ namespace Gameplay {
 		/// a trigger volume
 		/// </summary>
 		/// <param name="trigger"></param>
-		virtual void OnEnteredTrigger(const std::shared_ptr<Physics::TriggerVolume>& trigger){};
+		virtual void OnEnteredTrigger(const std::shared_ptr<Physics::TriggerVolume>& trigger) {};
 
 		/// <summary>
 		/// Invoked when a dynamic rigidbody attached to the parent gameobject has left
 		/// a trigger volume
 		/// </summary>
 		/// <param name="trigger"></param>
-		virtual void OnLeavingTrigger(const std::shared_ptr<Physics::TriggerVolume>& trigger){};
+		virtual void OnLeavingTrigger(const std::shared_ptr<Physics::TriggerVolume>& trigger) {};
 
 		/// <summary>
 		/// Invoked when a dynamic rigidbody has entered a trigger attached to the same gameobject

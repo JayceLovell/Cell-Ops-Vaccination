@@ -409,16 +409,17 @@ void DefaultSceneLayer::_CreateScene()
 		// Create some lights for our scene
 		scene->Lights.resize(3);
 		
-		GameObject::Sptr camera = scene->CreateGameObject("Main Camera");
+		GameObject::Sptr camera = scene->MainCamera->GetGameObject()->SelfRef();
+		//GameObject::Sptr camera = scene->CreateGameObject("Main Camera");
 		{
 			camera->SetPostion(glm::vec3(0.0f));
 			camera->SetRotation(glm::vec3(112.735f, 0.0f, -72.0f));
 
 			camera->Add<SimpleCameraControl>();
 
-			Camera::Sptr cam = camera->Add<Camera>();
+			//Camera::Sptr cam = camera->Add<Camera>();
 			// Make sure that the camera is set as the scene's main camera!
-			scene->MainCamera = cam;
+			//scene->MainCamera = cam;
 		}
 		GameObject::Sptr Player = scene->CreateGameObject("Player");
 		{
