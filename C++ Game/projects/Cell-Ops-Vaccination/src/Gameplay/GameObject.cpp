@@ -17,6 +17,7 @@ namespace Gameplay {
 	GameObject::GameObject() :
 		IResource(),
 		Name("Unknown"),
+		HideInHierarchy(false),
 		_components(std::vector<IComponent::Sptr>()),
 		_scene(nullptr),
 		_position(ZERO),
@@ -51,13 +52,21 @@ namespace Gameplay {
 	}
 
 	void GameObject::_RecalcWorldTransform() const {
+		// Start by determining our local transform if required
 		_RecalcLocalTransform();
+
+		// If our world transform has been marked as dirty, we need to recalculate it!
 		if (_isWorldTransformDirty) {
 			GameObject::Sptr parent = _parent;
+
+			// If out parent exists, we apply our local transformation relative to the parent's world transformation
 			if (parent != nullptr) {
 				_worldTransform = parent->GetTransform() * _localTransform;
 				_inverseWorldTransform = glm::inverse(_worldTransform);
-			} else {
+			}
+
+			// If our parent is null, we can simply use the local transform as the world transform
+			else {
 				_worldTransform = _localTransform;
 				_inverseWorldTransform = _inverseLocalTransform;
 			}
@@ -66,9 +75,10 @@ namespace Gameplay {
 	}
 
 	void GameObject::_PurgeDeletedChildren() {
-		std::remove_if(_children.begin(), _children.end(), [](WeakRef child) { 
-			return child == nullptr; 
-		});
+		auto it = std::remove_if(_children.begin(), _children.end(), [](WeakRef child) {
+			return child == nullptr;
+			});
+		_children.erase(it, _children.end());
 	}
 
 	void GameObject::LookAt(const glm::vec3& point) {
@@ -159,6 +169,12 @@ namespace Gameplay {
 	}
 
 	void GameObject::RenderGUI() {
+		// Prune children
+		auto it = std::remove_if(_children.begin(), _children.end(), [](const WeakRef& child) { return !child.IsAlive(); });
+		if (it != _children.end()) {
+			_children.erase(it);
+		}
+
 		for (auto& component : _components) {
 			if (component->IsEnabled) {
 				component->StartGUI();
@@ -229,7 +245,7 @@ namespace Gameplay {
 		LOG_ASSERT(!Has(type), "Cannot add 2 instances of a component type to a game object");
 
 		// Make a new component, forwarding the arguments
-		std::shared_ptr<IComponent> component = ComponentManager::Create(type);
+		std::shared_ptr<IComponent> component = _scene->_components.Create(type);
 		// Let the component know we are the parent
 		component->_context = this;
 
@@ -251,15 +267,17 @@ namespace Gameplay {
 		}
 
 		// Make sure the object isn't already a child of this object
-		auto it = std::find_if(_children.begin(), _children.end(), [child](GameObject::WeakRef wPtr) { return wPtr == child;});
+		auto it = std::find_if(_children.begin(), _children.end(), [child](GameObject::WeakRef wPtr) { return wPtr == child; });
 
+		// As long as the child is not already a child of this gameobject, add it
 		if (it == _children.end()) {
 			// Add child, set parent, and mark it's world transform as dirty, since the parent's transform now 
 			// applies to the child
 			_children.push_back(child);
 			child->_parent = _selfRef.lock();
 			child->_isWorldTransformDirty = true;
-		} else {
+		}
+		else {
 			LOG_WARN("Attempting to add same child twice, ignoring: {}", child->Name);
 		}
 	}
@@ -267,13 +285,14 @@ namespace Gameplay {
 	bool GameObject::RemoveChild(const GameObject::Sptr& child) {
 		// Find the child in our list of children if it exists
 		auto it = std::find_if(_children.begin(), _children.end(), [child](GameObject::WeakRef wPtr) { return wPtr == child; });
-		
-		if (it != _children.end()) { 
+
+		if (it != _children.end()) {
 			// Clear the object's parent and remove from our list of children
 			child->_parent.Reset();
 			_children.erase(it);
 			return true;
-		} else {
+		}
+		else {
 			return false;
 		}
 	}
@@ -334,7 +353,7 @@ namespace Gameplay {
 
 			// Render position label
 			_isLocalTransformDirty |= LABEL_LEFT(ImGui::DragFloat3, "Position", &_position.x, 0.01f);
-			
+
 			// Get the ImGui storage state so we can avoid gimbal locking issues by storing euler angles in the editor
 			glm::vec3 euler = GetRotationEuler();
 			ImGuiStorage* guiStore = ImGui::GetStateStorage();
@@ -357,7 +376,7 @@ namespace Gameplay {
 				//Send new rotation to the gameobject
 				SetRotation(euler);
 			}
-			
+
 			// Draw the scale
 			_isLocalTransformDirty |= LABEL_LEFT(ImGui::DragFloat3, "Scale   ", &_scale.x, 0.01f, 0.0f);
 
@@ -369,7 +388,7 @@ namespace Gameplay {
 			for (int ix = 0; ix < _components.size(); ix++) {
 				std::shared_ptr<IComponent> component = _components[ix];
 				if (ImGui::CollapsingHeader(component->ComponentTypeName().c_str())) {
-					ImGui::PushID(component.get()); 
+					ImGui::PushID(component.get());
 					component->RenderImGui();
 					// Render a delete button for the component
 					if (ImGuiHelper::WarningButton("Delete")) {
@@ -385,7 +404,7 @@ namespace Gameplay {
 			static std::string preview = "";
 			static std::optional<std::type_index> selectedType;
 			if (ImGui::BeginCombo("##AddComponents", preview.c_str())) {
-				ComponentManager::EachType([&](const std::string& typeName, const std::type_index type) {
+				_scene->Components().EachType([&](const std::string& typeName, const std::type_index type) {
 					// Hide component types already added
 					if (!Has(type)) {
 						bool isSelected = typeName == preview;
@@ -394,7 +413,7 @@ namespace Gameplay {
 							selectedType = type;
 						}
 					}
-				});
+					});
 				ImGui::EndCombo();
 			}
 			ImGui::SameLine();
@@ -427,19 +446,21 @@ namespace Gameplay {
 		return _selfRef.lock();
 	}
 
-	GameObject::Sptr GameObject::FromJson(const nlohmann::json& data)
+	GameObject::Sptr GameObject::FromJson(Scene* scene, const nlohmann::json& data)
 	{
 		// We need to manually construct since the GameObject constructor is
 		// protected. We can call it here since Scene is a friend class of GameObjects
 		GameObject::Sptr result(new GameObject());
+		result->_scene = scene;
 
 		// Load in basic info
 		result->Name = data["name"];
 		result->_guid = Guid(data["guid"]);
-		result->_parent = WeakRef(Guid(data["parent"]), nullptr);
-		result->_position = ParseJsonVec3(data["position"]);
-		result->_rotation = ParseJsonQuat(data["rotation"]);
-		result->_scale    = ParseJsonVec3(data["scale"]);
+		result->_parent = WeakRef(Guid(data.contains("parent") ? data["parent"] : "null"), nullptr);
+		result->_position = (data["position"]);
+		result->_rotation = (data["rotation"]);
+		result->_scale = (data["scale"]);
+		result->HideInHierarchy = JsonGet(data, "hide_in_inspector", false);
 		result->_isLocalTransformDirty = true;
 		result->_isWorldTransformDirty = true;
 
@@ -450,7 +471,7 @@ namespace Gameplay {
 			// We need to reference the component registry to load our components
 			// based on the type name (note that all component types need to be
 			// registered at the start of the application)
-			IComponent::Sptr component = ComponentManager::Load(typeName, value);
+			IComponent::Sptr component = scene->Components().Load(typeName, value);
 			component->_context = result.get();
 
 			// Add component to object and allow it to perform self initialization
@@ -466,10 +487,11 @@ namespace Gameplay {
 		nlohmann::json result = {
 			{ "name", Name },
 			{ "guid", _guid.str() },
-			{ "position", GlmToJson(_position) },
-			{ "rotation", GlmToJson(_rotation) },
-			{ "scale",    GlmToJson(_scale) },
+			{ "position", _position },
+			{ "rotation", _rotation },
+			{ "scale",    _scale },
 			{ "parent",   parent == nullptr ? "null" : parent->_guid.str() },
+			{ "hide_in_inspector", HideInHierarchy }
 		};
 		result["components"] = nlohmann::json();
 		for (auto& component : _components) {
@@ -490,23 +512,27 @@ namespace Gameplay {
 		ResourceGUID = ptr->GetGUID();
 		SceneContext = ptr->GetScene();
 		Ptr = ptr;
+		isNull = ptr == nullptr;
 		return *this;
 	}
 
 	GameObject::WeakRef::WeakRef(const GameObject::Sptr& ptr) {
 		*this = ptr;
+		isNull = ptr == nullptr;
 	}
 
 	GameObject::WeakRef::WeakRef() :
 		ResourceGUID(Guid()),
 		SceneContext(nullptr),
-		Ptr(std::weak_ptr<GameObject>())
+		Ptr(std::weak_ptr<GameObject>()),
+		isNull(true)
 	{ }
 
 	GameObject::WeakRef::WeakRef(const Guid& guid, const Scene* scene) :
 		ResourceGUID(guid),
 		SceneContext(scene),
-		Ptr(std::weak_ptr<GameObject>())
+		Ptr(std::weak_ptr<GameObject>()),
+		isNull(false)
 	{ }
 
 	bool GameObject::WeakRef::operator==(const GameObject::Sptr& other) {
@@ -526,15 +552,21 @@ namespace Gameplay {
 	}
 
 	GameObject::Sptr GameObject::WeakRef::Resolve() const {
+		// If we already determined the value is null, return null now
+		if (isNull) { return nullptr; }
+
 		// If the Ptr is uninitialized, try and look up the object in the scene
 		if (GetIsEmpty()) {
 			// We need a reference to the scene in order to search gameobjects :pensive:
 			if (SceneContext != nullptr) {
-				Ptr = SceneContext->FindObjectByGUID(ResourceGUID);
-				return Ptr.lock();
+				GameObject::Sptr result = SceneContext->FindObjectByGUID(ResourceGUID);
+				Ptr = result;
+				isNull = result == nullptr;
+				return result;
 			}
 			// If there's no scene, return null
 			else {
+				isNull = true;
 				return nullptr;
 			}
 		}
@@ -556,10 +588,15 @@ namespace Gameplay {
 		ResourceGUID = Guid();
 		Ptr.reset();
 		SceneContext = nullptr;
+		isNull = true;
 	}
 
 	GameObject::WeakRef::operator GameObject::Sptr() const {
 		return Resolve();
+	}
+
+	GameObject::WeakRef::operator Guid() const {
+		return ResourceGUID;
 	}
 
 }

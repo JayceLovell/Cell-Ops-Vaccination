@@ -78,7 +78,7 @@ namespace Gameplay::Physics {
 			// Get the attribute for positions from the vertex declaration
 			auto& it = std::find_if(VDecl.begin(), VDecl.end(), [](const BufferAttribute& attrib) {
 				return attrib.Usage == AttribUsage::Position;
-			});
+				});
 			if (it == VDecl.end()) {
 				LOG_WARN("Mesh vertex declaration does not have a position element");
 				return;
@@ -90,7 +90,7 @@ namespace Gameplay::Physics {
 			if (vertBuff != nullptr) {
 				// Shorthand our buffers
 				IndexBuffer::Sptr indexBuff = vao->GetIndexBuffer();
-				VertexBuffer::Sptr vertexBuff = vertBuff->Buffer;
+				VertexBuffer::Sptr vertexBuff = vertBuff->GetBuffer();
 
 				// Create the bullet physics triangle mesh
 				_triMesh = new btTriangleMesh();
@@ -99,15 +99,15 @@ namespace Gameplay::Physics {
 				auto getBufferIndex = [](IndexBuffer::Sptr buff, uint8_t* dataStore, int offset) {
 					switch (buff->GetElementType())
 					{
-						case IndexType::UByte:
-							return (int)*(dataStore + offset);
-						case IndexType::UShort:
-							return (int)*(reinterpret_cast<uint16_t*>(dataStore) + offset);
-						case IndexType::UInt:
-							return (int)*(reinterpret_cast<uint32_t*>(dataStore) + offset);
-						case IndexType::Unknown:
-						default:
-							return 0;
+					case IndexType::UByte:
+						return (int)*(dataStore + offset);
+					case IndexType::UShort:
+						return (int)*(reinterpret_cast<uint16_t*>(dataStore) + offset);
+					case IndexType::UInt:
+						return (int)*(reinterpret_cast<uint32_t*>(dataStore) + offset);
+					case IndexType::Unknown:
+					default:
+						return 0;
 					}
 				};
 
@@ -123,21 +123,21 @@ namespace Gameplay::Physics {
 					glGetNamedBufferSubData(indexBuff->GetHandle(), 0, indexBuff->GetTotalSize(), indexStore);
 
 					// Iterate over index triangles
-					for (int ix = 0; ix < indexBuff->GetElementCount(); ix+=3) {
+					for (size_t ix = 0; ix < indexBuff->GetElementCount(); ix += 3) {
 						// Extract index from the raw data
-						int i1 = getBufferIndex(indexBuff, indexStore, ix);
-						int i2 = getBufferIndex(indexBuff, indexStore, ix + 1);
-						int i3 = getBufferIndex(indexBuff, indexStore, ix + 2);
+						int i1 = getBufferIndex(indexBuff, indexStore, static_cast<int>(ix));
+						int i2 = getBufferIndex(indexBuff, indexStore, static_cast<int>(ix + 1));
+						int i3 = getBufferIndex(indexBuff, indexStore, static_cast<int>(ix + 2));
 
 						// Find the positions for the indices
-						glm::vec3 p1 = *reinterpret_cast<glm::vec3*>(vertexStore + (i1 * posAttrib.Stride) + posAttrib.Offset);
-						glm::vec3 p2 = *reinterpret_cast<glm::vec3*>(vertexStore + (i2 * posAttrib.Stride) + posAttrib.Offset);
-						glm::vec3 p3 = *reinterpret_cast<glm::vec3*>(vertexStore + (i3 * posAttrib.Stride) + posAttrib.Offset);
+						glm::vec3 p1 = *reinterpret_cast<glm::vec3*>(vertexStore + (posAttrib.Stride * i1) + posAttrib.Offset);
+						glm::vec3 p2 = *reinterpret_cast<glm::vec3*>(vertexStore + (posAttrib.Stride * i2) + posAttrib.Offset);
+						glm::vec3 p3 = *reinterpret_cast<glm::vec3*>(vertexStore + (posAttrib.Stride * i3) + posAttrib.Offset);
 
 						// Add the triangle
 						_triMesh->addTriangle(ToBt(p1), ToBt(p2), ToBt(p3));
 					}
-			
+
 					// Free the data we copied the indices into
 					free(indexStore);
 
@@ -145,7 +145,7 @@ namespace Gameplay::Physics {
 				// We only have vertex data, create triangles sequentially
 				else {
 					// Iterate over triangles, and add each to the mesh
-					for (int ix = 0; ix < vertexBuff->GetElementCount(); ix+=3) {
+					for (size_t ix = 0; ix < vertexBuff->GetElementCount(); ix += 3) {
 						glm::vec3 p1 = *reinterpret_cast<glm::vec3*>(vertexStore + ((ix + 0) * posAttrib.Stride) + posAttrib.Offset);
 						glm::vec3 p2 = *reinterpret_cast<glm::vec3*>(vertexStore + ((ix + 1) * posAttrib.Stride) + posAttrib.Offset);
 						glm::vec3 p3 = *reinterpret_cast<glm::vec3*>(vertexStore + ((ix + 2) * posAttrib.Stride) + posAttrib.Offset);

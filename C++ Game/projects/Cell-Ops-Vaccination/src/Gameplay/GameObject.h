@@ -13,8 +13,11 @@
 #include "Gameplay/Components/ComponentManager.h"
 #include "Utils/ResourceManager/IResource.h"
 
+class InspectorWindow;
+class HierarchyWindow;
+
 namespace Gameplay {
-// Predeclaration for Scene
+	// Predeclaration for Scene
 	class Scene;
 
 	namespace Physics {
@@ -26,7 +29,8 @@ namespace Gameplay {
 	/// Represents an object in our scene with a transformation and a collection
 	/// of components. Components provide gameobject's with behaviours
 	/// </summary>
-	struct GameObject : public IResource {
+	class GameObject : public IResource {
+	public:
 		typedef std::shared_ptr<GameObject> Sptr;
 		typedef std::weak_ptr<GameObject> Wptr;
 
@@ -39,6 +43,7 @@ namespace Gameplay {
 			Guid ResourceGUID;
 			const Scene* SceneContext;
 			mutable std::weak_ptr<GameObject> Ptr;
+			mutable bool isNull;
 
 			friend class Scene;
 
@@ -103,6 +108,11 @@ namespace Gameplay {
 			operator GameObject::Sptr() const;
 
 			/// <summary>
+			/// Implicitly converts the reference into a GUID
+			/// </summary>
+			operator Guid() const;
+
+			/// <summary>
 			/// Returns a strong pointer to the underlying gameobject, either returning
 			/// the pointer to the gameobject, or null if the reference is invalid
 			/// </summary>
@@ -125,6 +135,9 @@ namespace Gameplay {
 
 		// Human readable name for the object
 		std::string             Name;
+
+		// Hack to hide instances from the hierarchy (like when adding lots of instances)
+		bool HideInHierarchy = false;
 
 		/// <summary>
 		/// Rotates this object to look at the given point in world coordinates
@@ -214,7 +227,7 @@ namespace Gameplay {
 		/// <summary>
 		/// Allows components to render GUI elements to the screen
 		/// </summary>
-		void RenderGUI(); 
+		void RenderGUI();
 
 		/// <summary>
 		/// Returns a pointer to the scene that this GameObject belongs to
@@ -280,7 +293,7 @@ namespace Gameplay {
 			LOG_ASSERT(!Has<T>(), "Cannot add 2 instances of a component type to a game object");
 
 			// Make a new component, forwarding the arguments
-			std::shared_ptr<T> component = ComponentManager::Create<T>(std::forward<TArgs>(args)...);
+			std::shared_ptr<T> component = _scene->Components().Create<T>(std::forward<TArgs>(args)...);
 			// Let the component know we are the parent
 			component->_context = this;
 
@@ -313,7 +326,7 @@ namespace Gameplay {
 		/// <summary>
 		/// Loads a render object from a JSON blob
 		/// </summary>
-		static GameObject::Sptr FromJson(const nlohmann::json& data);
+		static GameObject::Sptr FromJson(Scene* scene, const nlohmann::json& data);
 		/// <summary>
 		/// Converts this object into it's JSON representation for storage
 		/// </summary>
@@ -321,6 +334,8 @@ namespace Gameplay {
 
 	private:
 		friend class Scene;
+		friend class InspectorWindow;
+		friend class HierarchyWindow;
 
 		// Rotation of the object as a quaternion
 		glm::quat _rotation;

@@ -10,6 +10,8 @@ class JumpBehaviour : public Gameplay::IComponent {
 public:
 	typedef std::shared_ptr<JumpBehaviour> Sptr;
 
+	std::weak_ptr<Gameplay::IComponent> Panel;
+
 	JumpBehaviour();
 	virtual ~JumpBehaviour();
 
