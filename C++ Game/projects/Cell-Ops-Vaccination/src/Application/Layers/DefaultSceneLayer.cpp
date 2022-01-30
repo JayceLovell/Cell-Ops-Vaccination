@@ -1016,7 +1016,7 @@ void DefaultSceneLayer::_CreateScene()
 
 			RectTransform::Sptr transform = EnemiesKilled->Add<RectTransform>();
 			transform->SetSize({ 10,10 });
-			transform->SetMin({ -119,-39 });
+			transform->SetMin({ 60,29 });
 
 			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
 			font->Bake();
@@ -1032,9 +1032,8 @@ void DefaultSceneLayer::_CreateScene()
 
 			RectTransform::Sptr transform = Rounds->Add<RectTransform>();
 			transform->SetSize({ 10,10 });
-			transform->SetMin({ -1501, -29 });
-			//transform->SetMax({ 256, 256 });
-			//transform->SetPosition({ 100 ,0});
+			transform->SetMin({ 750, 29 });
+			transform->SetMax({ 750,29 });
 
 			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
 			font->Bake();
@@ -1049,8 +1048,8 @@ void DefaultSceneLayer::_CreateScene()
 		{
 			RectTransform::Sptr transform = TargetHealth->Add<RectTransform>();
 			transform->SetSize({ 185,102 });
-			transform->SetMin({ 15,673 });
-			transform->SetMax({ 200,775 });
+			transform->SetMin({ 8,278 });
+			transform->SetMax({ 190,382 });
 
 			GuiPanel::Sptr Health = TargetHealth->Add<GuiPanel>();
 			Health->SetTexture(Health100Texture);
@@ -1069,8 +1068,8 @@ void DefaultSceneLayer::_CreateScene()
 		{
 			RectTransform::Sptr transform = Target1Health->Add<RectTransform>();
 			transform->SetSize({ 185,102 });
-			transform->SetMin({ 15,725 });
-			transform->SetMax({ 200,829 });
+			transform->SetMin({ 8,300 });
+			transform->SetMax({ 190,400 });
 
 			GuiPanel::Sptr Health = Target1Health->Add<GuiPanel>();
 			Health->SetTexture(Health100Texture);
