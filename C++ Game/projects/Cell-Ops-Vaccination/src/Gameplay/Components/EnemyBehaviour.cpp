@@ -83,18 +83,7 @@ void EnemyBehaviour::TakeDamage()
 		LOG_INFO("Killed {}", EnemyType);
 		GetGameObject()->GetScene()->EnemiesKilled++;
 		GetGameObject()->GetScene()->UpdateUI();
-		Reset();
+		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
 	}
 }
 
-void EnemyBehaviour::Reset()
-{
-	_health = _maxHealth;
-	float x = (float)(rand() % 50 + (-25));
-	float y = (float)(rand() % 50 + (-25));
-	float z = (float)(rand() % 50 + (-25));
-	RespawnPosition = glm::vec3(x, y, z);
-	GetGameObject()->SetPostion(RespawnPosition);
-	NewTarget();
-	GetGameObject()->LookAt(Target.get()->GetPosition());
-}
