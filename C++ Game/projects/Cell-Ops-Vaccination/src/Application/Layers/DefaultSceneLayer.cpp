@@ -193,9 +193,9 @@ void DefaultSceneLayer::_CreateScene()
 		Texture2D::Sptr WhiteBloodCell2Texture = ResourceManager::CreateAsset<Texture2D>("textures/White Blood Cell2.png");
 		Texture2D::Sptr YellowMBiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/YellowMBiota.png");
 		// UI Textures
-		Texture2D::Sptr GameOverTexture = ResourceManager::CreateAsset<Texture2D>("textures/GameOver.png");
-		Texture2D::Sptr GameWinTexture = ResourceManager::CreateAsset<Texture2D>("textures/GameWin.png");
-		Texture2D::Sptr GamePauseTexture = ResourceManager::CreateAsset<Texture2D>("textures/GamePause.png");
+		Texture2D::Sptr GameOverTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Game Over Screen/GameOver.png");
+		Texture2D::Sptr GameWinTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Game Win Screen/GameWin.png");
+		Texture2D::Sptr GamePauseTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Game Pause Screen/GamePause.png");
 		Texture2D::Sptr Health100Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_100.png");
 		Texture2D::Sptr Health90Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_90.png");
 		Texture2D::Sptr Health80Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_80.png");

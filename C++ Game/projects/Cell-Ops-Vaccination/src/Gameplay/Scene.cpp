@@ -374,14 +374,14 @@ namespace Gameplay {
 		if (!IsGameOver)
 		{
 			//Cheats
-			if (InputEngine::IsKeyDown(GLFW_KEY_F2) && IsPaused){
+			if ((InputEngine::GetKeyState(GLFW_KEY_F2) == ButtonState::Pressed) && IsPaused) {
 				if (!IsCheatActivated) {
 					EnemiesKilled = EnemiesThreshold;
 					IsCheatActivated = true;
 				}
 			}
 			// Pause
-			if (InputEngine::IsKeyDown(GLFW_KEY_ESCAPE)) {
+			if (InputEngine::GetKeyState(GLFW_KEY_ESCAPE) == ButtonState::Pressed) {
 				if (IsPaused && IsPauseUIUp)
 				{
 					IsPaused = false;
