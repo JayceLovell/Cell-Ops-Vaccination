@@ -51,6 +51,7 @@
 #include "Gameplay/Components/TargetBehaviour.h"
 #include "Gameplay/Components/BackgroundObjectsBehaviour.h"
 #include "Gameplay/Components/MorphAnimator.h"
+#include "Gameplay/Components/UIController.h"
 
 // Physics
 #include "Gameplay/Physics/RigidBody.h"
@@ -442,41 +443,30 @@ void DefaultSceneLayer::_CreateScene()
 		}
 		//OBJECTS BELOW HAVE A SPAWN RANGE OF - (X,Y,Z) TO + (X,Y,Z)
 		/////////////////////////TARGETS////////////////////////// 25 max range
-		GameObject::Sptr Target = scene->CreateGameObject("Target");
+		GameObject::Sptr LeftLung = scene->CreateGameObject("Left Lung");
 		{
 			float x = (float)(rand() % 50 + (-25));
 			float y = (float)(rand() % 50 + (-25));
 			float z = (float)(rand() % 50 + (-25));
 			// Set and rotation position in the scene
-			Target->SetPostion(glm::vec3(x, y, z));
+			LeftLung->SetPostion(glm::vec3(x, y, z));
 
 			scene->Lights[0].Position = glm::vec3(x, y, z);
 			scene->Lights[0].Color = glm::vec3(1.0f, 1.0f, 1.0f);
 			scene->Lights[0].Range = 100.0f;
 
 			// Add a render component
-			RenderComponent::Sptr renderer = Target->Add<RenderComponent>();
+			RenderComponent::Sptr renderer = LeftLung->Add<RenderComponent>();
 			renderer->SetMesh(LungsTargetMesh);
 			renderer->SetMaterial(LungMaterial);
 
 
-			TriggerVolume::Sptr volume = Target->Add<TriggerVolume>();
+			TriggerVolume::Sptr volume = LeftLung->Add<TriggerVolume>();
 			ConvexMeshCollider::Sptr collider = ConvexMeshCollider::Create();
 			volume->AddCollider(collider);
 
-			Target->Add<TargetBehaviour>();
-			Target->Get<TargetBehaviour>()->MaxHealth = 100;
-			Target->Get<TargetBehaviour>()->FullHp = Health100Texture;
-			Target->Get<TargetBehaviour>()->NintyPercentHp = Health90Texture;
-			Target->Get<TargetBehaviour>()->EightyPercentHp = Health80Texture;
-			Target->Get<TargetBehaviour>()->SeventyPercentHp = Health70Texture;
-			Target->Get<TargetBehaviour>()->SixtyPercentHp = Health60Texture;
-			Target->Get<TargetBehaviour>()->HalfHp = Health50Texture;
-			Target->Get<TargetBehaviour>()->FortyPercentHp = Health40Texture;
-			Target->Get<TargetBehaviour>()->ThirtyPercentHp = Health30Texture;
-			Target->Get<TargetBehaviour>()->TwentyPercentHp = Health20Texture;
-			Target->Get<TargetBehaviour>()->TenPercentHp = Health10Texture;
-			Target->Get<TargetBehaviour>()->NoHp = Health0Texture;
+			LeftLung->Add<TargetBehaviour>();
+			LeftLung->Get<TargetBehaviour>()->MaxHealth = 100;
 
 			/*MorphAnimator::Sptr animation = Target->Add<MorphAnimator>();
 
@@ -484,43 +474,32 @@ void DefaultSceneLayer::_CreateScene()
 
 			animation->ActivateAnim("Idle");*/
 
-			scene->Targets.push_back(Target);
+			scene->Targets.push_back(LeftLung);
 		}
-		GameObject::Sptr Target1 = scene->CreateGameObject("Target1");
+		GameObject::Sptr RightLung = scene->CreateGameObject("Right Lung");
 		{
 			float x = (float)(rand() % 50 + (-25));
 			float y = (float)(rand() % 50 + (-25));
 			float z = (float)(rand() % 50 + (-25));
 			// Set and rotation position in the scene
-			Target1->SetPostion(glm::vec3(x, y, z));
+			RightLung->SetPostion(glm::vec3(x, y, z));
 
 			scene->Lights[1].Position = glm::vec3(x, y, z);
 			scene->Lights[1].Color = glm::vec3(1.0f, 1.0f, 1.0f);
 			scene->Lights[1].Range = 100.0f;
 
 			// Add a render component
-			RenderComponent::Sptr renderer = Target1->Add<RenderComponent>();
+			RenderComponent::Sptr renderer = RightLung->Add<RenderComponent>();
 			renderer->SetMesh(LungsTargetMesh);
 			renderer->SetMaterial(LungMaterial);
 
 
-			TriggerVolume::Sptr volume = Target1->Add<TriggerVolume>();
+			TriggerVolume::Sptr volume = RightLung->Add<TriggerVolume>();
 			ConvexMeshCollider::Sptr collider = ConvexMeshCollider::Create();
 			volume->AddCollider(collider);
 
-			Target1->Add<TargetBehaviour>();
-			Target1->Get<TargetBehaviour>()->MaxHealth = 100;
-			Target1->Get<TargetBehaviour>()->FullHp = Health100Texture;
-			Target1->Get<TargetBehaviour>()->NintyPercentHp = Health90Texture;
-			Target1->Get<TargetBehaviour>()->EightyPercentHp = Health80Texture;
-			Target1->Get<TargetBehaviour>()->SeventyPercentHp = Health70Texture;
-			Target1->Get<TargetBehaviour>()->SixtyPercentHp = Health60Texture;
-			Target1->Get<TargetBehaviour>()->HalfHp = Health50Texture;
-			Target1->Get<TargetBehaviour>()->FortyPercentHp = Health40Texture;
-			Target1->Get<TargetBehaviour>()->ThirtyPercentHp = Health30Texture;
-			Target1->Get<TargetBehaviour>()->TwentyPercentHp = Health20Texture;
-			Target1->Get<TargetBehaviour>()->TenPercentHp = Health10Texture;
-			Target1->Get<TargetBehaviour>()->NoHp = Health0Texture;
+			RightLung->Add<TargetBehaviour>();
+			RightLung->Get<TargetBehaviour>()->MaxHealth = 100;
 
 			/*MorphAnimator::Sptr animation = Target1->Add<MorphAnimator>();
 
@@ -528,7 +507,7 @@ void DefaultSceneLayer::_CreateScene()
 
 			animation->ActivateAnim("Idle");*/
 
-			scene->Targets.push_back(Target1);
+			scene->Targets.push_back(RightLung);
 		}
 
 		////////////////////////Enemies/////////////////////////////// 50 max range
@@ -624,7 +603,6 @@ void DefaultSceneLayer::_CreateScene()
 			collider->SetScale(glm::vec3(1.130f, 1.120f, 1.790f));
 			collider->SetPosition(glm::vec3(0.0f, 0.9f, 0.1f));
 			physics->AddCollider(collider);
-
 
 			Enemy->Add<EnemyBehaviour>();
 			Enemy->Get<EnemyBehaviour>()->EnemyType = "Normal Enemy";
@@ -971,131 +949,33 @@ void DefaultSceneLayer::_CreateScene()
 			YellowMicrobiota->Add<BackgroundObjectsBehaviour>();
 			BackgroundObjects->AddChild(YellowMicrobiota);
 		}
-		//////////////////// GAME OVER ////////////////////////////
-		GameObject::Sptr GameOver = scene->CreateGameObject("GameOver"); {
-			GameOver->SetPostion(glm::vec3(100000.0f));
-			GameOver->SetScale(glm::vec3(15.0f, 15.0f, 1.0f));
-			//Make a big tiled mesh
-			MeshResource::Sptr GameOverMesh = ResourceManager::CreateAsset<MeshResource>();
-			GameOverMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
-			GameOverMesh->GenerateMesh();
-
-			RenderComponent::Sptr renderer = GameOver->Add<RenderComponent>();
-			renderer->SetMesh(GameOverMesh);
-			renderer->SetMaterial(GameOverMaterial);
-		}
-		///////////////////////// GAME WIN ///////////////////////////
-		GameObject::Sptr GameWin = scene->CreateGameObject("GameWin"); {
-			GameWin->SetPostion(glm::vec3(200000.0f));
-			GameWin->SetScale(glm::vec3(15.0f, 15.0f, 1.0f));
-			//Make a big tiled mesh
-			MeshResource::Sptr GameWinMesh = ResourceManager::CreateAsset<MeshResource>();
-			GameWinMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
-			GameWinMesh->GenerateMesh();
-
-			RenderComponent::Sptr renderer = GameWin->Add<RenderComponent>();
-			renderer->SetMesh(GameWinMesh);
-			renderer->SetMaterial(GameWinMaterial);
-		}
-		////////////////////////// GAME PAUSE ///////////////////////
-		GameObject::Sptr GamePause = scene->CreateGameObject("GamePause"); {
-			GamePause->SetPostion(glm::vec3(300000.0f));
-			GamePause->SetScale(glm::vec3(15.0f, 15.0f, 1.0f));
-			//Make a big tiled mesh
-			MeshResource::Sptr GamePauseMesh = ResourceManager::CreateAsset<MeshResource>();
-			GamePauseMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
-			GamePauseMesh->GenerateMesh();
-
-			RenderComponent::Sptr renderer = GamePause->Add<RenderComponent>();
-			renderer->SetMesh(GamePauseMesh);
-			renderer->SetMaterial(GamePauseMaterial);
-		}
 		/////////////////////////// UI //////////////////////////////
-		GameObject::Sptr EnemiesKilled = scene->CreateGameObject("EnemiesKilled");
+		GameObject::Sptr UI = scene->CreateGameObject("UI");
 		{
+			UI->Add<UiController>();
 
-			RectTransform::Sptr transform = EnemiesKilled->Add<RectTransform>();
-			transform->SetSize({ 10,10 });
-			transform->SetMin({ 60,29 });
+			UI->Get<UiController>()->Font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
+			UI->Get<UiController>()->Font->Bake();
 
-			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			font->Bake();
-
-			GuiText::Sptr EnemiesKilledText = EnemiesKilled->Add<GuiText>();
-			EnemiesKilledText->SetText("Enemies Killed: 0");
-			EnemiesKilledText->SetFont(font);
-			EnemiesKilledText->SetColor(glm::vec4(1.0f));
+			UI->Get<UiController>()->GameTitleTexture = TitleTexture;
+			UI->Get<UiController>()->GamePauseTexture = GamePauseTexture;
+			UI->Get<UiController>()->GameOverTexture = GameOverTexture;
+			UI->Get<UiController>()->GameWinTexture = GameWinTexture;
+			UI->Get<UiController>()->FullHp = Health100Texture;
+			UI->Get<UiController>()->NintyPercentHp = Health90Texture;
+			UI->Get<UiController>()->EightyPercentHp = Health80Texture;
+			UI->Get<UiController>()->SeventyPercentHp = Health70Texture;
+			UI->Get<UiController>()->SixtyPercentHp = Health60Texture;
+			UI->Get<UiController>()->HalfHp = Health50Texture;
+			UI->Get<UiController>()->FortyPercentHp = Health40Texture;
+			UI->Get<UiController>()->ThirtyPercentHp = Health30Texture;
+			UI->Get<UiController>()->TwentyPercentHp = Health20Texture;
+			UI->Get<UiController>()->TenPercentHp = Health10Texture;
+			UI->Get<UiController>()->NoHp = Health0Texture;
 
 		}
-		GameObject::Sptr Rounds = scene->CreateGameObject("Rounds");
-		{
 
-			RectTransform::Sptr transform = Rounds->Add<RectTransform>();
-			transform->SetSize({ 10,10 });
-			transform->SetMin({ 750, 29 });
-			transform->SetMax({ 750,29 });
-
-			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			font->Bake();
-
-			GuiText::Sptr GameRoundText = Rounds->Add<GuiText>();
-			GameRoundText->SetText("Round: 0");
-			GameRoundText->SetFont(font);
-			GameRoundText->SetColor(glm::vec4(1.0f));
-
-		}
-		GameObject::Sptr TargetHealth = scene->CreateGameObject("Lung 1 Health");
-		{
-			RectTransform::Sptr transform = TargetHealth->Add<RectTransform>();
-			transform->SetSize({ 185,102 });
-			transform->SetMin({ 8,278 });
-			transform->SetMax({ 190,382 });
-
-			GuiPanel::Sptr Health = TargetHealth->Add<GuiPanel>();
-			Health->SetTexture(Health100Texture);
-
-			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			font->Bake();
-
-			GuiText::Sptr TargetHealthNumber = TargetHealth->Add<GuiText>();
-			TargetHealthNumber->SetText("Lung 1 Health 100%");
-			TargetHealthNumber->SetFont(font);
-			TargetHealthNumber->SetColor(glm::vec4(1.0f));
-
-			Target->Get<TargetBehaviour>()->HealthUI = TargetHealth;
-		}
-		GameObject::Sptr Target1Health = scene->CreateGameObject("Lung 2 Health");
-		{
-			RectTransform::Sptr transform = Target1Health->Add<RectTransform>();
-			transform->SetSize({ 185,102 });
-			transform->SetMin({ 8,300 });
-			transform->SetMax({ 190,400 });
-
-			GuiPanel::Sptr Health = Target1Health->Add<GuiPanel>();
-			Health->SetTexture(Health100Texture);
-
-			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			font->Bake();
-
-			GuiText::Sptr Target1HealthNumber = Target1Health->Add<GuiText>();
-			Target1HealthNumber->SetText("Lung 2 Health 100%");
-			Target1HealthNumber->SetFont(font);
-			Target1HealthNumber->SetColor(glm::vec4(1.0f));
-
-			Target1->Get<TargetBehaviour>()->HealthUI = Target1Health;
-		}
-		GameObject::Sptr canvas = scene->CreateGameObject("UI Canvas");
-		{
-			RectTransform::Sptr transform = canvas->Add<RectTransform>();
-			transform->SetSize({ 800,800 });
-			transform->SetMin({ 0,0 });
-			transform->SetMax({ 800,800 });
-
-			GuiPanel::Sptr Title = canvas->Add<GuiPanel>();
-			Title->SetTexture(TitleTexture);
-		}
-
-		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/cell_ops_title_box.png"));
+		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/Title.png"));
 		GuiBatcher::SetDefaultBorderRadius(8);
 
 		// Save the asset manifest for all the resources we just loaded

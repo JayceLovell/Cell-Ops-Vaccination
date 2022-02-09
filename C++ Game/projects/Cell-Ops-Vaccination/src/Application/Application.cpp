@@ -43,6 +43,7 @@
 #include "Gameplay/Components/TargetBehaviour.h"
 #include "Gameplay/Components/BackgroundObjectsBehaviour.h"
 #include "Gameplay/Components/MorphAnimator.h"
+#include "Gameplay/Components/UIController.h"
 
 // GUI
 #include "Gameplay/Components/GUI/RectTransform.h"
@@ -253,6 +254,7 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<RenderComponent>();
 	ComponentManager::RegisterType<RigidBody>();
 	ComponentManager::RegisterType<TriggerVolume>();
+	ComponentManager::RegisterType<UiController>();
 	ComponentManager::RegisterType<RotatingBehaviour>();
 	ComponentManager::RegisterType<JumpBehaviour>();
 	ComponentManager::RegisterType<MaterialSwapBehaviour>();

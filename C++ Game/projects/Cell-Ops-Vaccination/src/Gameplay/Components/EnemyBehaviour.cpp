@@ -82,7 +82,7 @@ void EnemyBehaviour::TakeDamage()
 	if (_health <= 0) {
 		LOG_INFO("Killed {}", EnemyType);
 		GetGameObject()->GetScene()->EnemiesKilled++;
-		GetGameObject()->GetScene()->UpdateUI();
+		GetGameObject()->GetScene()->DeleteEnemy(GetGameObject()->SelfRef());
 		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
 	}
 }

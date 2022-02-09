@@ -18,7 +18,6 @@ public:
 	UiController();
 	virtual ~UiController();
 
-	virtual void Awake() override;
 	MAKE_TYPENAME(UiController);
 	virtual nlohmann::json ToJson() const override;
 	static UiController::Sptr FromJson(const nlohmann::json& blob);

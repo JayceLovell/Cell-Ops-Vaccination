@@ -21,6 +21,8 @@ UiController::UiController() :
 {
 }
 
+UiController::~UiController() = default;
+
 void UiController::UpdateUI()
 {
 	//Update Rounds
@@ -35,7 +37,7 @@ void UiController::UpdateUI()
 
 	//Update Targets
 	for (auto Target : GetGameObject()->GetScene()->Targets) {
-		std::string TargetUIName = Target->Get<TargetBehaviour>()->HealthUiName;
+		std::string TargetUIName = Target->Name+" UI";
 		Gameplay::GameObject::Sptr TargetUI = GetGameObject()->GetScene()->FindObjectByName(TargetUIName);
 		int TargetHealthPrecentage = Target->Get<TargetBehaviour>()->HealthInPercentage;
 
@@ -76,9 +78,19 @@ void UiController::SetupGameScreen()
 	std::string RoundText = "Round: ";
 	RoundText += std::to_string(GetGameObject()->GetScene()->GameRound);
 	GetGameObject()->GetScene()->FindObjectByName("Rounds")->Get<GuiText>()->SetText(RoundText);
-
-	_createUiObject("Lung 1 UI", "Lung 1 Health 100%", 185, 102, 8, 278, 192, 382, FullHp, glm::vec4(1.0f));
-	_createUiObject("Lung 2 UI", "Lung 2 Health 100%", 185, 102, 8, 300, 190, 400, FullHp, glm::vec4(1.0f));
+	
+	int SetMinY=278;
+	int SetMaxX = 192;
+	int SetMaxY = 382;
+	for (auto Target : GetGameObject()->GetScene()->Targets) {
+		std::string TargetName=Target->Name;
+		_createUiObject(TargetName+" UI", TargetName+" Health 100 % ", 185, 102, 8, SetMinY, SetMaxX, SetMaxY, FullHp, glm::vec4(1.0f));
+		SetMinY += 22;
+		SetMaxX -= 2;
+		SetMaxY += 18;
+	}
+	/*_createUiObject(TargetName + " UI", TargetName + " Health 100 % ", 185, 102, 8, 278, 192, 382, FullHp, glm::vec4(1.0f));
+	_createUiObject(TargetName + " UI", TargetName + " Health 100 % ", 185, 102, 8, 300, 190, 400, FullHp, glm::vec4(1.0f));*/
 }
 
 void UiController::GameTitleScreen()
@@ -199,4 +211,22 @@ void UiController::_createUiObject(std::string NameOfObject, std::string Text, i
 
 		GetGameObject()->AddChild(UIObject);
 	}
+}
+
+nlohmann::json UiController::ToJson() const
+{
+	return {
+
+	};
+}
+
+UiController::Sptr UiController::FromJson(const nlohmann::json& blob)
+{
+	UiController::Sptr result = std::make_shared<UiController>();
+	return result;
+}
+
+void UiController::RenderImGui()
+{
+
 }
