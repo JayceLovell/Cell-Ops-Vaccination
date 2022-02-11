@@ -217,14 +217,14 @@ namespace Gameplay {
 	void Scene::GameWon()
 	{
 		if (!IsTitleUp) {
-
+			UiControllerObject->Get<UiController>()->GameWinScreen();
 		}
 	}
 
 	void Scene::GameOver()
 	{
 		if (!IsTitleUp) {
-
+			UiControllerObject->Get<UiController>()->GameOverScreen();
 		}
 	}
 
