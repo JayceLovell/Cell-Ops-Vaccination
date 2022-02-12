@@ -23,18 +23,20 @@ void TargetBehaviour::Update(float deltaTime)
 }
 void TargetBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body)
 {
-	if (body->GetGameObject()->Name == "Enemy") {
-		_health = _health - 2;
-	}
-	else if (body->GetGameObject()->Name == "FastEnemy")
-	{
-		_health = _health - 1;
-	}
-	else if (body->GetGameObject()->Name == "LargeEnemy") {
-		_health = _health - 4;
-	}
-	if (_health < 0) {
-		GetGameObject()->GetScene()->DeleteTarget(GetGameObject()->SelfRef());
+	if (body->GetGameObject()->Name.find("Enemy") != std::string::npos) {
+		std::string EnemyType = body->GetGameObject()->Get<EnemyBehaviour>()->EnemyType;
+		if (EnemyType == "Fast Enemy") {
+			_health = _health - 1;
+		}
+		else if (EnemyType == "Normal Enemy") {
+			_health = _health - 2;
+		}
+		else if (EnemyType == "Large Enemy") {
+			_health = _health - 4;
+		}
+		if (_health < 0) {
+			GetGameObject()->GetScene()->DeleteTarget(GetGameObject()->SelfRef());
+		}
 	}
 }
 

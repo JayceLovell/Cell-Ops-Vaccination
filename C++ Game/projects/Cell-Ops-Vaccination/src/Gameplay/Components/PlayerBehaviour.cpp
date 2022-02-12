@@ -15,10 +15,9 @@ PlayerBehaviour::~PlayerBehaviour() = default;
 
 void PlayerBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body)
 {
-	//LOG_INFO("Player Entered trigger: {}", body->GetGameObject()->Name);
-	if (body->GetGameObject()->Name == "Enemy" ||
-		body->GetGameObject()->Name == "FastEnemy" ||
-		body->GetGameObject()->Name == "LargeEnemy") {
+	std::string testname = body->GetGameObject()->Name;
+	bool test = body->GetGameObject()->Name.find("Enemy");
+	if (body->GetGameObject()->Name.find("Enemy") != std::string::npos) {
 		//if (glfwGetKey(_window, GLFW_KEY_Q) || glfwGetKey(_window, GLFW_KEY_E)) {
 			LOG_INFO("Enemy Take Damage");
 			body->GetGameObject()->Get<EnemyBehaviour>()->TakeDamage();

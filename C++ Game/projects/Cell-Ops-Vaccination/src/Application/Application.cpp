@@ -44,6 +44,7 @@
 #include "Gameplay/Components/BackgroundObjectsBehaviour.h"
 #include "Gameplay/Components/MorphAnimator.h"
 #include "Gameplay/Components/UIController.h"
+#include "Gameplay/Components/EnemySpawnerBehaviour.h"
 
 // GUI
 #include "Gameplay/Components/GUI/RectTransform.h"
@@ -262,6 +263,7 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<SimpleCameraControl>();
 	ComponentManager::RegisterType<PlayerBehaviour>();
 	ComponentManager::RegisterType<EnemyBehaviour>();
+	ComponentManager::RegisterType<EnemySpawnerBehaviour>();
 	ComponentManager::RegisterType<TargetBehaviour>();
 	ComponentManager::RegisterType<BackgroundObjectsBehaviour>();
 	ComponentManager::RegisterType<MorphAnimator>();

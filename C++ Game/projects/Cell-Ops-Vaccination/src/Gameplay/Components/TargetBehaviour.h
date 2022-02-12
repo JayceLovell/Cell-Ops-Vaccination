@@ -4,6 +4,7 @@
 #include "Gameplay/Scene.h"
 #include "Gameplay/Physics/TriggerVolume.h"
 #include "Gameplay/Components/RenderComponent.h"
+#include "Gameplay/Components/EnemyBehaviour.h"
 #include <Utils/ImGuiHelper.h>
 #include <Gameplay/Components/GUI/GuiText.h>
 #include <Gameplay/Components/GUI/GuiPanel.h>

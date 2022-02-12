@@ -52,6 +52,7 @@
 #include "Gameplay/Components/BackgroundObjectsBehaviour.h"
 #include "Gameplay/Components/MorphAnimator.h"
 #include "Gameplay/Components/UIController.h"
+#include "Gameplay/Components/EnemySpawnerBehaviour.h"
 
 // Physics
 #include "Gameplay/Physics/RigidBody.h"
@@ -443,6 +444,8 @@ void DefaultSceneLayer::_CreateScene()
 		}
 		//OBJECTS BELOW HAVE A SPAWN RANGE OF - (X,Y,Z) TO + (X,Y,Z)
 		/////////////////////////TARGETS////////////////////////// 25 max range
+		GameObject::Sptr ListOfTargets = scene->CreateGameObject("List Of Targets");
+
 		GameObject::Sptr LeftLung = scene->CreateGameObject("Left Lung");
 		{
 			float x = (float)(rand() % 50 + (-25));
@@ -475,6 +478,7 @@ void DefaultSceneLayer::_CreateScene()
 			animation->ActivateAnim("Idle");*/
 
 			scene->Targets.push_back(LeftLung);
+			ListOfTargets->AddChild(LeftLung);
 		}
 		GameObject::Sptr RightLung = scene->CreateGameObject("Right Lung");
 		{
@@ -508,115 +512,27 @@ void DefaultSceneLayer::_CreateScene()
 			animation->ActivateAnim("Idle");*/
 
 			scene->Targets.push_back(RightLung);
+			ListOfTargets->AddChild(RightLung);
 		}
 
-		////////////////////////Enemies/////////////////////////////// 50 max range
-		GameObject::Sptr LargeEnemy = scene->CreateGameObject("LargeEnemy");
+		////////////////////////Enemies/////////////////////////////// 
+		GameObject::Sptr EnemySpawner = scene->CreateGameObject("Enemy Spawner");
 		{
-			float x = (float)(rand() % 100 + (-50));
-			float y = (float)(rand() % 100 + (-50));
-			float z = (float)(rand() % 100 + (-50));
-			// Set and rotation position in the scene
-			LargeEnemy->SetPostion(glm::vec3(x, y, z));
+			EnemySpawner->Add<EnemySpawnerBehaviour>();
 
-			// Add a render component
-			RenderComponent::Sptr renderer = LargeEnemy->Add<RenderComponent>();
-			renderer->SetMesh(LargeEnemyMesh);
-			renderer->SetMaterial(LargeEnemyMaterial);
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
 
-			// Add a dynamic rigid body to this monkey
-			RigidBody::Sptr physics = LargeEnemy->Add<RigidBody>(RigidBodyType::Dynamic);
-			physics->SetMass(0.0f);
-			BoxCollider::Sptr collider = BoxCollider::Create();
-			collider->SetScale(glm::vec3(3.04f, 4.23f, 3.44f));
-			collider->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
-			physics->AddCollider(collider);
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
 
-
-			LargeEnemy->Add<EnemyBehaviour>();
-			LargeEnemy->Get<EnemyBehaviour>()->EnemyType = "Large Enemy";
-			LargeEnemy->Get<EnemyBehaviour>()->_maxHealth = 5;
-			LargeEnemy->Get<EnemyBehaviour>()->_speed = 0.5f;
-
-			MorphAnimator::Sptr animation = LargeEnemy->Add<MorphAnimator>();
-
-			animation->AddClip(LargeEnemyFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");
-
-			scene->Enemies.push_back(LargeEnemy);
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
+			//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
 		}
-
-		GameObject::Sptr FastEnemy = scene->CreateGameObject("FastEnemy");
-		{
-			float x = (float)(rand() % 100 + (-50));
-			float y = (float)(rand() % 100 + (-50));
-			float z = (float)(rand() % 100 + (-50));
-			// Set and rotation position in the scene
-			FastEnemy->SetPostion(glm::vec3(x, y, z));
-
-			// Add a render component
-			RenderComponent::Sptr renderer = FastEnemy->Add<RenderComponent>();
-			renderer->SetMesh(FastEnemyMesh);
-			renderer->SetMaterial(FastEnemyMaterial);
-
-			// Add a dynamic rigid body to this monkey
-			RigidBody::Sptr physics = FastEnemy->Add<RigidBody>(RigidBodyType::Dynamic);
-			physics->SetMass(0.0f);
-			BoxCollider::Sptr collider = BoxCollider::Create();
-			collider->SetScale(glm::vec3(1.130f, 1.120f, 1.790f));
-			collider->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
-			physics->AddCollider(collider);
-
-
-			FastEnemy->Add<EnemyBehaviour>();
-			FastEnemy->Get<EnemyBehaviour>()->EnemyType = "Fast Enemy";
-			FastEnemy->Get<EnemyBehaviour>()->_maxHealth = 1;
-			FastEnemy->Get<EnemyBehaviour>()->_speed = 3;
-
-			/*MorphAnimator::Sptr animation = FastEnemy->Add<MorphAnimator>();
-
-			animation->AddClip(FastEnemyFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");*/
-
-			scene->Enemies.push_back(FastEnemy);
-		}
-
-		GameObject::Sptr Enemy = scene->CreateGameObject("Enemy");
-		{
-			float x = (float)(rand() % 100 + (-50));
-			float y = (float)(rand() % 100 + (-50));
-			float z = (float)(rand() % 100 + (-50));
-			// Set and rotation position in the scene
-			Enemy->SetPostion(glm::vec3(x, y, z));
-
-			// Add a render component
-			RenderComponent::Sptr renderer = Enemy->Add<RenderComponent>();
-			renderer->SetMesh(NormalEnemyMesh);
-			renderer->SetMaterial(NormalEnemyMaterial);
-
-			// Add a dynamic rigid body to this monkey
-			RigidBody::Sptr physics = Enemy->Add<RigidBody>(RigidBodyType::Dynamic);
-			physics->SetMass(0.0f);
-			BoxCollider::Sptr collider = BoxCollider::Create();
-			collider->SetScale(glm::vec3(1.130f, 1.120f, 1.790f));
-			collider->SetPosition(glm::vec3(0.0f, 0.9f, 0.1f));
-			physics->AddCollider(collider);
-
-			Enemy->Add<EnemyBehaviour>();
-			Enemy->Get<EnemyBehaviour>()->EnemyType = "Normal Enemy";
-			Enemy->Get<EnemyBehaviour>()->_maxHealth = 3;
-			Enemy->Get<EnemyBehaviour>()->_speed = 1.5f;
-
-			MorphAnimator::Sptr animation = Enemy->Add<MorphAnimator>();
-
-			animation->AddClip(NormalEnemyFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");
-
-			scene->Enemies.push_back(Enemy);
-		}
+		GameObject::Sptr Enemies = scene->CreateGameObject("Enemies");
 
 		//////////////// Background Objects ///// 50 max range
 

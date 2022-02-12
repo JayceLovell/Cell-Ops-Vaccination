@@ -20,6 +20,7 @@
 #include "Application/Application.h"
 #include <Gameplay/InputEngine.h>
 #include <Gameplay/Components/UIController.h>
+#include <Gameplay/Components/EnemySpawnerBehaviour.h>
 
 namespace Gameplay {
 	Scene::Scene() :
@@ -72,7 +73,9 @@ namespace Gameplay {
 		_CleanupPhysics();
 	}
 
-	////// Code Added//
+	////// Code Added //////////
+
+
 	GameObject::Sptr Scene::FindTarget()
 	{
 		if (Targets.size() != 0) {
@@ -107,31 +110,23 @@ namespace Gameplay {
 		{
 			int index = std::distance(Enemies.begin(), it);
 			Enemies.erase(Enemies.begin() + index);
-			//FindObjectByName("Coronas")->RemoveChild(object);
-			//LOG_INFO("Deleting Object {}", object);
-			//RemoveGameObject(FindObjectByGUID(object->GetGUID()));
+			LOG_INFO("Deleting Object {}", object->Name);
 		}
 		EnemiesKilled++;
 	}
-
-	/// <summary>
-	/// Level Difficulty Controller
-	/// </summary>
 	void Scene::LevellCheck()
 	{
-		if (EnemiesKilled >= EnemiesThreshold) {
-			EnemiesThreshold = EnemiesThreshold + 5;
+		if (Enemies.size() == 0 && EnemiesKilled>0) {
 			switch (GameRound)
 			{
 			case 1:
-
 				for each (GameObject::Sptr var in Targets)
 				{
 					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				//EnemySpawner->Get<SpawnEnemies>()->IncreaseEnemyDifficulty();
-				//EnemySpawner->Get<SpawnEnemies>()->SpawnWave(2, 3, 5);
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 3, 5);
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -141,8 +136,8 @@ namespace Gameplay {
 					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				//EnemySpawner->Get<SpawnEnemies>()->IncreaseEnemyDifficulty();
-				//EnemySpawner->Get<SpawnEnemies>()->SpawnWave(3, 5, 7);
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -152,8 +147,8 @@ namespace Gameplay {
 					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				//EnemySpawner->Get<SpawnEnemies>()->IncreaseEnemyDifficulty();
-				//EnemySpawner->Get<SpawnEnemies>()->SpawnWave(3, 5, 7);
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -163,8 +158,8 @@ namespace Gameplay {
 					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				//EnemySpawner->Get<SpawnEnemies>()->IncreaseEnemyDifficulty();
-				//EnemySpawner->Get<SpawnEnemies>()->SpawnWave(3, 5, 7);
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -174,8 +169,8 @@ namespace Gameplay {
 					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				//EnemySpawner->Get<SpawnEnemies>()->IncreaseEnemyDifficulty();
-				//EnemySpawner->Get<SpawnEnemies>()->SpawnWave(3, 5, 7);
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -185,8 +180,8 @@ namespace Gameplay {
 					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				//EnemySpawner->Get<SpawnEnemies>()->IncreaseEnemyDifficulty();
-				//EnemySpawner->Get<SpawnEnemies>()->SpawnWave(3, 5, 7);
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -207,8 +202,8 @@ namespace Gameplay {
 		IsTitleUp = false;
 		GameRound = 1;
 
-		//Spawning enemies
-		//EnemySpawner->Get<SpawnEnemies>()->SpawnWave(1, 2, 3);
+		//Spawning first wave of enemies
+		EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 3);
 
 
 		GameStarted = true;
@@ -339,7 +334,7 @@ namespace Gameplay {
 
 		//Code Added
 		UiControllerObject = FindObjectByName("UI");
-		//EnemySpawner = FindObjectByName("EnemySpawner");
+		EnemySpawnerObject = FindObjectByName("Enemy Spawner");
 	}
 
 	void Scene::DoPhysics(float dt) {
