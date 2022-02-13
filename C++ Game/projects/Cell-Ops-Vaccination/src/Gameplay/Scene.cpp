@@ -370,7 +370,7 @@ namespace Gameplay {
 			//Cheats
 			if ((InputEngine::GetKeyState(GLFW_KEY_F2) == ButtonState::Pressed) && IsPaused) {
 				if (!IsCheatActivated) {
-					EnemiesKilled = EnemiesThreshold;
+					EnemiesKilled = 100;
 					IsCheatActivated = true;
 				}
 			}
