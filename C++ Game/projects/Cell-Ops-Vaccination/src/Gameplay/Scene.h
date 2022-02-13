@@ -69,7 +69,6 @@ namespace Gameplay {
 		bool IsTitleUp;
 		int GameRound;
 		int EnemiesKilled;
-		int EnemiesThreshold;
 
 
 		Scene();

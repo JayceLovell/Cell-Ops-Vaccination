@@ -39,7 +39,6 @@ namespace Gameplay {
 		IsCheatActivated(false),
 		GameRound(0),
 		EnemiesKilled(0),
-		EnemiesThreshold(10),
 		MainCamera(nullptr),
 		DefaultMaterial(nullptr),
 		_isAwake(false),
@@ -117,52 +116,8 @@ namespace Gameplay {
 	void Scene::LevellCheck()
 	{
 		if (Enemies.size() == 0 && EnemiesKilled>0) {
-			switch (GameRound)
+			switch (EnemiesKilled)
 			{
-			case 1:
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 3, 5);
-				GameRound++;
-				EnemiesKilled = 0;
-				break;
-			case 2:
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
-				GameRound++;
-				EnemiesKilled = 0;
-				break;
-			case 3:
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
-				GameRound++;
-				EnemiesKilled = 0;
-				break;
-			case 4:
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
-				GameRound++;
-				EnemiesKilled = 0;
-				break;
 			case 5:
 				for each (GameObject::Sptr var in Targets)
 				{
@@ -170,18 +125,62 @@ namespace Gameplay {
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
-			case 6:
+			case 10:
 				for each (GameObject::Sptr var in Targets)
 				{
 					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 7);
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 4, 9);
+				GameRound++;
+				EnemiesKilled = 0;
+				break;
+			case 15:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 6, 11);
+				GameRound++;
+				EnemiesKilled = 0;
+				break;
+			case 20:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(4, 7, 14);
+				GameRound++;
+				EnemiesKilled = 0;
+				break;
+			case 25:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(5, 8, 17);
+				GameRound++;
+				EnemiesKilled = 0;
+				break;
+			case 30:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->MaxHealth += 100;
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(6, 9, 20);
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -190,7 +189,7 @@ namespace Gameplay {
 			}
 			IsCheatActivated = false;
 		}
-		else if (EnemiesKilled > 50) {
+		else if (EnemiesKilled > 35) {
 			IsGameWon = true;
 			IsGameOver = true;
 		}
