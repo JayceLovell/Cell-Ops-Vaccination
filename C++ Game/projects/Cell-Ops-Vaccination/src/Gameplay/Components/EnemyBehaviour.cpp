@@ -72,7 +72,6 @@ void EnemyBehaviour::TakeDamage()
 	Health = Health - 1;
 	if (Health <= 0) {
 		LOG_INFO("Killed {}", EnemyType);
-		GetGameObject()->GetScene()->EnemiesKilled++;
 		GetGameObject()->GetScene()->DeleteEnemy(GetGameObject()->SelfRef());
 		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
 	}
