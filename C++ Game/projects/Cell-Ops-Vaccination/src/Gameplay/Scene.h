@@ -56,15 +56,17 @@ namespace Gameplay {
 		/// Things I added for our game
 		std::vector<GameObject::Sptr> Targets;
 		std::vector<GameObject::Sptr> Enemies;
-		GameObject::Sptr EnemiesKilledUI;
-		GameObject::Sptr RoundUI;
+		std::vector<GameObject::Sptr> BackgroundObjects;
+		GameObject::Sptr EnemySpawnerObject;
+		GameObject::Sptr UiControllerObject;
 		glm::vec3 PlayerLastPosition;
-		bool					   IsPaused;
-		bool PauseUIUp;
-		bool GameOver;
-		bool GameWon;
+		bool IsPaused;
+		bool IsPauseUIUp;
+		bool IsGameOver;
+		bool IsGameWon;
 		bool GameStarted;
 		bool IsCheatActivated;
+		bool IsTitleUp;
 		int GameRound;
 		int EnemiesKilled;
 		int EnemiesThreshold;
@@ -76,10 +78,35 @@ namespace Gameplay {
 
 		/////// METHODS I ADD ////
 		GameObject::Sptr FindTarget();
+		/// <summary>
+		/// Cycles through target vector and deletes target from list
+		/// </summary>
+		/// <param name="object"></param>
 		void DeleteTarget(const GameObject::Sptr& object);
+		/// <summary>
+		/// When enemy hits 0 hp this method is called
+		/// Finds enemy in enemy pool
+		/// deletes enemy from enemy pool
+		/// </summary>
+		/// <param name="object">Enemy</param>
+		void DeleteEnemy(const GameObject::Sptr& object);
+		/// <summary>
+		/// Game Level
+		/// May turn this into a class later
+		/// </summary>
 		void LevellCheck();
+		/// <summary>
+		/// Starts Game
+		/// </summary>
 		void GameStart();
-		void UpdateUI();
+		/// <summary>
+		/// Game Win
+		/// </summary>
+		void GameWon();
+		/// <summary>
+		/// Game Over
+		/// </summary>
+		void GameOver();
 		void GamePause(bool IsPaused);
 		///
 

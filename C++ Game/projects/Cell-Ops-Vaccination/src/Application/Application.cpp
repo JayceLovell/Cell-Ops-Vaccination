@@ -43,6 +43,8 @@
 #include "Gameplay/Components/TargetBehaviour.h"
 #include "Gameplay/Components/BackgroundObjectsBehaviour.h"
 #include "Gameplay/Components/MorphAnimator.h"
+#include "Gameplay/Components/UIController.h"
+#include "Gameplay/Components/EnemySpawnerBehaviour.h"
 
 // GUI
 #include "Gameplay/Components/GUI/RectTransform.h"
@@ -64,7 +66,7 @@ std::string Application::_applicationName = "Cell Ops Vaccination";
 
 Application::Application() :
 	_window(nullptr),
-	_windowSize({DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT}),
+	_windowSize({ DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT }),
 	_isRunning(false),
 	_isEditor(true),
 	_windowTitle("Cell Ops Vaccination"),
@@ -94,11 +96,11 @@ const glm::uvec4& Application::GetPrimaryViewport() const {
 	return _primaryViewport;
 }
 
-void Application::SetPrimaryViewport(const glm::uvec4& value) {
+void Application::SetPrimaryViewport(const glm::uvec4 & value) {
 	_primaryViewport = value;
 }
 
-void Application::ResizeWindow(const glm::ivec2& newSize)
+void Application::ResizeWindow(const glm::ivec2 & newSize)
 {
 	_HandleWindowSizeChanged(newSize);
 }
@@ -107,7 +109,7 @@ void Application::Quit() {
 	_isRunning = false;
 }
 
-bool Application::LoadScene(const std::string& path) {
+bool Application::LoadScene(const std::string & path) {
 	if (std::filesystem::exists(path)) {
 
 		std::string manifestPath = std::filesystem::path(path).stem().string() + "-manifest.json";
@@ -123,7 +125,7 @@ bool Application::LoadScene(const std::string& path) {
 	return false;
 }
 
-void Application::LoadScene(const Gameplay::Scene::Sptr& scene) {
+void Application::LoadScene(const Gameplay::Scene::Sptr & scene) {
 	_targetScene = scene;
 }
 
@@ -171,7 +173,7 @@ void Application::_Run()
 	_Load();
 
 	// Grab current time as the previous frame
-	double lastFrame =  glfwGetTime();
+	double lastFrame = glfwGetTime();
 
 	// Done loading, app is now running!
 	_isRunning = true;
@@ -253,6 +255,7 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<RenderComponent>();
 	ComponentManager::RegisterType<RigidBody>();
 	ComponentManager::RegisterType<TriggerVolume>();
+	ComponentManager::RegisterType<UiController>();
 	ComponentManager::RegisterType<RotatingBehaviour>();
 	ComponentManager::RegisterType<JumpBehaviour>();
 	ComponentManager::RegisterType<MaterialSwapBehaviour>();
@@ -260,6 +263,7 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<SimpleCameraControl>();
 	ComponentManager::RegisterType<PlayerBehaviour>();
 	ComponentManager::RegisterType<EnemyBehaviour>();
+	ComponentManager::RegisterType<EnemySpawnerBehaviour>();
 	ComponentManager::RegisterType<TargetBehaviour>();
 	ComponentManager::RegisterType<BackgroundObjectsBehaviour>();
 	ComponentManager::RegisterType<MorphAnimator>();
@@ -277,7 +281,7 @@ void Application::_Load() {
 
 	// Pass the window to the input engine and let it initialize itself
 	InputEngine::Init(_window);
-	
+
 	// Initialize our ImGui helper
 	ImGuiHelper::Init(_window);
 
@@ -302,7 +306,7 @@ void Application::_LateUpdate() {
 
 void Application::_PreRender()
 {
-	glm::ivec2 size ={ 0, 0 };
+	glm::ivec2 size = { 0, 0 };
 	glfwGetWindowSize(_window, &size.x, &size.y);
 	glViewport(0, 0, size.x, size.y);
 	glScissor(0, 0, size.x, size.y);
@@ -390,7 +394,7 @@ void Application::_HandleSceneChange() {
 	}
 
 	_currentScene = _targetScene;
-	
+
 	// Let the layers know that we've loaded in a new scene
 	for (const auto& layer : _layers) {
 		if (layer->Enabled && *(layer->Overrides & AppLayerFunctions::OnSceneLoad)) {
@@ -409,7 +413,7 @@ void Application::_HandleSceneChange() {
 	_targetScene = nullptr;
 }
 
-void Application::_HandleWindowSizeChanged(const glm::ivec2& newSize) {
+void Application::_HandleWindowSizeChanged(const glm::ivec2 & newSize) {
 	for (const auto& layer : _layers) {
 		if (layer->Enabled && *(layer->Overrides & AppLayerFunctions::OnWindowResize)) {
 			layer->OnWindowResize(_windowSize, newSize);
@@ -444,7 +448,7 @@ void Application::_ConfigureSettings() {
 
 nlohmann::json Application::_GetDefaultAppSettings()
 {
-	nlohmann::json result ={};
+	nlohmann::json result = {};
 
 	for (const auto& layer : _layers) {
 		if (!layer->Name.empty()) {
@@ -456,8 +460,7 @@ nlohmann::json Application::_GetDefaultAppSettings()
 		}
 	}
 
-	result["window_width"]  = DEFAULT_WINDOW_WIDTH;
+	result["window_width"] = DEFAULT_WINDOW_WIDTH;
 	result["window_height"] = DEFAULT_WINDOW_HEIGHT;
 	return result;
 }
-

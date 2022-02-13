@@ -19,20 +19,17 @@ public:
 public:
 	virtual void RenderImGui() override;
 	virtual void Update(float deltaTime) override;
-	void TakeDamage();
 	void Reset();
 	MAKE_TYPENAME(EnemyBehaviour);
 	virtual nlohmann::json ToJson() const override;
 	static EnemyBehaviour::Sptr FromJson(const nlohmann::json& blob);
+	/// <summary>
+	/// Take 1 hp away from enemy
+	/// </summary>
+	void TakeDamage();
 
-protected:
-	float _health;
-	float _dmg;
-
-	//Gameplay::Physics::RigidBody::Sptr _body;
-public:
-	float _maxHealth;
-	float _speed;
+	float Health;
+	float Speed;
 	std::string EnemyType;
 	Gameplay::GameObject::Sptr Target;
 
@@ -41,6 +38,13 @@ public:
 	float lerpTimer = 0;
 	float lerpTimerMax = 10.0f;
 
-	// After destroying target look for new one
+	/// <summary>
+	/// Finds new target for enemy
+	/// kind of rubber banding methods as this is called from scene to enemy 
+	/// then back to scene and in reverse....oh well when in rome
+	/// </summary>
 	void NewTarget();
+
+protected:
+	float _dmg;
 };
