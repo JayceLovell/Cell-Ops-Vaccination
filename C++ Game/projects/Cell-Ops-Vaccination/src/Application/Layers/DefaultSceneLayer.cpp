@@ -46,13 +46,14 @@
 #include "Gameplay/Components/MaterialSwapBehaviour.h"
 #include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
 #include "Gameplay/Components/SimpleCameraControl.h"
+#include "Gameplay/Components/EnemySpawnerBehaviour.h"
 #include "Gameplay/Components/PlayerBehaviour.h"
 #include "Gameplay/Components/EnemyBehaviour.h"
 #include "Gameplay/Components/TargetBehaviour.h"
 #include "Gameplay/Components/BackgroundObjectsBehaviour.h"
 #include "Gameplay/Components/MorphAnimator.h"
 #include "Gameplay/Components/UIController.h"
-#include "Gameplay/Components/EnemySpawnerBehaviour.h"
+#include "Gameplay/Components/TargetController.h"
 
 // Physics
 #include "Gameplay/Physics/RigidBody.h"
@@ -409,7 +410,7 @@ void DefaultSceneLayer::_CreateScene()
 		}
 
 		// Create some lights for our scene
-		scene->Lights.resize(3);
+		scene->Lights.resize(10);
 		
 		GameObject::Sptr camera = scene->MainCamera->GetGameObject()->SelfRef();
 		//GameObject::Sptr camera = scene->CreateGameObject("Main Camera");
@@ -442,77 +443,22 @@ void DefaultSceneLayer::_CreateScene()
 
 			trigger->AddCollider(collider);
 		}
-		//OBJECTS BELOW HAVE A SPAWN RANGE OF - (X,Y,Z) TO + (X,Y,Z)
 		/////////////////////////TARGETS////////////////////////// 25 max range
 		GameObject::Sptr ListOfTargets = scene->CreateGameObject("List Of Targets");
 
-		GameObject::Sptr LeftLung = scene->CreateGameObject("Left Lung");
+		GameObject::Sptr TargetSpawner = scene->CreateGameObject("Target Spawner");
 		{
-			float x = (float)(rand() % 50 + (-25));
-			float y = (float)(rand() % 50 + (-25));
-			float z = (float)(rand() % 50 + (-25));
-			// Set and rotation position in the scene
-			LeftLung->SetPostion(glm::vec3(x, y, z));
+			TargetSpawner->Add<TargetController>();
 
-			scene->Lights[0].Position = glm::vec3(x, y, z);
-			scene->Lights[0].Color = glm::vec3(1.0f, 1.0f, 1.0f);
-			scene->Lights[0].Range = 100.0f;
+			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Left Lung");
+			TargetSpawner->Get<TargetController>()->TargetMesh.push_back(LungsTargetMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(LungMaterial);
+			//TargetSpawner->Get<TargetController>()->TargetFrames.push_back(LeftLungFrames);
 
-			// Add a render component
-			RenderComponent::Sptr renderer = LeftLung->Add<RenderComponent>();
-			renderer->SetMesh(LungsTargetMesh);
-			renderer->SetMaterial(LungMaterial);
-
-
-			TriggerVolume::Sptr volume = LeftLung->Add<TriggerVolume>();
-			ConvexMeshCollider::Sptr collider = ConvexMeshCollider::Create();
-			volume->AddCollider(collider);
-
-			LeftLung->Add<TargetBehaviour>();
-			LeftLung->Get<TargetBehaviour>()->MaxHealth = 100;
-
-			/*MorphAnimator::Sptr animation = Target->Add<MorphAnimator>();
-
-			animation->AddClip(LungFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");*/
-
-			scene->Targets.push_back(LeftLung);
-			ListOfTargets->AddChild(LeftLung);
-		}
-		GameObject::Sptr RightLung = scene->CreateGameObject("Right Lung");
-		{
-			float x = (float)(rand() % 50 + (-25));
-			float y = (float)(rand() % 50 + (-25));
-			float z = (float)(rand() % 50 + (-25));
-			// Set and rotation position in the scene
-			RightLung->SetPostion(glm::vec3(x, y, z));
-
-			scene->Lights[1].Position = glm::vec3(x, y, z);
-			scene->Lights[1].Color = glm::vec3(1.0f, 1.0f, 1.0f);
-			scene->Lights[1].Range = 100.0f;
-
-			// Add a render component
-			RenderComponent::Sptr renderer = RightLung->Add<RenderComponent>();
-			renderer->SetMesh(LungsTargetMesh);
-			renderer->SetMaterial(LungMaterial);
-
-
-			TriggerVolume::Sptr volume = RightLung->Add<TriggerVolume>();
-			ConvexMeshCollider::Sptr collider = ConvexMeshCollider::Create();
-			volume->AddCollider(collider);
-
-			RightLung->Add<TargetBehaviour>();
-			RightLung->Get<TargetBehaviour>()->MaxHealth = 100;
-
-			/*MorphAnimator::Sptr animation = Target1->Add<MorphAnimator>();
-
-			animation->AddClip(LungFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");*/
-
-			scene->Targets.push_back(RightLung);
-			ListOfTargets->AddChild(RightLung);
+			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Right Lung");
+			TargetSpawner->Get<TargetController>()->TargetMesh.push_back(LungsTargetMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(LungMaterial);
+			//TargetSpawner->Get<TargetController>()->TargetFrames.push_back(RightLungFrames);
 		}
 
 		////////////////////////Enemies/////////////////////////////// 
@@ -533,7 +479,7 @@ void DefaultSceneLayer::_CreateScene()
 			//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
 		}
 		GameObject::Sptr Enemies = scene->CreateGameObject("Enemies");
-
+		//OBJECTS BELOW HAVE A SPAWN RANGE OF - (X,Y,Z) TO + (X,Y,Z)
 		//////////////// Background Objects ///// 50 max range
 
 		GameObject::Sptr BackgroundObjects = scene->CreateGameObject("BackgroundObjects");

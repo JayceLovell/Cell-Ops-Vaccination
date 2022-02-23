@@ -23,7 +23,7 @@ void EnemySpawnerBehaviour::Update(float deltaTime)
 {
 	if (_isSpawning) {
 		_counter++;
-		if (_counter == 3000) {
+		if (_counter == 500) {
 			_spawning();
 		}
 	}

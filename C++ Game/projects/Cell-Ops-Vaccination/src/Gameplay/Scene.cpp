@@ -21,6 +21,7 @@
 #include <Gameplay/InputEngine.h>
 #include <Gameplay/Components/UIController.h>
 #include <Gameplay/Components/EnemySpawnerBehaviour.h>
+#include <Gameplay/Components/TargetController.h>
 
 namespace Gameplay {
 	Scene::Scene() :
@@ -121,7 +122,6 @@ namespace Gameplay {
 			case 5:
 				for each (GameObject::Sptr var in Targets)
 				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
@@ -131,8 +131,7 @@ namespace Gameplay {
 				break;
 			case 10:
 				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
+				{					
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
@@ -142,8 +141,7 @@ namespace Gameplay {
 				break;
 			case 15:
 				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
+				{					
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
@@ -154,7 +152,6 @@ namespace Gameplay {
 			case 20:
 				for each (GameObject::Sptr var in Targets)
 				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
@@ -165,7 +162,6 @@ namespace Gameplay {
 			case 25:
 				for each (GameObject::Sptr var in Targets)
 				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
@@ -176,7 +172,6 @@ namespace Gameplay {
 			case 30:
 				for each (GameObject::Sptr var in Targets)
 				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
@@ -197,13 +192,17 @@ namespace Gameplay {
 
 	void Scene::GameStart()
 	{
-		UiControllerObject->Get<UiController>()->SetupGameScreen();
-		IsTitleUp = false;
 		GameRound = 1;
+
+		//Spawn Targets
+		TargetSpawnerObject->Get<TargetController>()->Spawntargets();
 
 		//Spawning first wave of enemies
 		EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 3);
 
+		//Change UI
+		UiControllerObject->Get<UiController>()->SetupGameScreen();
+		IsTitleUp = false;
 
 		GameStarted = true;
 	}
@@ -334,6 +333,7 @@ namespace Gameplay {
 		//Code Added
 		UiControllerObject = FindObjectByName("UI");
 		EnemySpawnerObject = FindObjectByName("Enemy Spawner");
+		TargetSpawnerObject = FindObjectByName("Target Spawner");
 	}
 
 	void Scene::DoPhysics(float dt) {

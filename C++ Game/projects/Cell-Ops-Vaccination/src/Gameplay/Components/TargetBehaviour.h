@@ -21,7 +21,6 @@ public:
 	TargetBehaviour();
 	virtual ~TargetBehaviour();
 
-	virtual void Awake() override;
 	virtual void Update(float deltaTime) override;
 	virtual void OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Physics::RigidBody>& body) override;
 	virtual void RenderImGui() override;
@@ -29,13 +28,21 @@ public:
 	static TargetBehaviour::Sptr FromJson(const nlohmann::json& blob);
 	MAKE_TYPENAME(TargetBehaviour);
 
+	/// <summary>
+	/// Heals Target at end of round.
+	/// </summary>
 	void Heal();
+	/// <summary>
+	/// Prepares Target status for game.
+	/// </summary>
+	/// <param name="MaxHealth">Max Health of target</param>
+	void TargetSetUp(float MaxHealth);
 
-	float MaxHealth;
 	int HealthInPercentage;
 	std::string HealthUiName;
 
 protected:
+	float _maxHealth;
 	float _health;
 	RenderComponent::Sptr _renderer;
 };
