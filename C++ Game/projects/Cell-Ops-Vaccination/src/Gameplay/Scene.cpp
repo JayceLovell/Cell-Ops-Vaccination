@@ -33,7 +33,7 @@ namespace Gameplay {
 		IsPlaying(false),
 		IsPaused(false),
 		IsPauseUIUp(false),
-		IsGameOver(false),
+		IsGameEnd(false),
 		IsGameWon(false),
 		IsTitleUp(false),
 		GameStarted(false),
@@ -85,7 +85,7 @@ namespace Gameplay {
 		else
 		{
 			RemoveGameObject(FindObjectByName("Player"));
-			IsGameOver = true;
+			IsGameEnd = true;
 		}
 		return nullptr;
 	}
@@ -119,86 +119,111 @@ namespace Gameplay {
 		if (Enemies.size() == 0 && EnemiesKilled>0) {
 			switch (EnemiesKilled)
 			{
-			case 5:
+			/// <summary>
+			/// rounds 1 - 5
+			/// </summary>
+			case 8:
 				for each (GameObject::Sptr var in Targets)
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
-				}
 				GameRound++;
+				if (GameRound == 5) {
+					for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					}
+				}
+				else if (GameRound > 2) {
+					for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 2);
+					}
+				}
+				else {
+					for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 4);
+					}
+				}
 				EnemiesKilled = 0;
 				break;
-			case 10:
+			/// <summary>
+			/// Rounds 5 - 7
+			/// </summary>
+			case 12:
 				for each (GameObject::Sptr var in Targets)
-				{					
+				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
-				}
 				GameRound++;
+				if (GameRound > 6) {
+					for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 4, 4);
+					}
+				}
+				else {
+					for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					}
+				}
 				EnemiesKilled = 0;
 				break;
-			case 15:
+			/// <summary>
+			/// round 8
+			/// </summary>
+			case 16:
 				for each (GameObject::Sptr var in Targets)
-				{					
+				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
-				}
 				GameRound++;
+					for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 3, 5);
+					}
 				EnemiesKilled = 0;
 				break;
+			/// <summary>
+			/// round 9-10
+			/// </summary>
 			case 20:
 				for each (GameObject::Sptr var in Targets)
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
+				GameRound++;
+				if (GameRound == 10) {
+					for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 4, 6);
+					}
+				}
+				else {
 				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
 					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 2, 5);
 				}
-				GameRound++;
+		}
 				EnemiesKilled = 0;
 				break;
-			case 25:
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
-				}
-				GameRound++;
-				EnemiesKilled = 0;
-				break;
-			case 30:
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
-				}
-				GameRound++;
-				EnemiesKilled = 0;
+			/// <summary>
+			/// Game Won
+			/// </summary>
+			case 26:
+				IsGameWon = true;
+				IsGameEnd = true;
 				break;
 			default:
 				break;
 			}
 			IsCheatActivated = false;
 		}
-		else if (EnemiesKilled > 35) {
+		else if (EnemiesKilled > 26) {
 			IsGameWon = true;
-			IsGameOver = true;
+			IsGameEnd = true;
 		}
 	}
 
@@ -222,9 +247,9 @@ namespace Gameplay {
 		// Call this to bake lights
 		SetupShaderAndLights();
 
-		//Spawning first wave of enemies
+		//Spawning first wave of enemies for round 1
 		for (auto EnemySpawnerObject : EnemySpawnerObjects) {
-			EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 3);
+			EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 4);
 		}
 
 		//Change UI
@@ -391,7 +416,7 @@ namespace Gameplay {
 	}
 	//Game Loop
 	void Scene::Update(float dt) {
-		if (!IsGameOver)
+		if (!IsGameEnd)
 		{
 			//Cheats
 			if ((InputEngine::GetKeyState(GLFW_KEY_F2) == ButtonState::Pressed) && IsPaused) {

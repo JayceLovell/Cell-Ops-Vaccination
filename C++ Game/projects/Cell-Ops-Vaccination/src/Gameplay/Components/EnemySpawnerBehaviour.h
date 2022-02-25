@@ -59,6 +59,7 @@ private:
 	int _normalAmount;
 	int _fastAmount;
 	int _totalAmount;
+	int _spawned;
 
 	//Enemy Stats
 	float _largeEnemySpeed;

@@ -63,7 +63,7 @@ namespace Gameplay {
 		glm::vec3 PlayerLastPosition;
 		bool IsPaused;
 		bool IsPauseUIUp;
-		bool IsGameOver;
+		bool IsGameEnd;
 		bool IsGameWon;
 		bool GameStarted;
 		bool IsCheatActivated;

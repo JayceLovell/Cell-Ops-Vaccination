@@ -23,10 +23,10 @@ void TargetBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Phy
 			_health = _health - 1;
 		}
 		else if (EnemyType == "Normal Enemy") {
-			_health = _health - 2;
+			_health = _health - 3;
 		}
 		else if (EnemyType == "Large Enemy") {
-			_health = _health - 4;
+			_health = _health - 5;
 		}
 		if (_health < 0) {
 			GetGameObject()->GetScene()->DeleteTarget(GetGameObject()->SelfRef());
@@ -57,7 +57,7 @@ TargetBehaviour::Sptr TargetBehaviour::FromJson(const nlohmann::json& blob)
 
 void TargetBehaviour::Heal()
 {
-	_maxHealth += 100;
+	_maxHealth += 10;
 	_health = _maxHealth;
 }
 
