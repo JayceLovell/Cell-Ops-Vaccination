@@ -65,11 +65,14 @@ std::string Application::_applicationName = "Cell Ops Vaccination";
 #define DEFAULT_WINDOW_WIDTH 800
 #define DEFAULT_WINDOW_HEIGHT 800
 
+/// <summary>
+/// Reminder to turn isEditor to true for debug windows.
+/// </summary>
 Application::Application() :
 	_window(nullptr),
 	_windowSize({ DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT }),
 	_isRunning(false),
-	_isEditor(true),
+	_isEditor(false),
 	_windowTitle("Cell Ops Vaccination"),
 	_currentScene(nullptr),
 	_targetScene(nullptr)

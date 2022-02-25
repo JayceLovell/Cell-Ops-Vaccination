@@ -443,7 +443,7 @@ void DefaultSceneLayer::_CreateScene()
 
 			trigger->AddCollider(collider);
 		}
-		/////////////////////////TARGETS////////////////////////// 25 max range
+		/////////////////////////TARGETS//////////////////////////
 		GameObject::Sptr ListOfTargets = scene->CreateGameObject("List Of Targets");
 
 		GameObject::Sptr TargetSpawner = scene->CreateGameObject("Target Spawner");

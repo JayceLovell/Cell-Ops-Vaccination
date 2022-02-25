@@ -403,8 +403,10 @@ namespace Gameplay {
 					for (auto& obj : _objects) {
 						obj->Update(dt);
 					}
-					UiControllerObject->Get<UiController>()->UpdateUI();
-					LevellCheck();
+					if (GameStarted) {
+						UiControllerObject->Get<UiController>()->UpdateUI();
+						LevellCheck();
+					}
 				}
 			}
 			else {
