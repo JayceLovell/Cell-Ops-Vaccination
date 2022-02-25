@@ -411,9 +411,9 @@ void Application::_HandleSceneChange() {
 	_currentScene->Awake();
 
 	// If we are not in editor mode, scenes play by default
-	if (!_isEditor) {
-		_currentScene->IsPlaying = true;
-	}
+	//if (!_isEditor) {
+		//_currentScene->IsPlaying = true;
+	//}
 
 	_targetScene = nullptr;
 }

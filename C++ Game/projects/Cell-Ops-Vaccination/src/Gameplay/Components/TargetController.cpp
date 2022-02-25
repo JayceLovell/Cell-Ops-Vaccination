@@ -70,10 +70,7 @@ void TargetController::Spawntargets()
 		Gameplay::GameObject::Sptr Target = GetGameObject()->GetScene()->CreateGameObject(TargetNames[i]);
 		{
 			_occupiedPositions.push_back(_targetPosition);
-			Target->SetPostion(_targetPosition);
-			GetGameObject()->GetScene()->Lights[i].Position = _targetPosition;
-			GetGameObject()->GetScene()->Lights[i].Color = glm::vec3(1.0f, 1.0f, 1.0f);
-			GetGameObject()->GetScene()->Lights[i].Range = 10000.0f;
+			Target->SetPostion(_targetPosition);;
 			
 
 			// Add a render component

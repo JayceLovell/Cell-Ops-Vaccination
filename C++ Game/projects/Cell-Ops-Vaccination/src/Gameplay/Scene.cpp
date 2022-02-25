@@ -124,8 +124,10 @@ namespace Gameplay {
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
+				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
+				}
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -134,8 +136,10 @@ namespace Gameplay {
 				{					
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 4, 9);
+				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
+				}
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -144,8 +148,10 @@ namespace Gameplay {
 				{					
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 6, 11);
+				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
+				}
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -154,8 +160,10 @@ namespace Gameplay {
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(4, 7, 14);
+				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
+				}
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -164,8 +172,10 @@ namespace Gameplay {
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(5, 8, 17);
+				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
+				}
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -174,8 +184,10 @@ namespace Gameplay {
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-				EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(6, 9, 20);
+				for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 3, 6);
+				}
 				GameRound++;
 				EnemiesKilled = 0;
 				break;
@@ -197,8 +209,23 @@ namespace Gameplay {
 		//Spawn Targets
 		TargetSpawnerObject->Get<TargetController>()->Spawntargets();
 
+		Lights.resize(Targets.size());
+		int lightIndex;
+		lightIndex = 0;
+		for (auto Target : Targets) {
+			
+			Lights[lightIndex].Position = Target->GetPosition();
+			Lights[lightIndex].Color= glm::vec3(1.0f, 1.0f, 1.0f);
+			Lights[lightIndex].Range = 100.0f;
+			lightIndex++;
+		}
+		// Call this to bake lights
+		SetupShaderAndLights();
+
 		//Spawning first wave of enemies
-		EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 3);
+		for (auto EnemySpawnerObject : EnemySpawnerObjects) {
+			EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 3);
+		}
 
 		//Change UI
 		UiControllerObject->Get<UiController>()->SetupGameScreen();
@@ -332,7 +359,6 @@ namespace Gameplay {
 
 		//Code Added
 		UiControllerObject = FindObjectByName("UI");
-		EnemySpawnerObject = FindObjectByName("Enemy Spawner");
 		TargetSpawnerObject = FindObjectByName("Target Spawner");
 	}
 

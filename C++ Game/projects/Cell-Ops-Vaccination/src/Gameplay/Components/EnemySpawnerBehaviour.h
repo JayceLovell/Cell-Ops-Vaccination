@@ -67,7 +67,7 @@ private:
 
 	/// <summary>
 	/// Delay Counter
-	/// Spawn at 5 seconds
+	/// Spawn in seconds example 500 = 5 seconds
 	/// </summary>
 	int _counter;
 
