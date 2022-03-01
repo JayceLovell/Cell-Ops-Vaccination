@@ -33,40 +33,6 @@ void TargetController::RenderImGui()
 void TargetController::Spawntargets()
 {
 	for (int i = 0; i < TargetNames.size(); i++) {
-		/*while (_isNotSafe) {
-			float x = (float)(rand() % 100 + (-50));
-			float y = (float)(rand() % 100 + (-50));
-			float z = (float)(rand() % 100 + (-50));
-			
-
-			/// <summary>
-			/// Check if near any other Targets
-			/// </summary>
-			if (_occupiedPositions.size() != 0) {
-				for (auto check : _occupiedPositions) {
-					if (!(_inRange(-abs(check.x), abs(check.x), x))) {
-						if (!(_inRange(-abs(check.y), abs(check.y), y))) {
-							if (!(_inRange(-abs(check.z), abs(check.z), z))) {
-								_isNotSafe = false;;
-							}
-							else {
-								_isNotSafe = true;
-							}
-						}
-						else {
-							_isNotSafe = true;
-						}
-					}
-					else {
-						_isNotSafe = true;
-					}
-				}
-			}
-			else {
-				_isNotSafe = false;
-			}
-			_targetPosition=glm::vec3(x, y, z);
-		}*/
 		Gameplay::GameObject::Sptr Target = GetGameObject()->GetScene()->CreateGameObject(TargetNames[i]);
 		{
 			//_occupiedPositions.push_back(_targetPosition);

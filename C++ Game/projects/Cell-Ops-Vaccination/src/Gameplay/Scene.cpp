@@ -222,6 +222,7 @@ namespace Gameplay {
 		//Spawn Targets
 		TargetSpawnerObject->Get<TargetController>()->Spawntargets();
 
+		// Set up Lights for scene
 		Lights.resize(Targets.size());
 		int lightIndex;
 		lightIndex = 0;

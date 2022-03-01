@@ -141,7 +141,7 @@ void DefaultSceneLayer::_CreateScene()
 		// Target Mesh
 		MeshResource::Sptr LeftLungMesh = ResourceManager::CreateAsset<MeshResource>("models/LeftLung.obj");
 		MeshResource::Sptr RightLungMesh = ResourceManager::CreateAsset<MeshResource>("models/RightLung.obj");
-		MeshResource::Sptr HeartMesh = ResourceManager::CreateAsset<MeshResource>("models/Heart.obj");
+		MeshResource::Sptr HeartMesh = ResourceManager::CreateAsset<MeshResource>("models/Heartlow.obj");
 		MeshResource::Sptr KidneyMesh = ResourceManager::CreateAsset<MeshResource>("models/Kidney.obj");
 
 		// Background Meshes
