@@ -25,11 +25,14 @@ public:
 	//Names of Targets
 	std::vector<std::string> TargetNames;
 
+	//Target Position
+	std::vector<glm::vec3> TargetPositions;
+
 	//Materials stored in a vector
 	std::vector<Gameplay::Material::Sptr> TargetMaterials;
 
 	//Meshes stored in a vector
-	std::vector<Gameplay::MeshResource::Sptr> TargetMesh;
+	std::vector<Gameplay::MeshResource::Sptr> TargetMeshs;
 
 	//Animation
 	std::vector<Gameplay::MeshResource::Sptr> TargetFrames;

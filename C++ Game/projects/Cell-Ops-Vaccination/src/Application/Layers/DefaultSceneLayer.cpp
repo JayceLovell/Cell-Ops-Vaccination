@@ -132,16 +132,18 @@ void DefaultSceneLayer::_CreateScene()
 		/////////////////////////////////////////// MESHES ////////////////////////////////////////////////
 		// Load in the meshes
 		MeshResource::Sptr PlayerMesh = ResourceManager::CreateAsset<MeshResource>("models/Player.obj");
+
 		// Enemy Meshes
 		MeshResource::Sptr LargeEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/LargeEnemy/LargeEnemy_001.obj");
 		MeshResource::Sptr FastEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Fast Enemy.obj");
-		//MeshResource::Sptr FastEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/FastIdle/FastEnemy_001.obj");
-
 		MeshResource::Sptr NormalEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/NormalIdle/NormalEnemy_001.obj");
 
 		// Target Mesh
-		MeshResource::Sptr LungsTargetMesh = ResourceManager::CreateAsset<MeshResource>("models/LungsTarget.obj");
-		//MeshResource::Sptr LungsTargetMesh = ResourceManager::CreateAsset<MeshResource>("models/Lungs/Lungs_001.obj");
+		MeshResource::Sptr LeftLungMesh = ResourceManager::CreateAsset<MeshResource>("models/LeftLung.obj");
+		MeshResource::Sptr RightLungMesh = ResourceManager::CreateAsset<MeshResource>("models/RightLung.obj");
+		MeshResource::Sptr HeartMesh = ResourceManager::CreateAsset<MeshResource>("models/Heart.obj");
+		MeshResource::Sptr KidneyMesh = ResourceManager::CreateAsset<MeshResource>("models/LungsTarget.obj");
+
 		// Background Meshes
 		MeshResource::Sptr APCMesh = ResourceManager::CreateAsset<MeshResource>("models/APC.obj");
 		MeshResource::Sptr APC2Mesh = ResourceManager::CreateAsset<MeshResource>("models/APC2.obj");
@@ -168,12 +170,18 @@ void DefaultSceneLayer::_CreateScene()
 		/////////////////////////////////////////// TEXTURES ////////////////////////////////////////////////
 		// Load in some textures
 		Texture2D::Sptr PlayerTexture = ResourceManager::CreateAsset<Texture2D>("textures/tempWhiteCell.jpg");
+
 		// Enemy Textures
 		Texture2D::Sptr	LargeEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Large Enemy.png");
 		Texture2D::Sptr	FastEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Fast Enemy.png");
 		Texture2D::Sptr	NormalEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Normal Enemy.png");
+
 		// Target Textures
-		Texture2D::Sptr	LungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+		Texture2D::Sptr	HeartTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+		Texture2D::Sptr	KidneyTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+		Texture2D::Sptr	RightLungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+		Texture2D::Sptr	LeftLungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+
 		// Background Texture
 		Texture2D::Sptr	APCTexture = ResourceManager::CreateAsset<Texture2D>("textures/APC.png");
 		Texture2D::Sptr	APC2Texture = ResourceManager::CreateAsset<Texture2D>("textures/APC2.png");
@@ -268,12 +276,31 @@ void DefaultSceneLayer::_CreateScene()
 			FastEnemyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		// Target Material
-		Material::Sptr LungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr LeftLungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
-			LungMaterial->Name = "LungMaterial";
-			LungMaterial->Set("u_Material.Diffuse", LungTexture);
-			LungMaterial->Set("u_Material.Shininess", 0.1f);
+			LeftLungMaterial->Name = "LeftLungMaterial";
+			LeftLungMaterial->Set("u_Material.Diffuse", LeftLungTexture);
+			LeftLungMaterial->Set("u_Material.Shininess", 0.1f);
 		}
+		Material::Sptr RightLungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			RightLungMaterial->Name = "LeftLungMaterial";
+			RightLungMaterial->Set("u_Material.Diffuse", RightLungTexture);
+			RightLungMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr HeartMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			HeartMaterial->Name = "HeartMaterial";
+			HeartMaterial->Set("u_Material.Diffuse", HeartTexture);
+			HeartMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr KidneyMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			KidneyMaterial->Name = "KidneyMateriall";
+			KidneyMaterial->Set("u_Material.Diffuse", KidneyTexture);
+			KidneyMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+
 		// Background Materials
 		Material::Sptr APCMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
@@ -443,64 +470,75 @@ void DefaultSceneLayer::_CreateScene()
 			trigger->AddCollider(collider);
 		}
 		/////////////////////////TARGETS//////////////////////////
-		GameObject::Sptr ListOfTargets = scene->CreateGameObject("List Of Targets");
+		//GameObject::Sptr ListOfTargets = scene->CreateGameObject("List Of Targets");
 
 		GameObject::Sptr TargetSpawner = scene->CreateGameObject("Target Spawner");
 		{
 			TargetSpawner->Add<TargetController>();
 
 			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Left Lung");
-			TargetSpawner->Get<TargetController>()->TargetMesh.push_back(LungsTargetMesh);
-			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(LungMaterial);
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(100.0f, 0.0f, 0.0));
+			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(LeftLungMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(LeftLungMaterial);
 			//TargetSpawner->Get<TargetController>()->TargetFrames.push_back(LeftLungFrames);
 
 			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Right Lung");
-			TargetSpawner->Get<TargetController>()->TargetMesh.push_back(LungsTargetMesh);
-			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(LungMaterial);
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(-100.0f, 0.0f, 0.0));
+			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(RightLungMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(RightLungMaterial);
 			//TargetSpawner->Get<TargetController>()->TargetFrames.push_back(RightLungFrames);
 
+			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Heart");
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(0.0f, 0.0f, 0.0));
+			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(HeartMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(HeartMaterial);
+
+			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Kidney");
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(50.0f, 50.0f, -50.0));
+			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(KidneyMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(KidneyMaterial);
 		}
 
 		////////////////////////Enemies/////////////////////////////// 
-		GameObject::Sptr Enemies = scene->CreateGameObject("Enemies");
+		//GameObject::Sptr Enemies = scene->CreateGameObject("Enemies");
 
-		GameObject::Sptr EnemySpawner1 = scene->CreateGameObject("Enemy Spawner 1");
+		GameObject::Sptr EnemySpawner = scene->CreateGameObject("Enemy Spawner");
 		{
-			EnemySpawner1->SetPostion(glm::vec3(10.0f, 0.0f, 0.0f));
-			EnemySpawner1->Add<EnemySpawnerBehaviour>();
+			EnemySpawner->SetPostion(glm::vec3(0.0f, 0.0f, 100.0f));
+			EnemySpawner->Add<EnemySpawnerBehaviour>();
 
-			EnemySpawner1->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
-			EnemySpawner1->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
-			EnemySpawner1->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
 
-			EnemySpawner1->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
-			EnemySpawner1->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
-			EnemySpawner1->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
 
-			EnemySpawner1->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
-			EnemySpawner1->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
 			//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
 
-			scene->EnemySpawnerObjects.push_back(EnemySpawner1);
+			//scene->EnemySpawnerObjects.push_back(EnemySpawner);
 		}
-		GameObject::Sptr EnemySpawner2 = scene->CreateGameObject("Enemy Spawner 2");
-		{
-			EnemySpawner2->Add<EnemySpawnerBehaviour>();
+		//GameObject::Sptr EnemySpawner2 = scene->CreateGameObject("Enemy Spawner 2");
+		//{
+		//	EnemySpawner2->Add<EnemySpawnerBehaviour>();
 
-			EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
-			EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
-			EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
 
-			EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
-			EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
-			EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
 
-			EnemySpawner2->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
-			EnemySpawner2->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
-			//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
+		//	//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
 
-			scene->EnemySpawnerObjects.push_back(EnemySpawner2);
-		}
+		//	scene->EnemySpawnerObjects.push_back(EnemySpawner2);
+		//}
 		//GameObject::Sptr EnemySpawner3 = scene->CreateGameObject("Enemy Spawner 3");
 		//{
 		//	EnemySpawner3->Add<EnemySpawnerBehaviour>();

@@ -115,7 +115,7 @@ void EnemySpawnerBehaviour::_createLargeEnemy()
 		animation->ActivateAnim("Idle");
 
 		GetGameObject()->GetScene()->Enemies.push_back(LargeEnemy);
-		GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(LargeEnemy);
+		//GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(LargeEnemy);
 	}
 }
 
@@ -150,7 +150,7 @@ void EnemySpawnerBehaviour::_createNormalEnemy()
 		animation->ActivateAnim("Idle");
 
 		GetGameObject()->GetScene()->Enemies.push_back(NormalEnemy);
-		GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(NormalEnemy);
+		//GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(NormalEnemy);
 	}
 }
 
@@ -159,6 +159,7 @@ void EnemySpawnerBehaviour::_createFastEnemy()
 	std::string EnemyName = "Enemy ID:" + std::to_string(GetGameObject()->GetScene()->Enemies.size());
 	Gameplay::GameObject::Sptr FastEnemy = GetGameObject()->GetScene()->CreateGameObject(EnemyName);
 	{
+		FastEnemy->SetPostion(GetGameObject()->SelfRef()->GetPosition());
 
 		// Add a render component
 		RenderComponent::Sptr renderer = FastEnemy->Add<RenderComponent>();
@@ -184,7 +185,7 @@ void EnemySpawnerBehaviour::_createFastEnemy()
 		animation->ActivateAnim("Idle");*/
 
 		GetGameObject()->GetScene()->Enemies.push_back(FastEnemy);
-		GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(FastEnemy);
+		//GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(FastEnemy);
 	}
 }
 

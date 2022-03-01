@@ -3,7 +3,7 @@
 TargetController::TargetController():
 	IComponent(),
 	TargetNames(std::vector<std::string>()),
-	TargetMesh(std::vector<Gameplay::MeshResource::Sptr>()),
+	TargetMeshs(std::vector<Gameplay::MeshResource::Sptr>()),
 	TargetMaterials(std::vector<Gameplay::Material::Sptr>()),
 	TargetFrames(std::vector<Gameplay::MeshResource::Sptr>()),
 	_occupiedPositions(std::vector<glm::vec3>()),
@@ -33,7 +33,7 @@ void TargetController::RenderImGui()
 void TargetController::Spawntargets()
 {
 	for (int i = 0; i < TargetNames.size(); i++) {
-		while (_isNotSafe) {
+		/*while (_isNotSafe) {
 			float x = (float)(rand() % 100 + (-50));
 			float y = (float)(rand() % 100 + (-50));
 			float z = (float)(rand() % 100 + (-50));
@@ -66,16 +66,16 @@ void TargetController::Spawntargets()
 				_isNotSafe = false;
 			}
 			_targetPosition=glm::vec3(x, y, z);
-		}
+		}*/
 		Gameplay::GameObject::Sptr Target = GetGameObject()->GetScene()->CreateGameObject(TargetNames[i]);
 		{
-			_occupiedPositions.push_back(_targetPosition);
-			Target->SetPostion(_targetPosition);;
+			//_occupiedPositions.push_back(_targetPosition);
+			Target->SetPostion(TargetPositions[i]);;
 			
 
 			// Add a render component
 			RenderComponent::Sptr renderer = Target->Add<RenderComponent>();
-			renderer->SetMesh(TargetMesh[i]);
+			renderer->SetMesh(TargetMeshs[i]);
 			renderer->SetMaterial(TargetMaterials[i]);
 
 			Gameplay::Physics::TriggerVolume::Sptr volume = Target->Add<Gameplay::Physics::TriggerVolume>();
@@ -86,7 +86,7 @@ void TargetController::Spawntargets()
 			Target->Get<TargetBehaviour>()->TargetSetUp(100);
 
 			GetGameObject()->GetScene()->Targets.push_back(Target);
-			GetGameObject()->GetScene()->FindObjectByName("List Of Targets")->AddChild(Target);
+			//GetGameObject()->GetScene()->FindObjectByName("List Of Targets")->AddChild(Target);
 		}
 		_isNotSafe = true;
 	}

@@ -17,14 +17,16 @@ void EnemyBehaviour::Awake()
 void EnemyBehaviour::RenderImGui() {
 	LABEL_LEFT(ImGui::DragFloat, "Speed", &Speed, 1.0f);
 	LABEL_LEFT(ImGui::DragFloat, "Health", &Health, 1.0f);
-	LABEL_LEFT(ImGui::Text, "Enemy Type", &EnemyType,1.0f);
+	ImGui::Text, "Target", Target->Name.c_str();
+	ImGui::Text, "Enemy Type", EnemyType.c_str();
 }
 
 nlohmann::json EnemyBehaviour::ToJson() const {
 	return {
 		{"speed",Speed},
 		{"Health",Health},
-		{"EnemyType",EnemyType}
+		{"Target",Target->Name.c_str()},
+		{"EnemyType",EnemyType.c_str()}
 	};
 }
 
@@ -43,6 +45,7 @@ EnemyBehaviour::Sptr EnemyBehaviour::FromJson(const nlohmann::json & blob) {
 	EnemyBehaviour::Sptr result = std::make_shared<EnemyBehaviour>();
 	result->Speed = blob["Speed"];
 	result->Health = blob["Health"];
+	result->Target->Name = blob["Target"];
 	result->EnemyType = blob["EnemyType"];
 	return result;
 }
