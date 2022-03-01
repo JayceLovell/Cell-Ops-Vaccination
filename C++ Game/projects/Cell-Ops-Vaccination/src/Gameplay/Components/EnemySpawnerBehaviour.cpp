@@ -161,6 +161,9 @@ void EnemySpawnerBehaviour::_createFastEnemy()
 	{
 		FastEnemy->SetPostion(GetGameObject()->SelfRef()->GetPosition());
 
+		ParticleSystem::Sptr Emitter = FastEnemy->Add<ParticleSystem>();
+		Emitter->AddEmitter(glm::vec3(0.0f), glm::vec3(20.0f, -1.0f, 10.0f), 20.0f, glm::vec4(0.0f, 0.18f, 1.0f, 1.0f));
+
 		// Add a render component
 		RenderComponent::Sptr renderer = FastEnemy->Add<RenderComponent>();
 		renderer->SetMesh(FastEnemyMesh);
@@ -179,6 +182,7 @@ void EnemySpawnerBehaviour::_createFastEnemy()
 		FastEnemy->Get<EnemyBehaviour>()->EnemyType = "Fast Enemy";
 		FastEnemy->Get<EnemyBehaviour>()->Health = 1;
 		FastEnemy->Get<EnemyBehaviour>()->Speed = _fastEnemySpeed;
+
 
 		/*MorphAnimator::Sptr animation = FastEnemy->Add<MorphAnimator>();
 		animation->AddClip(FastEnemyFrames, 0.7f, "Idle");

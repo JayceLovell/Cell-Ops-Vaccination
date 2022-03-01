@@ -7,7 +7,6 @@ layout(location = 3) in vec2 inUV;
 
 layout(location = 4) in vec3 inTangent;
 layout(location = 5) in vec3 inBiTangent;
-layout(location = 6) in vec3 inPosition2;
 
 // Standard vertex shader outputs
 layout(location = 0) out vec3 outWorldPos;
