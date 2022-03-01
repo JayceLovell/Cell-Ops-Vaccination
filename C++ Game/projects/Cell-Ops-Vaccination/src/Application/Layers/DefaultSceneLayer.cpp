@@ -142,7 +142,7 @@ void DefaultSceneLayer::_CreateScene()
 		MeshResource::Sptr LeftLungMesh = ResourceManager::CreateAsset<MeshResource>("models/LeftLung.obj");
 		MeshResource::Sptr RightLungMesh = ResourceManager::CreateAsset<MeshResource>("models/RightLung.obj");
 		MeshResource::Sptr HeartMesh = ResourceManager::CreateAsset<MeshResource>("models/Heart.obj");
-		MeshResource::Sptr KidneyMesh = ResourceManager::CreateAsset<MeshResource>("models/LungsTarget.obj");
+		MeshResource::Sptr KidneyMesh = ResourceManager::CreateAsset<MeshResource>("models/Kidney.obj");
 
 		// Background Meshes
 		MeshResource::Sptr APCMesh = ResourceManager::CreateAsset<MeshResource>("models/APC.obj");
@@ -177,8 +177,8 @@ void DefaultSceneLayer::_CreateScene()
 		Texture2D::Sptr	NormalEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Normal Enemy.png");
 
 		// Target Textures
-		Texture2D::Sptr	HeartTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
-		Texture2D::Sptr	KidneyTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+		Texture2D::Sptr	HeartTexture = ResourceManager::CreateAsset<Texture2D>("textures/Heart.jpg");
+		Texture2D::Sptr	KidneyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Kidney.png");
 		Texture2D::Sptr	RightLungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
 		Texture2D::Sptr	LeftLungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
 
