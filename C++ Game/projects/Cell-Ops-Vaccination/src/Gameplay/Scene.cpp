@@ -230,7 +230,7 @@ namespace Gameplay {
 			
 			Lights[lightIndex].Position = Target->GetPosition();
 			Lights[lightIndex].Color= glm::vec3(1.0f, 1.0f, 1.0f);
-			Lights[lightIndex].Range = 100.0f;
+			Lights[lightIndex].Range = 200.0f;
 			lightIndex++;
 		}
 		// Call this to bake lights
