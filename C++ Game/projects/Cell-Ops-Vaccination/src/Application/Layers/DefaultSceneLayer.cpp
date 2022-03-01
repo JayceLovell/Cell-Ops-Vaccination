@@ -441,8 +441,8 @@ void DefaultSceneLayer::_CreateScene()
 		GameObject::Sptr camera = scene->MainCamera->GetGameObject()->SelfRef();
 		//GameObject::Sptr camera = scene->CreateGameObject("Main Camera");
 		{
-			camera->SetPostion(glm::vec3(0.0f));
-			camera->SetRotation(glm::vec3(112.735f, 0.0f, -72.0f));
+			camera->SetPostion(glm::vec3(2.153f,49.807f,-0.995f));
+			camera->SetRotation(glm::vec3(118.0f, 0.0f, -179.0f));
 
 			camera->Add<SimpleCameraControl>();
 
@@ -477,13 +477,13 @@ void DefaultSceneLayer::_CreateScene()
 			TargetSpawner->Add<TargetController>();
 
 			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Left Lung");
-			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(100.0f, 0.0f, 0.0));
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(50.0f, 0.0f, 0.0));
 			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(LeftLungMesh);
 			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(LeftLungMaterial);
 			//TargetSpawner->Get<TargetController>()->TargetFrames.push_back(LeftLungFrames);
 
 			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Right Lung");
-			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(-100.0f, 0.0f, 0.0));
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(-50.0f, 0.0f, 0.0));
 			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(RightLungMesh);
 			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(RightLungMaterial);
 			//TargetSpawner->Get<TargetController>()->TargetFrames.push_back(RightLungFrames);
