@@ -46,11 +46,14 @@
 #include "Gameplay/Components/MaterialSwapBehaviour.h"
 #include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
 #include "Gameplay/Components/SimpleCameraControl.h"
+#include "Gameplay/Components/EnemySpawnerBehaviour.h"
 #include "Gameplay/Components/PlayerBehaviour.h"
 #include "Gameplay/Components/EnemyBehaviour.h"
 #include "Gameplay/Components/TargetBehaviour.h"
 #include "Gameplay/Components/BackgroundObjectsBehaviour.h"
 #include "Gameplay/Components/MorphAnimator.h"
+#include "Gameplay/Components/UIController.h"
+#include "Gameplay/Components/TargetController.h"
 
 // Physics
 #include "Gameplay/Physics/RigidBody.h"
@@ -129,16 +132,18 @@ void DefaultSceneLayer::_CreateScene()
 		/////////////////////////////////////////// MESHES ////////////////////////////////////////////////
 		// Load in the meshes
 		MeshResource::Sptr PlayerMesh = ResourceManager::CreateAsset<MeshResource>("models/Player.obj");
+
 		// Enemy Meshes
 		MeshResource::Sptr LargeEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/LargeEnemy/LargeEnemy_001.obj");
 		MeshResource::Sptr FastEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/Fast Enemy.obj");
-		//MeshResource::Sptr FastEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/FastIdle/FastEnemy_001.obj");
-
 		MeshResource::Sptr NormalEnemyMesh = ResourceManager::CreateAsset<MeshResource>("models/NormalIdle/NormalEnemy_001.obj");
 
 		// Target Mesh
-		MeshResource::Sptr LungsTargetMesh = ResourceManager::CreateAsset<MeshResource>("models/LungsTarget.obj");
-		//MeshResource::Sptr LungsTargetMesh = ResourceManager::CreateAsset<MeshResource>("models/Lungs/Lungs_001.obj");
+		MeshResource::Sptr LeftLungMesh = ResourceManager::CreateAsset<MeshResource>("models/LeftLung.obj");
+		MeshResource::Sptr RightLungMesh = ResourceManager::CreateAsset<MeshResource>("models/RightLung.obj");
+		MeshResource::Sptr HeartMesh = ResourceManager::CreateAsset<MeshResource>("models/Heart.obj");
+		MeshResource::Sptr KidneyMesh = ResourceManager::CreateAsset<MeshResource>("models/Kidney.obj");
+
 		// Background Meshes
 		MeshResource::Sptr APCMesh = ResourceManager::CreateAsset<MeshResource>("models/APC.obj");
 		MeshResource::Sptr APC2Mesh = ResourceManager::CreateAsset<MeshResource>("models/APC2.obj");
@@ -165,12 +170,18 @@ void DefaultSceneLayer::_CreateScene()
 		/////////////////////////////////////////// TEXTURES ////////////////////////////////////////////////
 		// Load in some textures
 		Texture2D::Sptr PlayerTexture = ResourceManager::CreateAsset<Texture2D>("textures/tempWhiteCell.jpg");
+
 		// Enemy Textures
 		Texture2D::Sptr	LargeEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Large Enemy.png");
 		Texture2D::Sptr	FastEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Fast Enemy.png");
 		Texture2D::Sptr	NormalEnemyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Normal Enemy.png");
+
 		// Target Textures
-		Texture2D::Sptr	LungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+		Texture2D::Sptr	HeartTexture = ResourceManager::CreateAsset<Texture2D>("textures/Heart.jpg");
+		Texture2D::Sptr	KidneyTexture = ResourceManager::CreateAsset<Texture2D>("textures/Kidney.png");
+		Texture2D::Sptr	RightLungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+		Texture2D::Sptr	LeftLungTexture = ResourceManager::CreateAsset<Texture2D>("textures/LungTexture.jpg");
+
 		// Background Texture
 		Texture2D::Sptr	APCTexture = ResourceManager::CreateAsset<Texture2D>("textures/APC.png");
 		Texture2D::Sptr	APC2Texture = ResourceManager::CreateAsset<Texture2D>("textures/APC2.png");
@@ -192,9 +203,9 @@ void DefaultSceneLayer::_CreateScene()
 		Texture2D::Sptr WhiteBloodCell2Texture = ResourceManager::CreateAsset<Texture2D>("textures/White Blood Cell2.png");
 		Texture2D::Sptr YellowMBiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/YellowMBiota.png");
 		// UI Textures
-		Texture2D::Sptr GameOverTexture = ResourceManager::CreateAsset<Texture2D>("textures/GameOver.png");
-		Texture2D::Sptr GameWinTexture = ResourceManager::CreateAsset<Texture2D>("textures/GameWin.png");
-		Texture2D::Sptr GamePauseTexture = ResourceManager::CreateAsset<Texture2D>("textures/GamePause.png");
+		Texture2D::Sptr GameOverTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Game Over Screen/GameOver.png");
+		Texture2D::Sptr GameWinTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Game Win Screen/GameWin.png");
+		Texture2D::Sptr GamePauseTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Game Pause Screen/GamePause.png");
 		Texture2D::Sptr Health100Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_100.png");
 		Texture2D::Sptr Health90Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_90.png");
 		Texture2D::Sptr Health80Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_80.png");
@@ -265,12 +276,31 @@ void DefaultSceneLayer::_CreateScene()
 			FastEnemyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		// Target Material
-		Material::Sptr LungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr LeftLungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
 		{
-			LungMaterial->Name = "LungMaterial";
-			LungMaterial->Set("u_Material.Diffuse", LungTexture);
-			LungMaterial->Set("u_Material.Shininess", 0.1f);
+			LeftLungMaterial->Name = "LeftLungMaterial";
+			LeftLungMaterial->Set("u_Material.Diffuse", LeftLungTexture);
+			LeftLungMaterial->Set("u_Material.Shininess", 0.1f);
 		}
+		Material::Sptr RightLungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			RightLungMaterial->Name = "LeftLungMaterial";
+			RightLungMaterial->Set("u_Material.Diffuse", RightLungTexture);
+			RightLungMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr HeartMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			HeartMaterial->Name = "HeartMaterial";
+			HeartMaterial->Set("u_Material.Diffuse", HeartTexture);
+			HeartMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+		Material::Sptr KidneyMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		{
+			KidneyMaterial->Name = "KidneyMateriall";
+			KidneyMaterial->Set("u_Material.Diffuse", KidneyTexture);
+			KidneyMaterial->Set("u_Material.Shininess", 0.1f);
+		}
+
 		// Background Materials
 		Material::Sptr APCMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
 		{
@@ -406,14 +436,13 @@ void DefaultSceneLayer::_CreateScene()
 			GamePauseMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 
-		// Create some lights for our scene
-		scene->Lights.resize(3);
+		
 		
 		GameObject::Sptr camera = scene->MainCamera->GetGameObject()->SelfRef();
 		//GameObject::Sptr camera = scene->CreateGameObject("Main Camera");
 		{
-			camera->SetPostion(glm::vec3(0.0f));
-			camera->SetRotation(glm::vec3(112.735f, 0.0f, -72.0f));
+			camera->SetPostion(glm::vec3(2.153f,49.807f,-0.995f));
+			camera->SetRotation(glm::vec3(118.0f, 0.0f, -179.0f));
 
 			camera->Add<SimpleCameraControl>();
 
@@ -440,206 +469,114 @@ void DefaultSceneLayer::_CreateScene()
 
 			trigger->AddCollider(collider);
 		}
+		/////////////////////////TARGETS//////////////////////////
+		//GameObject::Sptr ListOfTargets = scene->CreateGameObject("List Of Targets");
+
+		GameObject::Sptr TargetSpawner = scene->CreateGameObject("Target Spawner");
+		{
+			TargetSpawner->Add<TargetController>();
+
+			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Left Lung");
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(50.0f, 0.0f, 0.0));
+			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(LeftLungMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(LeftLungMaterial);
+			//TargetSpawner->Get<TargetController>()->TargetFrames.push_back(LeftLungFrames);
+
+			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Right Lung");
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(-50.0f, 0.0f, 0.0));
+			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(RightLungMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(RightLungMaterial);
+			//TargetSpawner->Get<TargetController>()->TargetFrames.push_back(RightLungFrames);
+
+			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Heart");
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(0.0f, 0.0f, 0.0));
+			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(HeartMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(HeartMaterial);
+
+			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Kidney");
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(50.0f, 50.0f, -50.0));
+			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(KidneyMesh);
+			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(KidneyMaterial);
+		}
+
+		////////////////////////Enemies/////////////////////////////// 
+		//GameObject::Sptr Enemies = scene->CreateGameObject("Enemies");
+
+		GameObject::Sptr EnemySpawner = scene->CreateGameObject("Enemy Spawner");
+		{
+			EnemySpawner->SetPostion(glm::vec3(0.0f, 0.0f, 100.0f));
+			EnemySpawner->Add<EnemySpawnerBehaviour>();
+
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
+
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
+
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
+			//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
+
+			//scene->EnemySpawnerObjects.push_back(EnemySpawner);
+		}
+		//GameObject::Sptr EnemySpawner2 = scene->CreateGameObject("Enemy Spawner 2");
+		//{
+		//	EnemySpawner2->Add<EnemySpawnerBehaviour>();
+
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
+
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
+
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
+		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
+		//	//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
+
+		//	scene->EnemySpawnerObjects.push_back(EnemySpawner2);
+		//}
+		//GameObject::Sptr EnemySpawner3 = scene->CreateGameObject("Enemy Spawner 3");
+		//{
+		//	EnemySpawner3->Add<EnemySpawnerBehaviour>();
+
+		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
+		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
+		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
+
+		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
+		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
+		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
+
+		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
+		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
+		//	//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
+
+		//	scene->EnemySpawnerObjects.push_back(EnemySpawner3);
+		//}
+		//GameObject::Sptr EnemySpawner4 = scene->CreateGameObject("Enemy Spawner 4");
+		//{
+		//	EnemySpawner4->Add<EnemySpawnerBehaviour>();
+
+		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
+		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
+		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
+
+		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
+		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
+		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
+
+		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
+		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
+		//	//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
+
+		//	scene->EnemySpawnerObjects.push_back(EnemySpawner4);
+		//}
+		
 		//OBJECTS BELOW HAVE A SPAWN RANGE OF - (X,Y,Z) TO + (X,Y,Z)
-		/////////////////////////TARGETS////////////////////////// 25 max range
-		GameObject::Sptr Target = scene->CreateGameObject("Target");
-		{
-			float x = (float)(rand() % 50 + (-25));
-			float y = (float)(rand() % 50 + (-25));
-			float z = (float)(rand() % 50 + (-25));
-			// Set and rotation position in the scene
-			Target->SetPostion(glm::vec3(x, y, z));
-
-			scene->Lights[0].Position = glm::vec3(x, y, z);
-			scene->Lights[0].Color = glm::vec3(1.0f, 1.0f, 1.0f);
-			scene->Lights[0].Range = 100.0f;
-
-			// Add a render component
-			RenderComponent::Sptr renderer = Target->Add<RenderComponent>();
-			renderer->SetMesh(LungsTargetMesh);
-			renderer->SetMaterial(LungMaterial);
-
-
-			TriggerVolume::Sptr volume = Target->Add<TriggerVolume>();
-			ConvexMeshCollider::Sptr collider = ConvexMeshCollider::Create();
-			volume->AddCollider(collider);
-
-			Target->Add<TargetBehaviour>();
-			Target->Get<TargetBehaviour>()->MaxHealth = 100;
-			Target->Get<TargetBehaviour>()->FullHp = Health100Texture;
-			Target->Get<TargetBehaviour>()->NintyPercentHp = Health90Texture;
-			Target->Get<TargetBehaviour>()->EightyPercentHp = Health80Texture;
-			Target->Get<TargetBehaviour>()->SeventyPercentHp = Health70Texture;
-			Target->Get<TargetBehaviour>()->SixtyPercentHp = Health60Texture;
-			Target->Get<TargetBehaviour>()->HalfHp = Health50Texture;
-			Target->Get<TargetBehaviour>()->FortyPercentHp = Health40Texture;
-			Target->Get<TargetBehaviour>()->ThirtyPercentHp = Health30Texture;
-			Target->Get<TargetBehaviour>()->TwentyPercentHp = Health20Texture;
-			Target->Get<TargetBehaviour>()->TenPercentHp = Health10Texture;
-			Target->Get<TargetBehaviour>()->NoHp = Health0Texture;
-
-			/*MorphAnimator::Sptr animation = Target->Add<MorphAnimator>();
-
-			animation->AddClip(LungFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");*/
-
-			scene->Targets.push_back(Target);
-		}
-		GameObject::Sptr Target1 = scene->CreateGameObject("Target1");
-		{
-			float x = (float)(rand() % 50 + (-25));
-			float y = (float)(rand() % 50 + (-25));
-			float z = (float)(rand() % 50 + (-25));
-			// Set and rotation position in the scene
-			Target1->SetPostion(glm::vec3(x, y, z));
-
-			scene->Lights[1].Position = glm::vec3(x, y, z);
-			scene->Lights[1].Color = glm::vec3(1.0f, 1.0f, 1.0f);
-			scene->Lights[1].Range = 100.0f;
-
-			// Add a render component
-			RenderComponent::Sptr renderer = Target1->Add<RenderComponent>();
-			renderer->SetMesh(LungsTargetMesh);
-			renderer->SetMaterial(LungMaterial);
-
-
-			TriggerVolume::Sptr volume = Target1->Add<TriggerVolume>();
-			ConvexMeshCollider::Sptr collider = ConvexMeshCollider::Create();
-			volume->AddCollider(collider);
-
-			Target1->Add<TargetBehaviour>();
-			Target1->Get<TargetBehaviour>()->MaxHealth = 100;
-			Target1->Get<TargetBehaviour>()->FullHp = Health100Texture;
-			Target1->Get<TargetBehaviour>()->NintyPercentHp = Health90Texture;
-			Target1->Get<TargetBehaviour>()->EightyPercentHp = Health80Texture;
-			Target1->Get<TargetBehaviour>()->SeventyPercentHp = Health70Texture;
-			Target1->Get<TargetBehaviour>()->SixtyPercentHp = Health60Texture;
-			Target1->Get<TargetBehaviour>()->HalfHp = Health50Texture;
-			Target1->Get<TargetBehaviour>()->FortyPercentHp = Health40Texture;
-			Target1->Get<TargetBehaviour>()->ThirtyPercentHp = Health30Texture;
-			Target1->Get<TargetBehaviour>()->TwentyPercentHp = Health20Texture;
-			Target1->Get<TargetBehaviour>()->TenPercentHp = Health10Texture;
-			Target1->Get<TargetBehaviour>()->NoHp = Health0Texture;
-
-			/*MorphAnimator::Sptr animation = Target1->Add<MorphAnimator>();
-
-			animation->AddClip(LungFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");*/
-
-			scene->Targets.push_back(Target1);
-		}
-
-		////////////////////////Enemies/////////////////////////////// 50 max range
-		GameObject::Sptr LargeEnemy = scene->CreateGameObject("LargeEnemy");
-		{
-			float x = (float)(rand() % 100 + (-50));
-			float y = (float)(rand() % 100 + (-50));
-			float z = (float)(rand() % 100 + (-50));
-			// Set and rotation position in the scene
-			LargeEnemy->SetPostion(glm::vec3(x, y, z));
-
-			// Add a render component
-			RenderComponent::Sptr renderer = LargeEnemy->Add<RenderComponent>();
-			renderer->SetMesh(LargeEnemyMesh);
-			renderer->SetMaterial(LargeEnemyMaterial);
-
-			// Add a dynamic rigid body to this monkey
-			RigidBody::Sptr physics = LargeEnemy->Add<RigidBody>(RigidBodyType::Dynamic);
-			physics->SetMass(0.0f);
-			BoxCollider::Sptr collider = BoxCollider::Create();
-			collider->SetScale(glm::vec3(3.04f, 4.23f, 3.44f));
-			collider->SetPosition(glm::vec3(0.0f, 2.0f, 0.0f));
-			physics->AddCollider(collider);
-
-
-			LargeEnemy->Add<EnemyBehaviour>();
-			LargeEnemy->Get<EnemyBehaviour>()->EnemyType = "Large Enemy";
-			LargeEnemy->Get<EnemyBehaviour>()->_maxHealth = 5;
-			LargeEnemy->Get<EnemyBehaviour>()->_speed = 0.5f;
-
-			MorphAnimator::Sptr animation = LargeEnemy->Add<MorphAnimator>();
-
-			animation->AddClip(LargeEnemyFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");
-
-			scene->Enemies.push_back(LargeEnemy);
-		}
-
-		GameObject::Sptr FastEnemy = scene->CreateGameObject("FastEnemy");
-		{
-			float x = (float)(rand() % 100 + (-50));
-			float y = (float)(rand() % 100 + (-50));
-			float z = (float)(rand() % 100 + (-50));
-			// Set and rotation position in the scene
-			FastEnemy->SetPostion(glm::vec3(x, y, z));
-
-			// Add a render component
-			RenderComponent::Sptr renderer = FastEnemy->Add<RenderComponent>();
-			renderer->SetMesh(FastEnemyMesh);
-			renderer->SetMaterial(FastEnemyMaterial);
-
-			// Add a dynamic rigid body to this monkey
-			RigidBody::Sptr physics = FastEnemy->Add<RigidBody>(RigidBodyType::Dynamic);
-			physics->SetMass(0.0f);
-			BoxCollider::Sptr collider = BoxCollider::Create();
-			collider->SetScale(glm::vec3(1.130f, 1.120f, 1.790f));
-			collider->SetPosition(glm::vec3(0.0f, 0.0f, 1.0f));
-			physics->AddCollider(collider);
-
-
-			FastEnemy->Add<EnemyBehaviour>();
-			FastEnemy->Get<EnemyBehaviour>()->EnemyType = "Fast Enemy";
-			FastEnemy->Get<EnemyBehaviour>()->_maxHealth = 1;
-			FastEnemy->Get<EnemyBehaviour>()->_speed = 3;
-
-			/*MorphAnimator::Sptr animation = FastEnemy->Add<MorphAnimator>();
-
-			animation->AddClip(FastEnemyFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");*/
-
-			scene->Enemies.push_back(FastEnemy);
-		}
-
-		GameObject::Sptr Enemy = scene->CreateGameObject("Enemy");
-		{
-			float x = (float)(rand() % 100 + (-50));
-			float y = (float)(rand() % 100 + (-50));
-			float z = (float)(rand() % 100 + (-50));
-			// Set and rotation position in the scene
-			Enemy->SetPostion(glm::vec3(x, y, z));
-
-			// Add a render component
-			RenderComponent::Sptr renderer = Enemy->Add<RenderComponent>();
-			renderer->SetMesh(NormalEnemyMesh);
-			renderer->SetMaterial(NormalEnemyMaterial);
-
-			// Add a dynamic rigid body to this monkey
-			RigidBody::Sptr physics = Enemy->Add<RigidBody>(RigidBodyType::Dynamic);
-			physics->SetMass(0.0f);
-			BoxCollider::Sptr collider = BoxCollider::Create();
-			collider->SetScale(glm::vec3(1.130f, 1.120f, 1.790f));
-			collider->SetPosition(glm::vec3(0.0f, 0.9f, 0.1f));
-			physics->AddCollider(collider);
-
-
-			Enemy->Add<EnemyBehaviour>();
-			Enemy->Get<EnemyBehaviour>()->EnemyType = "Normal Enemy";
-			Enemy->Get<EnemyBehaviour>()->_maxHealth = 3;
-			Enemy->Get<EnemyBehaviour>()->_speed = 1.5f;
-
-			MorphAnimator::Sptr animation = Enemy->Add<MorphAnimator>();
-
-			animation->AddClip(NormalEnemyFrames, 0.7f, "Idle");
-
-			animation->ActivateAnim("Idle");
-
-			scene->Enemies.push_back(Enemy);
-		}
-
 		//////////////// Background Objects ///// 50 max range
 
 		GameObject::Sptr BackgroundObjects = scene->CreateGameObject("BackgroundObjects");
@@ -971,131 +908,33 @@ void DefaultSceneLayer::_CreateScene()
 			YellowMicrobiota->Add<BackgroundObjectsBehaviour>();
 			BackgroundObjects->AddChild(YellowMicrobiota);
 		}
-		//////////////////// GAME OVER ////////////////////////////
-		GameObject::Sptr GameOver = scene->CreateGameObject("GameOver"); {
-			GameOver->SetPostion(glm::vec3(100000.0f));
-			GameOver->SetScale(glm::vec3(15.0f, 15.0f, 1.0f));
-			//Make a big tiled mesh
-			MeshResource::Sptr GameOverMesh = ResourceManager::CreateAsset<MeshResource>();
-			GameOverMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
-			GameOverMesh->GenerateMesh();
-
-			RenderComponent::Sptr renderer = GameOver->Add<RenderComponent>();
-			renderer->SetMesh(GameOverMesh);
-			renderer->SetMaterial(GameOverMaterial);
-		}
-		///////////////////////// GAME WIN ///////////////////////////
-		GameObject::Sptr GameWin = scene->CreateGameObject("GameWin"); {
-			GameWin->SetPostion(glm::vec3(200000.0f));
-			GameWin->SetScale(glm::vec3(15.0f, 15.0f, 1.0f));
-			//Make a big tiled mesh
-			MeshResource::Sptr GameWinMesh = ResourceManager::CreateAsset<MeshResource>();
-			GameWinMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
-			GameWinMesh->GenerateMesh();
-
-			RenderComponent::Sptr renderer = GameWin->Add<RenderComponent>();
-			renderer->SetMesh(GameWinMesh);
-			renderer->SetMaterial(GameWinMaterial);
-		}
-		////////////////////////// GAME PAUSE ///////////////////////
-		GameObject::Sptr GamePause = scene->CreateGameObject("GamePause"); {
-			GamePause->SetPostion(glm::vec3(300000.0f));
-			GamePause->SetScale(glm::vec3(15.0f, 15.0f, 1.0f));
-			//Make a big tiled mesh
-			MeshResource::Sptr GamePauseMesh = ResourceManager::CreateAsset<MeshResource>();
-			GamePauseMesh->AddParam(MeshBuilderParam::CreatePlane(ZERO, UNIT_Z, UNIT_X, glm::vec2(1.0f), glm::vec2(1.0f)));
-			GamePauseMesh->GenerateMesh();
-
-			RenderComponent::Sptr renderer = GamePause->Add<RenderComponent>();
-			renderer->SetMesh(GamePauseMesh);
-			renderer->SetMaterial(GamePauseMaterial);
-		}
 		/////////////////////////// UI //////////////////////////////
-		GameObject::Sptr EnemiesKilled = scene->CreateGameObject("EnemiesKilled");
+		GameObject::Sptr UI = scene->CreateGameObject("UI");
 		{
+			UI->Add<UiController>();
 
-			RectTransform::Sptr transform = EnemiesKilled->Add<RectTransform>();
-			transform->SetSize({ 10,10 });
-			transform->SetMin({ 60,29 });
+			UI->Get<UiController>()->Font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
+			UI->Get<UiController>()->Font->Bake();
 
-			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			font->Bake();
-
-			GuiText::Sptr EnemiesKilledText = EnemiesKilled->Add<GuiText>();
-			EnemiesKilledText->SetText("Enemies Killed: 0");
-			EnemiesKilledText->SetFont(font);
-			EnemiesKilledText->SetColor(glm::vec4(1.0f));
+			UI->Get<UiController>()->GameTitleTexture = TitleTexture;
+			UI->Get<UiController>()->GamePauseTexture = GamePauseTexture;
+			UI->Get<UiController>()->GameOverTexture = GameOverTexture;
+			UI->Get<UiController>()->GameWinTexture = GameWinTexture;
+			UI->Get<UiController>()->FullHp = Health100Texture;
+			UI->Get<UiController>()->NintyPercentHp = Health90Texture;
+			UI->Get<UiController>()->EightyPercentHp = Health80Texture;
+			UI->Get<UiController>()->SeventyPercentHp = Health70Texture;
+			UI->Get<UiController>()->SixtyPercentHp = Health60Texture;
+			UI->Get<UiController>()->HalfHp = Health50Texture;
+			UI->Get<UiController>()->FortyPercentHp = Health40Texture;
+			UI->Get<UiController>()->ThirtyPercentHp = Health30Texture;
+			UI->Get<UiController>()->TwentyPercentHp = Health20Texture;
+			UI->Get<UiController>()->TenPercentHp = Health10Texture;
+			UI->Get<UiController>()->NoHp = Health0Texture;
 
 		}
-		GameObject::Sptr Rounds = scene->CreateGameObject("Rounds");
-		{
 
-			RectTransform::Sptr transform = Rounds->Add<RectTransform>();
-			transform->SetSize({ 10,10 });
-			transform->SetMin({ 750, 29 });
-			transform->SetMax({ 750,29 });
-
-			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			font->Bake();
-
-			GuiText::Sptr GameRoundText = Rounds->Add<GuiText>();
-			GameRoundText->SetText("Round: 0");
-			GameRoundText->SetFont(font);
-			GameRoundText->SetColor(glm::vec4(1.0f));
-
-		}
-		GameObject::Sptr TargetHealth = scene->CreateGameObject("Lung 1 Health");
-		{
-			RectTransform::Sptr transform = TargetHealth->Add<RectTransform>();
-			transform->SetSize({ 185,102 });
-			transform->SetMin({ 8,278 });
-			transform->SetMax({ 190,382 });
-
-			GuiPanel::Sptr Health = TargetHealth->Add<GuiPanel>();
-			Health->SetTexture(Health100Texture);
-
-			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			font->Bake();
-
-			GuiText::Sptr TargetHealthNumber = TargetHealth->Add<GuiText>();
-			TargetHealthNumber->SetText("Lung 1 Health 100%");
-			TargetHealthNumber->SetFont(font);
-			TargetHealthNumber->SetColor(glm::vec4(1.0f));
-
-			Target->Get<TargetBehaviour>()->HealthUI = TargetHealth;
-		}
-		GameObject::Sptr Target1Health = scene->CreateGameObject("Lung 2 Health");
-		{
-			RectTransform::Sptr transform = Target1Health->Add<RectTransform>();
-			transform->SetSize({ 185,102 });
-			transform->SetMin({ 8,300 });
-			transform->SetMax({ 190,400 });
-
-			GuiPanel::Sptr Health = Target1Health->Add<GuiPanel>();
-			Health->SetTexture(Health100Texture);
-
-			Font::Sptr font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			font->Bake();
-
-			GuiText::Sptr Target1HealthNumber = Target1Health->Add<GuiText>();
-			Target1HealthNumber->SetText("Lung 2 Health 100%");
-			Target1HealthNumber->SetFont(font);
-			Target1HealthNumber->SetColor(glm::vec4(1.0f));
-
-			Target1->Get<TargetBehaviour>()->HealthUI = Target1Health;
-		}
-		GameObject::Sptr canvas = scene->CreateGameObject("UI Canvas");
-		{
-			RectTransform::Sptr transform = canvas->Add<RectTransform>();
-			transform->SetSize({ 800,800 });
-			transform->SetMin({ 0,0 });
-			transform->SetMax({ 800,800 });
-
-			GuiPanel::Sptr Title = canvas->Add<GuiPanel>();
-			Title->SetTexture(TitleTexture);
-		}
-
-		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/cell_ops_title_box.png"));
+		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/Title.png"));
 		GuiBatcher::SetDefaultBorderRadius(8);
 
 		// Save the asset manifest for all the resources we just loaded

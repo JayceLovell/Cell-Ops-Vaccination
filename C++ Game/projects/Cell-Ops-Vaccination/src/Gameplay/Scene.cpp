@@ -19,23 +19,29 @@
 #include <Gameplay/Components/GUI/GuiText.h>
 #include "Application/Application.h"
 #include <Gameplay/InputEngine.h>
+#include <Gameplay/Components/UIController.h>
+#include <Gameplay/Components/EnemySpawnerBehaviour.h>
+#include <Gameplay/Components/TargetController.h>
 
 namespace Gameplay {
 	Scene::Scene() :
 		_objects(std::vector<GameObject::Sptr>()),
 		_deletionQueue(std::vector<std::weak_ptr<GameObject>>()),
 		Lights(std::vector<Light>()),
+		Enemies(std::vector<GameObject::Sptr>()),
 		PlayerLastPosition(glm::vec3(0.0f)),
 		IsPlaying(false),
 		IsPaused(false),
-		PauseUIUp(false),
-		GameOver(false),
-		GameWon(false),
+		IsPauseUIUp(false),
+		IsGameEnd(false),
+		IsGameWon(false),
+		IsTitleUp(false),
+		IsLoseScreenUp(false),
+		IsWinScreenUp(false),
 		GameStarted(false),
 		IsCheatActivated(false),
 		GameRound(0),
 		EnemiesKilled(0),
-		EnemiesThreshold(10),
 		MainCamera(nullptr),
 		DefaultMaterial(nullptr),
 		_isAwake(false),
@@ -69,7 +75,9 @@ namespace Gameplay {
 		_CleanupPhysics();
 	}
 
-	////// Code Added//
+	////// Code Added //////////
+
+
 	GameObject::Sptr Scene::FindTarget()
 	{
 		if (Targets.size() != 0) {
@@ -79,7 +87,7 @@ namespace Gameplay {
 		else
 		{
 			RemoveGameObject(FindObjectByName("Player"));
-			GameOver = true;
+			IsGameEnd = true;
 		}
 		return nullptr;
 	}
@@ -93,148 +101,178 @@ namespace Gameplay {
 			Targets.erase(Targets.begin() + index);
 			RemoveGameObject(object);
 		}
-		FindObjectByName("Enemy")->Get<EnemyBehaviour>()->NewTarget();
-		FindObjectByName("FastEnemy")->Get<EnemyBehaviour>()->NewTarget();
-		FindObjectByName("LargeEnemy")->Get<EnemyBehaviour>()->NewTarget();
+		for (auto Enemy : Enemies) {
+			Enemy->Get<EnemyBehaviour>()->NewTarget();
+		}
 	}
-	/// <summary>
-	/// Level Difficulty Controller
-	/// </summary>
+	void Scene::DeleteEnemy(const GameObject::Sptr& object)
+	{
+		std::vector<GameObject::Sptr>::iterator it = std::find(Enemies.begin(), Enemies.end(), object);
+		if (it != Enemies.end())
+		{
+			int index = std::distance(Enemies.begin(), it);
+			Enemies.erase(Enemies.begin() + index);
+			LOG_INFO("Deleting Object {}", object->Name);
+		}
+		EnemiesKilled++;
+	}
 	void Scene::LevellCheck()
 	{
-		if (EnemiesKilled >= EnemiesThreshold) {
-			EnemiesThreshold = EnemiesThreshold + 10;
-			switch (GameRound)
+			switch (EnemiesKilled)
 			{
-			case 1:
-
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				for each (GameObject::Sptr var in Enemies)
-				{
-					var->Get<EnemyBehaviour>()->_speed++;
-				}
-				GameRound++;
-				UpdateUI();
-				break;
-			case 2:
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				for each (GameObject::Sptr var in Enemies)
-				{
-					var->Get<EnemyBehaviour>()->_speed++;
-				}
-				GameRound++;
-				UpdateUI();
-				break;
-			case 3:
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				for each (GameObject::Sptr var in Enemies)
-				{
-					var->Get<EnemyBehaviour>()->_speed++;
-				}
-				GameRound++;
-				UpdateUI();
-				break;
-			case 4:
-				for each (GameObject::Sptr var in Targets)
-				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
-					var->Get<TargetBehaviour>()->Heal();
-				}
-				for each (GameObject::Sptr var in Enemies)
-				{
-					var->Get<EnemyBehaviour>()->_speed++;
-				}
-				GameRound++;
-				UpdateUI();
-				break;
+			/// <summary>
+			/// rounds 1 - 5
+			/// </summary>
 			case 5:
 				for each (GameObject::Sptr var in Targets)
 				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				for each (GameObject::Sptr var in Enemies)
-				{
-					var->Get<EnemyBehaviour>()->_speed++;
-				}
 				GameRound++;
-				UpdateUI();
+				if (GameRound == 5) {
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 5, 5);
+				}
+				else if (GameRound > 2) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+				}
+				else {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 6);
+				}
+				EnemiesKilled = 0;
 				break;
-			case 6:
+			/// <summary>
+			/// Rounds 5 - 7
+			/// </summary>
+			case 9:
 				for each (GameObject::Sptr var in Targets)
 				{
-					var->Get<TargetBehaviour>()->MaxHealth += 100;
 					var->Get<TargetBehaviour>()->Heal();
 				}
-				for each (GameObject::Sptr var in Enemies)
+				GameRound++;
+				if (GameRound > 6) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 7, 7);
+				}
+				else {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 5, 5);
+				}
+				EnemiesKilled = 0;
+				break;
+			/// <summary>
+			/// round 8
+			/// </summary>
+			case 13:
+				for each (GameObject::Sptr var in Targets)
 				{
-					var->Get<EnemyBehaviour>()->_speed++;
+					var->Get<TargetBehaviour>()->Heal();
 				}
 				GameRound++;
-				UpdateUI();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 5, 9);
+				EnemiesKilled = 0;
+				break;
+			/// <summary>
+			/// round 9-10
+			/// </summary>
+			case 16:
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->Heal();
+				}
+				GameRound++;
+				if (GameRound == 10) {
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(5, 7, 11);
+				}
+				else {
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(5, 3, 9);
+				}
+				EnemiesKilled = 0;
+				break;
+			/// <summary>
+			/// Game Won
+			/// </summary>
+			case 20:
+				IsGameWon = true;
+				IsGameEnd = true;
 				break;
 			default:
 				break;
 			}
-			IsCheatActivated = false;
-		}
-		else if (EnemiesKilled > 50) {
-			RemoveGameObject(FindObjectByName("Player"));
-			RemoveGameObject(FindObjectByName("GameOver"));
-			RemoveGameObject(FindObjectByName("GamePause"));
-			GameWon = true;
-			GameOver = true;
+
+		IsCheatActivated = false;
+
+		if (EnemiesKilled > 26) {
+			IsGameWon = true;
+			IsGameEnd = true;
 		}
 	}
 
 	void Scene::GameStart()
 	{
-		RemoveGameObject(FindObjectByName("UI Canvas"));
-		EnemiesKilledUI = FindObjectByName("EnemiesKilled");
-		RoundUI= FindObjectByName("Rounds");
 		GameRound = 1;
-		std::string RoundText = "Round: ";
-		RoundText += std::to_string(GameRound);
-		RoundUI->Get<GuiText>()->SetText(RoundText);
+		EnemiesKilled = 0;
+		IsCheatActivated = false;
+
+		//Spawn Targets
+		TargetSpawnerObject->Get<TargetController>()->Spawntargets();
+
+		// Set up Lights for scene
+		Lights.resize(Targets.size());
+		int lightIndex;
+		lightIndex = 0;
+		for (auto Target : Targets) {
+			
+			Lights[lightIndex].Position = Target->GetPosition();
+			Lights[lightIndex].Color= glm::vec3(1.0f, 1.0f, 1.0f);
+			Lights[lightIndex].Range = 200.0f;
+			lightIndex++;
+		}
+		// Call this to bake lights
+		SetupShaderAndLights();
+
+		//Spawning first wave of enemies for round 1
+		//for (auto EnemySpawnerObject : EnemySpawnerObject) {
+			EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 6);
+		//}
+
+		//Change UI
+		UiControllerObject->Get<UiController>()->SetupGameScreen();
+		IsTitleUp = false;
+
 		GameStarted = true;
 	}
 
-	void Scene::UpdateUI()
+	void Scene::GameWon()
 	{
-		std::string RoundText = "Round: ";
-		RoundText += std::to_string(GameRound);
-		std::string EnemiesText = "Enemies Killed: ";
-		EnemiesText += std::to_string(EnemiesKilled);
-		RoundUI->Get<GuiText>()->SetText(RoundText);
-		EnemiesKilledUI->Get<GuiText>()->SetText(EnemiesText);
+		if (!IsTitleUp && !IsWinScreenUp) {
+			UiControllerObject->Get<UiController>()->GameWinScreen();
+			IsWinScreenUp = true;
+		}
+	}
+
+	void Scene::GameOver()
+	{
+		if (!IsTitleUp && !IsLoseScreenUp) {
+			UiControllerObject->Get<UiController>()->GameOverScreen();
+			IsLoseScreenUp = true;
+		}
 	}
 
 	void Scene::GamePause(bool IsPaused)
 	{
-		if (IsPaused && !PauseUIUp) {
-			PlayerLastPosition = FindObjectByName("Main Camera")->GetPosition();
-			FindObjectByName("Main Camera")->SetPostion(glm::vec3(0.0f));
-			FindObjectByName("Main Camera")->SetRotation(glm::vec3(0.0f));
-			FindObjectByName("GamePause")->SetPostion(glm::vec3(0.0f, -0.900f, -6.550f));
-			FindObjectByName("GamePause")->SetRotation(FindObjectByName("Main Camera")->GetRotation());
-			PauseUIUp = true;
+		if (IsPaused && !IsPauseUIUp) {
+			UiControllerObject->Get<UiController>()->GamePauseScreen();
+			IsPauseUIUp = true;
 		}
 		else {
-			FindObjectByName("Main Camera")->SetPostion(PlayerLastPosition);
-			FindObjectByName("GamePause")->SetPostion(glm::vec3(300000));
-			PauseUIUp = false;
+			RemoveGameObject(FindObjectByName("Game Pause"));
+			IsPauseUIUp = false;
 		}
 	}
 	
@@ -334,6 +372,11 @@ namespace Gameplay {
 		SetupShaderAndLights();
 
 		_isAwake = true;
+
+		//Code Added
+		UiControllerObject = FindObjectByName("UI");
+		TargetSpawnerObject = FindObjectByName("Target Spawner");
+		EnemySpawnerObject = FindObjectByName("Enemy Spawner");
 	}
 
 	void Scene::DoPhysics(float dt) {
@@ -365,19 +408,18 @@ namespace Gameplay {
 	}
 	//Game Loop
 	void Scene::Update(float dt) {
-		if (!GameOver)
+		if (!IsGameEnd)
 		{
 			//Cheats
-			if (InputEngine::IsKeyDown(GLFW_KEY_F2) && IsPaused){
+			if ((InputEngine::GetKeyState(GLFW_KEY_F2) == ButtonState::Pressed) && IsPaused) {
 				if (!IsCheatActivated) {
-					EnemiesKilled = EnemiesThreshold;
-					UpdateUI();
+					EnemiesKilled = 100;
 					IsCheatActivated = true;
 				}
 			}
 			// Pause
-			if (InputEngine::IsKeyDown(GLFW_KEY_ESCAPE)) {
-				if (IsPaused && PauseUIUp)
+			if (InputEngine::GetKeyState(GLFW_KEY_ESCAPE) == ButtonState::Pressed) {
+				if (IsPaused && IsPauseUIUp)
 				{
 					IsPaused = false;
 					GamePause(IsPaused);
@@ -404,23 +446,52 @@ namespace Gameplay {
 					for (auto& obj : _objects) {
 						obj->Update(dt);
 					}
-					LevellCheck();
+					if (GameStarted) {
+						UiControllerObject->Get<UiController>()->UpdateUI();
+						LevellCheck();
+					}
+				}
+			}
+			else {
+				if (!GameStarted && !IsTitleUp) {
+					for (auto Target : Targets) {
+						RemoveGameObject(Target);
+					}
+					for (auto Enemy : Enemies) {
+						RemoveGameObject(Enemy);
+					}
+					UiControllerObject->Get<UiController>()->GameTitleScreen();
+					IsTitleUp = true;
 				}
 			}
 			_FlushDeleteQueue();
 		}
 		else {
-			if (GameWon) {
-				FindObjectByName("Main Camera")->SetPostion(glm::vec3(0.0f));
-				FindObjectByName("Main Camera")->SetRotation(glm::vec3(0.0f));
-				FindObjectByName("GameWin")->SetPostion(glm::vec3(0.0f, -0.900f, -6.550f));
-				FindObjectByName("GameWin")->SetRotation(FindObjectByName("Main Camera")->GetRotation());
+
+			if (IsGameWon) {
+				GameWon();
 			}
 			else {
-				FindObjectByName("Main Camera")->SetPostion(glm::vec3(0.0f));
-				FindObjectByName("Main Camera")->SetRotation(glm::vec3(0.0f));
-				FindObjectByName("GameOver")->SetPostion(glm::vec3(0.0f, -0.900f, -6.550f));
-				FindObjectByName("GameOver")->SetRotation(FindObjectByName("Main Camera")->GetRotation());
+				GameOver();
+			}
+			/// <summary>
+			/// Restart Game
+			/// TODO: Major lag after restart cause:Unkown
+			/// </summary>
+			/// <param name="dt"></param>
+			if (InputEngine::GetKeyState(GLFW_KEY_TAB) == ButtonState::Pressed) {
+				
+				Lights.clear();
+				Enemies.clear();
+				IsGameEnd = false;
+				IsGameWon = false;
+				GameStarted = false;
+				IsTitleUp = false;
+				IsPlaying = false;
+
+				//Application& app = Application::Get();
+				//app.LoadScene("scene.json");
+				//app.CurrentScene()->Load("scene.json");
 			}
 		}
 	}

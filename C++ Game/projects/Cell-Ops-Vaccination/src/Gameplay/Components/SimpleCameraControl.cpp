@@ -33,8 +33,8 @@ void SimpleCameraControl::Update(float deltaTime)
 
 		_currentRot.x += static_cast<float>(delta.x) * _mouseSensitivity.x;
 		_currentRot.y += static_cast<float>(delta.y) * _mouseSensitivity.y;
-		glm::quat rotX = glm::angleAxis(glm::radians(_currentRot.x), glm::vec3(0, 0, 1));
-		glm::quat rotY = glm::angleAxis(glm::radians(_currentRot.y), glm::vec3(1, 0, 0));
+		glm::quat rotX = glm::angleAxis(glm::radians(_currentRot.x), glm::vec3(0, 0, -1));
+		glm::quat rotY = glm::angleAxis(glm::radians(_currentRot.y), glm::vec3(-1, 0, 0));
 		glm::quat currentRot = rotX * rotY;
 		GetGameObject()->SetRotation(currentRot);
 
@@ -75,7 +75,7 @@ void SimpleCameraControl::RenderImGui()
 {
 	LABEL_LEFT(ImGui::DragFloat2, "Mouse Sensitivity", &_mouseSensitivity.x, 0.01f);
 	LABEL_LEFT(ImGui::DragFloat3, "Move Speed       ", &_moveSpeeds.x, 0.01f, 0.01f);
-	LABEL_LEFT(ImGui::DragFloat , "Shift Multiplier ", &_shiftMultipler, 0.01f, 1.0f);
+	LABEL_LEFT(ImGui::DragFloat, "Shift Multiplier ", &_shiftMultipler, 0.01f, 1.0f);
 }
 
 nlohmann::json SimpleCameraControl::ToJson() const {
@@ -86,7 +86,7 @@ nlohmann::json SimpleCameraControl::ToJson() const {
 	};
 }
 
-SimpleCameraControl::Sptr SimpleCameraControl::FromJson(const nlohmann::json& blob) {
+SimpleCameraControl::Sptr SimpleCameraControl::FromJson(const nlohmann::json & blob) {
 	SimpleCameraControl::Sptr result = std::make_shared<SimpleCameraControl>();
 	result->_mouseSensitivity = JsonGet(blob, "mouse_sensitivity", result->_mouseSensitivity);
 	result->_moveSpeeds = JsonGet(blob, "move_speed", result->_moveSpeeds);

@@ -11,36 +11,29 @@ T LERP(const T& p0, const T& p1, float t)
 
 void EnemyBehaviour::Awake()
 {
-	//_body = GetComponent<Gameplay::Physics::RigidBody>();
-	/*if (_body == nullptr) {
-		IsEnabled = false;
-	}*/
-	_health = _maxHealth;
 	RespawnPosition = GetGameObject()->GetPosition();
 	Target = GetGameObject()->GetScene()->FindTarget();
-	GetGameObject()->SetRotation(glm::vec3(0.0f, 0.0f, 0.0f));
-	GetGameObject()->LookAt(Target.get()->GetPosition());
 }
 void EnemyBehaviour::RenderImGui() {
-	LABEL_LEFT(ImGui::DragFloat, "Speed", &_speed, 1.0f);
-	LABEL_LEFT(ImGui::DragFloat, "Health", &_health, 1.0f);
-	LABEL_LEFT(ImGui::DragFloat, "MaxHealth", &_maxHealth, 1.0f);
+	LABEL_LEFT(ImGui::DragFloat, "Speed", &Speed, 1.0f);
+	LABEL_LEFT(ImGui::DragFloat, "Health", &Health, 1.0f);
+	ImGui::Text, "Target", Target->Name.c_str();
+	ImGui::Text, "Enemy Type", EnemyType.c_str();
 }
 
 nlohmann::json EnemyBehaviour::ToJson() const {
 	return {
-		{"speed",_speed},
-		{"health",_health},
-		{"maxHealth",_maxHealth},
-		{"EnemyType",EnemyType}
+		{"speed",Speed},
+		{"Health",Health},
+		{"Target",Target->Name.c_str()},
+		{"EnemyType",EnemyType.c_str()}
 	};
 }
 
 EnemyBehaviour::EnemyBehaviour() :
 	IComponent(),
-	_speed(0.0f),
-	_health(0.0f),
-	_maxHealth(0.0f),
+	Speed(0.0f),
+	Health(0.0f),
 	EnemyType(""),
 	Target(nullptr),
 	RespawnPosition(glm::vec3(0.0f,0.0f,0.0f))
@@ -50,8 +43,9 @@ EnemyBehaviour::~EnemyBehaviour() = default;
 
 EnemyBehaviour::Sptr EnemyBehaviour::FromJson(const nlohmann::json & blob) {
 	EnemyBehaviour::Sptr result = std::make_shared<EnemyBehaviour>();
-	result->_health = blob["Health"];
-	result->_maxHealth = blob["MaxHealth"];
+	result->Speed = blob["Speed"];
+	result->Health = blob["Health"];
+	result->Target->Name = blob["Target"];
 	result->EnemyType = blob["EnemyType"];
 	return result;
 }
@@ -59,14 +53,14 @@ EnemyBehaviour::Sptr EnemyBehaviour::FromJson(const nlohmann::json & blob) {
 
 void EnemyBehaviour::Update(float deltaTime)
 {
-	lerpTimer += deltaTime * _speed;
+	lerpTimer += deltaTime * Speed;
 	if (lerpTimer >= lerpTimerMax) {
 		lerpTimer = 0;
 	}
 	float t;
 	t = lerpTimer / lerpTimerMax;
-
 	GetGameObject()->SetPostion(LERP(RespawnPosition, Target.get()->GetPosition(), t));
+	GetGameObject()->LookAt(Target.get()->GetPosition());
 }
 
 // After destroying target look for new one
@@ -78,23 +72,11 @@ void EnemyBehaviour::NewTarget()
 void EnemyBehaviour::TakeDamage()
 {
 	LOG_INFO("I {} Took Damage", EnemyType);
-	_health = _health - 1;
-	if (_health <= 0) {
+	Health = Health - 1;
+	if (Health <= 0) {
 		LOG_INFO("Killed {}", EnemyType);
-		GetGameObject()->GetScene()->EnemiesKilled++;
-		GetGameObject()->GetScene()->UpdateUI();
-		Reset();
+		GetGameObject()->GetScene()->DeleteEnemy(GetGameObject()->SelfRef());
+		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
 	}
 }
 
-void EnemyBehaviour::Reset()
-{
-	_health = _maxHealth;
-	float x = (float)(rand() % 50 + (-25));
-	float y = (float)(rand() % 50 + (-25));
-	float z = (float)(rand() % 50 + (-25));
-	RespawnPosition = glm::vec3(x, y, z);
-	GetGameObject()->SetPostion(RespawnPosition);
-	NewTarget();
-	GetGameObject()->LookAt(Target.get()->GetPosition());
-}
