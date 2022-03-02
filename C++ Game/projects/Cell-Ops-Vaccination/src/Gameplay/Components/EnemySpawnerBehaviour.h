@@ -9,6 +9,7 @@
 #include "Gameplay/Physics/Colliders/BoxCollider.h"
 #include "Gameplay/Scene.h"
 #include <Utils/ImGuiHelper.h>
+#include <Gameplay/Components/ParticleSystem.h>
 
 /// <summary>
 /// Spawns Enemies
@@ -59,6 +60,7 @@ private:
 	int _normalAmount;
 	int _fastAmount;
 	int _totalAmount;
+	int _spawned;
 
 	//Enemy Stats
 	float _largeEnemySpeed;
@@ -67,7 +69,7 @@ private:
 
 	/// <summary>
 	/// Delay Counter
-	/// Spawn at 5 seconds
+	/// Spawn in seconds example 500 = 5 seconds
 	/// </summary>
 	int _counter;
 

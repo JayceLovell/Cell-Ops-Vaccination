@@ -58,15 +58,18 @@ namespace Gameplay {
 		std::vector<GameObject::Sptr> Enemies;
 		std::vector<GameObject::Sptr> BackgroundObjects;
 		GameObject::Sptr EnemySpawnerObject;
+		GameObject::Sptr TargetSpawnerObject;
 		GameObject::Sptr UiControllerObject;
 		glm::vec3 PlayerLastPosition;
 		bool IsPaused;
 		bool IsPauseUIUp;
-		bool IsGameOver;
+		bool IsGameEnd;
 		bool IsGameWon;
 		bool GameStarted;
 		bool IsCheatActivated;
 		bool IsTitleUp;
+		bool IsWinScreenUp;
+		bool IsLoseScreenUp;
 		int GameRound;
 		int EnemiesKilled;
 

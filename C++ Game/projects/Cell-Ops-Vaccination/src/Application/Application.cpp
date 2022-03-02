@@ -40,11 +40,13 @@
 #include "Gameplay/Components/SimpleCameraControl.h"
 #include "Gameplay/Components/PlayerBehaviour.h"
 #include "Gameplay/Components/EnemyBehaviour.h"
+#include "Gameplay/Components/TargetController.h"
 #include "Gameplay/Components/TargetBehaviour.h"
 #include "Gameplay/Components/BackgroundObjectsBehaviour.h"
 #include "Gameplay/Components/MorphAnimator.h"
 #include "Gameplay/Components/UIController.h"
 #include "Gameplay/Components/EnemySpawnerBehaviour.h"
+#include "Gameplay/Components/ParticleSystem.h"
 
 // GUI
 #include "Gameplay/Components/GUI/RectTransform.h"
@@ -64,6 +66,9 @@ std::string Application::_applicationName = "Cell Ops Vaccination";
 #define DEFAULT_WINDOW_WIDTH 800
 #define DEFAULT_WINDOW_HEIGHT 800
 
+/// <summary>
+/// Reminder to turn isEditor to true for debug windows.
+/// </summary>
 Application::Application() :
 	_window(nullptr),
 	_windowSize({ DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT }),
@@ -270,6 +275,8 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<RectTransform>();
 	ComponentManager::RegisterType<GuiPanel>();
 	ComponentManager::RegisterType<GuiText>();
+	ComponentManager::RegisterType<TargetController>();
+	ComponentManager::RegisterType<ParticleSystem>();
 }
 
 void Application::_Load() {
@@ -406,9 +413,9 @@ void Application::_HandleSceneChange() {
 	_currentScene->Awake();
 
 	// If we are not in editor mode, scenes play by default
-	if (!_isEditor) {
-		_currentScene->IsPlaying = true;
-	}
+	//if (!_isEditor) {
+		//_currentScene->IsPlaying = true;
+	//}
 
 	_targetScene = nullptr;
 }

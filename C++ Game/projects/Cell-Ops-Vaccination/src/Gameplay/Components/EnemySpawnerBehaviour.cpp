@@ -6,16 +6,17 @@ EnemySpawnerBehaviour::EnemySpawnerBehaviour() :
 	IComponent(),
 	LargeEnemyMaterial(nullptr),
 	LargeEnemyMesh(nullptr),
-	_largeEnemySpeed(0.5f),
+	_largeEnemySpeed(0.1f),
 	NormalEnemyMaterial(nullptr),
 	NormalEnemyMesh(nullptr),
-	_normalEnemySpeed(1.5f),
+	_normalEnemySpeed(0.3f),
 	FastEnemyMaterial(nullptr),
 	FastEnemyMesh(nullptr),
-	_fastEnemySpeed(3.0f),
+	_fastEnemySpeed(0.5f),
 	_counter(0),
 	_totalAmount(0),
-	_isSpawning(false)
+	_isSpawning(false),
+	_spawned(0)
 {
 }
 
@@ -23,7 +24,7 @@ void EnemySpawnerBehaviour::Update(float deltaTime)
 {
 	if (_isSpawning) {
 		_counter++;
-		if (_counter == 5000) {
+		if (_counter == 500) {
 			_spawning();
 		}
 	}
@@ -38,7 +39,8 @@ nlohmann::json EnemySpawnerBehaviour::ToJson() const
 		{"Normal Enemy Speed",_normalEnemySpeed},
 		{"Fast Enemy Speed",_fastEnemySpeed},
 		{"Amount of enemies",GetGameObject()->GetScene()->Enemies.size()},
-		{"Total Spawning",_totalAmount}
+		{"Total Spawning",_totalAmount},
+		{"Spawned",_spawned}
 	};
 
 }
@@ -52,6 +54,7 @@ EnemySpawnerBehaviour::Sptr EnemySpawnerBehaviour::FromJson(const nlohmann::json
 	result->_normalEnemySpeed = blob["Normal Enemy Speed"];
 	result->_fastEnemySpeed = blob["Fast Enemy Speed"];
 	result->_totalAmount = blob["Total Spawning"];
+	result->_spawned = blob["Spawned"];
 	return result;
 }
 
@@ -63,10 +66,12 @@ void EnemySpawnerBehaviour::RenderImGui()
 	LABEL_LEFT(ImGui::DragFloat, "Normal Enemy Speed", &_normalEnemySpeed, 1.0f);
 	LABEL_LEFT(ImGui::DragFloat, "Fast Enemy Speed", &_fastEnemySpeed, 1.0f);
 	LABEL_LEFT(ImGui::DragInt, "Total Spawning", &_totalAmount, 1.0f);
+	LABEL_LEFT(ImGui::DragInt, "Spawned", &_spawned, 1.0f);
 }
 
 void EnemySpawnerBehaviour::SpawnWave(int LargeAmount, int NormalAmount, int FastAmount)
 {
+	_spawned = 0;
 	_isSpawning = true;
 	_largeAmount = LargeAmount;
 	_normalAmount = NormalAmount;
@@ -76,9 +81,9 @@ void EnemySpawnerBehaviour::SpawnWave(int LargeAmount, int NormalAmount, int Fas
 
 void EnemySpawnerBehaviour::IncreaseEnemySpeed()
 {
-	_largeEnemySpeed += 0.5;
-	_normalEnemySpeed += 0.3;
-	_fastEnemySpeed += 0.1;
+	_largeEnemySpeed += 0.1f;
+	_normalEnemySpeed += 0.3f;
+	_fastEnemySpeed += 0.5f;
 }
 
 void EnemySpawnerBehaviour::_createLargeEnemy()
@@ -111,7 +116,7 @@ void EnemySpawnerBehaviour::_createLargeEnemy()
 		animation->ActivateAnim("Idle");
 
 		GetGameObject()->GetScene()->Enemies.push_back(LargeEnemy);
-		GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(LargeEnemy);
+		//GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(LargeEnemy);
 	}
 }
 
@@ -146,7 +151,7 @@ void EnemySpawnerBehaviour::_createNormalEnemy()
 		animation->ActivateAnim("Idle");
 
 		GetGameObject()->GetScene()->Enemies.push_back(NormalEnemy);
-		GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(NormalEnemy);
+		//GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(NormalEnemy);
 	}
 }
 
@@ -155,6 +160,10 @@ void EnemySpawnerBehaviour::_createFastEnemy()
 	std::string EnemyName = "Enemy ID:" + std::to_string(GetGameObject()->GetScene()->Enemies.size());
 	Gameplay::GameObject::Sptr FastEnemy = GetGameObject()->GetScene()->CreateGameObject(EnemyName);
 	{
+		FastEnemy->SetPostion(GetGameObject()->SelfRef()->GetPosition());
+
+		ParticleSystem::Sptr Emitter = FastEnemy->Add<ParticleSystem>();
+		Emitter->AddEmitter(glm::vec3(0.0f), glm::vec3(20.0f, -1.0f, 10.0f), 20.0f, glm::vec4(0.0f, 0.18f, 1.0f, 1.0f));
 
 		// Add a render component
 		RenderComponent::Sptr renderer = FastEnemy->Add<RenderComponent>();
@@ -175,34 +184,47 @@ void EnemySpawnerBehaviour::_createFastEnemy()
 		FastEnemy->Get<EnemyBehaviour>()->Health = 1;
 		FastEnemy->Get<EnemyBehaviour>()->Speed = _fastEnemySpeed;
 
+
 		/*MorphAnimator::Sptr animation = FastEnemy->Add<MorphAnimator>();
 		animation->AddClip(FastEnemyFrames, 0.7f, "Idle");
 		animation->ActivateAnim("Idle");*/
 
 		GetGameObject()->GetScene()->Enemies.push_back(FastEnemy);
-		GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(FastEnemy);
+		//GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(FastEnemy);
 	}
 }
 
 void EnemySpawnerBehaviour::_spawning()
 {
-	if (_totalAmount > GetGameObject()->GetScene()->Enemies.size())
+	if (_totalAmount > _spawned)
 	{
-		if (_fastAmount > 0) {
-			_createFastEnemy();
-			_fastAmount -= 1;
-			_counter = 0;
+		int a = rand()%3;
+		switch (a) {
+		case 0:
+			if (_fastAmount > 0) {
+				_createFastEnemy();
+				_fastAmount -= 1;
+				_spawned++;
+			}
+			break;
+		case 1:
+			if (_normalAmount > 0) {
+				_createNormalEnemy();
+				_normalAmount -= 1;
+				_spawned++;
+			}
+			break;
+		case 2:
+			if (_largeAmount > 0) {
+				_createLargeEnemy();
+				_largeAmount -= 1;
+				_spawned++;
+			}
+			break;
+		default:
+			break;
 		}
-		else if (_normalAmount > 0) {
-			_createNormalEnemy();
-			_normalAmount -= 1;
-			_counter = 0;
-		}
-		else if (_largeAmount > 0) {
-			_createLargeEnemy();
-			_largeAmount -= 1;
-			_counter = 0;
-		}
+		_counter = 0;
 	}
 	else
 	{
