@@ -68,6 +68,8 @@ namespace Gameplay {
 		bool GameStarted;
 		bool IsCheatActivated;
 		bool IsTitleUp;
+		bool IsWinScreenUp;
+		bool IsLoseScreenUp;
 		int GameRound;
 		int EnemiesKilled;
 

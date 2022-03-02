@@ -71,6 +71,7 @@ void EnemySpawnerBehaviour::RenderImGui()
 
 void EnemySpawnerBehaviour::SpawnWave(int LargeAmount, int NormalAmount, int FastAmount)
 {
+	_spawned = 0;
 	_isSpawning = true;
 	_largeAmount = LargeAmount;
 	_normalAmount = NormalAmount;

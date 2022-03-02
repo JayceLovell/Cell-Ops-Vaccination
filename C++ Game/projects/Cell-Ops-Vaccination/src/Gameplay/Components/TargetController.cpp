@@ -52,7 +52,6 @@ void TargetController::Spawntargets()
 			Target->Get<TargetBehaviour>()->TargetSetUp(100);
 
 			GetGameObject()->GetScene()->Targets.push_back(Target);
-			//GetGameObject()->GetScene()->FindObjectByName("List Of Targets")->AddChild(Target);
 		}
 		_isNotSafe = true;
 	}

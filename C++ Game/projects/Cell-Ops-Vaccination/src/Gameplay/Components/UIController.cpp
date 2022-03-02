@@ -41,8 +41,10 @@ void UiController::UpdateUI()
 		Gameplay::GameObject::Sptr TargetUI = GetGameObject()->GetScene()->FindObjectByName(TargetUIName);
 		int TargetHealthPrecentage = Target->Get<TargetBehaviour>()->HealthInPercentage;
 
-		if (TargetHealthPrecentage <= 0)
+		if (TargetHealthPrecentage <= 0) {
 			TargetUI->Get<GuiPanel>()->SetTexture(NoHp);
+			GetGameObject()->GetScene()->RemoveGameObject(TargetUI);
+		}
 		else if (TargetHealthPrecentage < 10)
 			TargetUI->Get<GuiPanel>()->SetTexture(TenPercentHp);
 		else if (TargetHealthPrecentage < 20)
@@ -71,6 +73,14 @@ void UiController::UpdateUI()
 void UiController::SetupGameScreen()
 {
 	GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("Game Title"));
+	if (GetGameObject()->GetScene()->IsLoseScreenUp) {
+		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("GameOver"));
+		GetGameObject()->GetScene()->IsLoseScreenUp = false;
+	}
+	if (GetGameObject()->GetScene()->IsWinScreenUp) {
+		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("GameWin"));
+		GetGameObject()->GetScene()->IsWinScreenUp = false;
+	}
 
 	_createUiObject("EnemiesKilled", "Enemied Killed :0/0", 10, 10, 60, 29, glm::vec4(1.0f));
 
@@ -84,13 +94,13 @@ void UiController::SetupGameScreen()
 	int SetMaxY = 382;
 	for (auto Target : GetGameObject()->GetScene()->Targets) {
 		std::string TargetName=Target->Name;
-		_createUiObject(TargetName+" UI", TargetName+" Health 100 % ", 185, 102, 8, SetMinY, SetMaxX, SetMaxY, FullHp, glm::vec4(1.0f));
+		if (!GetGameObject()->GetScene()->FindObjectByName(TargetName + " UI"))
+			_createUiObject(TargetName + " UI", TargetName + " Health 100 % ", 185, 102, 8, SetMinY, SetMaxX, SetMaxY, FullHp, glm::vec4(1.0f));
+
 		SetMinY += 22;
 		SetMaxX -= 2;
 		SetMaxY += 18;
 	}
-	/*_createUiObject(TargetName + " UI", TargetName + " Health 100 % ", 185, 102, 8, 278, 192, 382, FullHp, glm::vec4(1.0f));
-	_createUiObject(TargetName + " UI", TargetName + " Health 100 % ", 185, 102, 8, 300, 190, 400, FullHp, glm::vec4(1.0f));*/
 }
 
 void UiController::GameTitleScreen()
@@ -143,17 +153,19 @@ void UiController::GameOverScreen()
 
 void UiController::GameWinScreen()
 {
-	Gameplay::GameObject::Sptr GameWin = GetGameObject()->GetScene()->CreateGameObject("GameWin"); {
+	if (!GetGameObject()->GetScene()->FindObjectByName("GameWin")) {
+		Gameplay::GameObject::Sptr GameWin = GetGameObject()->GetScene()->CreateGameObject("GameWin"); {
 
-		RectTransform::Sptr transform = GameWin->Add<RectTransform>();
-		transform->SetSize({ 800,800 });
-		transform->SetMin({ 0,0 });
-		transform->SetMax({ 800,800 });
+			RectTransform::Sptr transform = GameWin->Add<RectTransform>();
+			transform->SetSize({ 800,800 });
+			transform->SetMin({ 0,0 });
+			transform->SetMax({ 800,800 });
 
-		GuiPanel::Sptr GamePausePanel = GameWin->Add<GuiPanel>();
-		GamePausePanel->SetTexture(GameWinTexture);
+			GuiPanel::Sptr GamePausePanel = GameWin->Add<GuiPanel>();
+			GamePausePanel->SetTexture(GameWinTexture);
 
-		GetGameObject()->AddChild(GameWin);
+			GetGameObject()->AddChild(GameWin);
+		}
 	}
 }
 
