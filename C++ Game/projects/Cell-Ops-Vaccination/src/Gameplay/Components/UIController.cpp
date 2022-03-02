@@ -82,9 +82,12 @@ void UiController::SetupGameScreen()
 		GetGameObject()->GetScene()->IsWinScreenUp = false;
 	}
 
+	if (!GetGameObject()->GetScene()->FindObjectByName("EnemiesKilled"))
 	_createUiObject("EnemiesKilled", "Enemied Killed :0/0", 10, 10, 60, 29, glm::vec4(1.0f));
 
+	if (!GetGameObject()->GetScene()->FindObjectByName("Rounds"))
 	_createUiObject("Rounds", "Round: 0", 10, 10, 750, 29, 750, 29, glm::vec4(1.0f));
+
 	std::string RoundText = "Round: ";
 	RoundText += std::to_string(GetGameObject()->GetScene()->GameRound);
 	GetGameObject()->GetScene()->FindObjectByName("Rounds")->Get<GuiText>()->SetText(RoundText);

@@ -454,8 +454,6 @@ namespace Gameplay {
 			}
 			else {
 				if (!GameStarted && !IsTitleUp) {
-					RemoveGameObject(FindObjectByName("EnemiesKilled"));
-					RemoveGameObject(FindObjectByName("Rounds"));
 					for (auto Target : Targets) {
 						RemoveGameObject(Target);
 					}
@@ -476,13 +474,24 @@ namespace Gameplay {
 			else {
 				GameOver();
 			}
-			//Restart
+			/// <summary>
+			/// Restart Game
+			/// TODO: Major lag after restart cause:Unkown
+			/// </summary>
+			/// <param name="dt"></param>
 			if (InputEngine::GetKeyState(GLFW_KEY_TAB) == ButtonState::Pressed) {
+				
+				Lights.clear();
+				Enemies.clear();
 				IsGameEnd = false;
 				IsGameWon = false;
 				GameStarted = false;
 				IsTitleUp = false;
 				IsPlaying = false;
+
+				//Application& app = Application::Get();
+				//app.LoadScene("scene.json");
+				//app.CurrentScene()->Load("scene.json");
 			}
 		}
 	}
