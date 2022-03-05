@@ -9,7 +9,6 @@
 #include "Gameplay/Physics/Colliders/BoxCollider.h"
 #include "Gameplay/Scene.h"
 #include <Utils/ImGuiHelper.h>
-#include <Gameplay/Components/ParticleSystem.h>
 
 /// <summary>
 /// Spawns Enemies

@@ -53,6 +53,7 @@ namespace Gameplay {
 
 		// Whether the application is in "play mode", lets us leverage editors!
 		bool                       IsPlaying;
+		bool	isDestroyed;
 		/// Things I added for our game
 		std::vector<GameObject::Sptr> Targets;
 		std::vector<GameObject::Sptr> Enemies;

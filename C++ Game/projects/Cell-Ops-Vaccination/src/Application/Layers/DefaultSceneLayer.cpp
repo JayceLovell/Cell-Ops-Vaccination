@@ -489,7 +489,7 @@ void DefaultSceneLayer::_CreateScene()
 			//TargetSpawner->Get<TargetController>()->TargetFrames.push_back(RightLungFrames);
 
 			TargetSpawner->Get<TargetController>()->TargetNames.push_back("Heart");
-			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(0.0f, 0.0f, 0.0));
+			TargetSpawner->Get<TargetController>()->TargetPositions.push_back(glm::vec3(10.0f, 10.0f, 10.0));
 			TargetSpawner->Get<TargetController>()->TargetMeshs.push_back(HeartMesh);
 			TargetSpawner->Get<TargetController>()->TargetMaterials.push_back(HeartMaterial);
 
@@ -521,60 +521,6 @@ void DefaultSceneLayer::_CreateScene()
 
 			//scene->EnemySpawnerObjects.push_back(EnemySpawner);
 		}
-		//GameObject::Sptr EnemySpawner2 = scene->CreateGameObject("Enemy Spawner 2");
-		//{
-		//	EnemySpawner2->Add<EnemySpawnerBehaviour>();
-
-		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
-		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
-		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
-
-		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
-		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
-		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
-
-		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
-		//	EnemySpawner2->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
-		//	//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
-
-		//	scene->EnemySpawnerObjects.push_back(EnemySpawner2);
-		//}
-		//GameObject::Sptr EnemySpawner3 = scene->CreateGameObject("Enemy Spawner 3");
-		//{
-		//	EnemySpawner3->Add<EnemySpawnerBehaviour>();
-
-		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
-		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
-		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
-
-		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
-		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
-		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
-
-		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
-		//	EnemySpawner3->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
-		//	//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
-
-		//	scene->EnemySpawnerObjects.push_back(EnemySpawner3);
-		//}
-		//GameObject::Sptr EnemySpawner4 = scene->CreateGameObject("Enemy Spawner 4");
-		//{
-		//	EnemySpawner4->Add<EnemySpawnerBehaviour>();
-
-		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
-		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
-		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
-
-		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
-		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
-		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
-
-		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
-		//	EnemySpawner4->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
-		//	//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
-
-		//	scene->EnemySpawnerObjects.push_back(EnemySpawner4);
-		//}
 		
 		//OBJECTS BELOW HAVE A SPAWN RANGE OF - (X,Y,Z) TO + (X,Y,Z)
 		//////////////// Background Objects ///// 50 max range

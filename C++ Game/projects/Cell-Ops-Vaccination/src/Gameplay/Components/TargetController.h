@@ -8,6 +8,7 @@
 #include "Gameplay/Physics/Colliders/ConvexMeshCollider.h"
 #include "Gameplay/Scene.h"
 #include <Utils/ImGuiHelper.h>
+#include "Gameplay/Components/ParticleSystem.h"
 
 class TargetController :public Gameplay::IComponent
 {
@@ -42,7 +43,6 @@ public:
 	/// </summary>
 	void Spawntargets();
 private:
-	std::vector<glm::vec3> _occupiedPositions;
 	bool _isNotSafe;
 	glm::vec3 _targetPosition;
 

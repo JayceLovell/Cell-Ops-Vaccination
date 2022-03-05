@@ -59,6 +59,7 @@
 #include "Layers/ImGuiDebugLayer.h"
 #include "Utils/ImGuiHelper.h"
 #include "Gameplay/Components/ComponentManager.h"
+#include <Application/Layers/ParticleLayer.h>
 
 Application* Application::_singleton = nullptr;
 std::string Application::_applicationName = "Cell Ops Vaccination";
@@ -154,6 +155,7 @@ void Application::_Run()
 	_layers.push_back(std::make_shared<RenderLayer>());
 	_layers.push_back(std::make_shared<InterfaceLayer>());
 	_layers.push_back(std::make_shared<LogicUpdateLayer>());
+	_layers.push_back(std::make_shared<ParticleLayer>());
 
 	// If we're in editor mode, we add all the editor layers
 	if (_isEditor) {

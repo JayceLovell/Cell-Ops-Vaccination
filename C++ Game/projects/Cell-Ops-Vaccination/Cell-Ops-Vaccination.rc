@@ -52,8 +52,7 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-
-IDI_ICON1               ICON                    "res\\icons\\3rd Set\\favicon.ico"
+IDI_ICON1               ICON                    "res\\icons\\3rd Set\\exe.ico"
 
 #endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
