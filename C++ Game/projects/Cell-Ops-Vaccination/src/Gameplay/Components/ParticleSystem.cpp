@@ -33,114 +33,116 @@ ParticleSystem::~ParticleSystem()
 
 void ParticleSystem::Update()
 {
-	// If we haven't previously initialized our data, initialize it now
-	if (!_hasInit) {
-		// Allocate some temp space for particles, so we can init the emitters
-		size_t dataSize = (_maxParticles + _emitters.size()) * sizeof(ParticleData);
-		ParticleData* data = new ParticleData[_maxParticles + _emitters.size()];
-		memset(data, 0, dataSize);
+	if (!GetGameObject()->GetScene()->IsPaused) {
+		// If we haven't previously initialized our data, initialize it now
+		if (!_hasInit) {
+			// Allocate some temp space for particles, so we can init the emitters
+			size_t dataSize = (_maxParticles + _emitters.size()) * sizeof(ParticleData);
+			ParticleData* data = new ParticleData[_maxParticles + _emitters.size()];
+			memset(data, 0, dataSize);
 
-		// Add all emitter to the the particle list at the beginning
-		for (int ix = 0; ix < _emitters.size(); ix++) {
-			data[ix] = _emitters[ix];
+			// Add all emitter to the the particle list at the beginning
+			for (int ix = 0; ix < _emitters.size(); ix++) {
+				data[ix] = _emitters[ix];
+			}
+
+			// We essentially use double buffering, hence the 2 buffers
+			glCreateTransformFeedbacks(2, _feedbackBuffers);
+			glCreateBuffers(2, _particleBuffers);
+
+			// Set up our first transform feedback buffer to write to the first buffer
+			glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, _feedbackBuffers[0]);
+			glBindBuffer(GL_ARRAY_BUFFER, _particleBuffers[0]);
+			glBufferData(GL_ARRAY_BUFFER, dataSize, data, GL_DYNAMIC_DRAW);
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, _particleBuffers[0]);
+
+			// Set up the second transform feedback buffer to write to the second buffer
+			glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, _feedbackBuffers[1]);
+			glBindBuffer(GL_ARRAY_BUFFER, _particleBuffers[1]);
+			glBufferData(GL_ARRAY_BUFFER, dataSize, data, GL_DYNAMIC_DRAW);
+			glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, _particleBuffers[1]);
+
+			// We create a query object to track the number of particles we're simulating
+			glGenQueries(1, &_query);
+
+			// We no longer need the CPU copy
+			delete[] data;
 		}
 
-		// We essentially use double buffering, hence the 2 buffers
-		glCreateTransformFeedbacks(2, _feedbackBuffers);
-		glCreateBuffers(2, _particleBuffers);
 
-		// Set up our first transform feedback buffer to write to the first buffer
-		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, _feedbackBuffers[0]);
-		glBindBuffer(GL_ARRAY_BUFFER, _particleBuffers[0]);
-		glBufferData(GL_ARRAY_BUFFER, dataSize, data, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, _particleBuffers[0]);
+		// Disable rasterization, this is update only
+		glEnable(GL_RASTERIZER_DISCARD);
 
-		// Set up the second transform feedback buffer to write to the second buffer
-		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, _feedbackBuffers[1]);
-		glBindBuffer(GL_ARRAY_BUFFER, _particleBuffers[1]);
-		glBufferData(GL_ARRAY_BUFFER, dataSize, data, GL_DYNAMIC_DRAW);
-		glBindBufferBase(GL_TRANSFORM_FEEDBACK_BUFFER, 0, _particleBuffers[1]);
+		// Make sure no VAOs are bound
+		glBindVertexArray(0);
 
-		// We create a query object to track the number of particles we're simulating
-		glGenQueries(1, &_query);
+		// Bind the buffer and transform feedback
+		glBindBuffer(GL_ARRAY_BUFFER, _particleBuffers[_currentVertexBuffer]);
+		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, _feedbackBuffers[_currentFeedbackBuffer]);
 
-		// We no longer need the CPU copy
-		delete[] data;
+		// Enable our attributes, aside from color since it doesn't impact simulation
+		glEnableVertexAttribArray(0);
+		glEnableVertexAttribArray(1);
+		glEnableVertexAttribArray(2);
+		glEnableVertexAttribArray(3);
+		glEnableVertexAttribArray(4);
+		glEnableVertexAttribArray(5);
+
+		glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ParticleData), 0); // type
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Position)); // position
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Velocity)); // velocity
+		glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Color)); // color 
+		glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Lifetime)); // metadata 
+		glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Metadata)); // metadata 
+
+		// Bind the update shader and send our relevant uniforms
+		_updateShader->Bind();
+		_updateShader->SetUniform("u_Gravity", _gravity);
+
+		// Our particles are points that we're simulating
+		glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, _query);
+		glBeginTransformFeedback(GL_POINTS);
+
+		// If this is our first pass, we use drawArrays to get the initial state, otherwise we use transform feedback for rendering
+		if (!_hasInit) {
+			glDrawArrays(GL_POINTS, 0, _emitters.size());
+		}
+		else {
+			glDrawTransformFeedback(GL_POINTS, _feedbackBuffers[_currentVertexBuffer]);
+		}
+
+		// End of transform feedback
+		glEndTransformFeedback();
+		glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
+
+		// Use our query to get the number of particles
+		glGetQueryObjectuiv(_query, GL_QUERY_RESULT, &_numParticles);
+		if (_numParticles >= _emitters.size()) {
+			_numParticles -= _emitters.size();
+		}
+		else {
+			_numParticles = 0;
+		}
+
+		// Clean up our state
+		glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
+
+		glDisableVertexAttribArray(0);
+		glDisableVertexAttribArray(1);
+		glDisableVertexAttribArray(2);
+		glDisableVertexAttribArray(3);
+		glDisableVertexAttribArray(4);
+		glDisableVertexAttribArray(5);
+
+		// Re-enable rasterization for later OpenGL calls
+		glDisable(GL_RASTERIZER_DISCARD);
+
+		_hasInit = true;
+
+		// Double-buffering, swap which buffers we're operating on
+		_currentVertexBuffer = _currentFeedbackBuffer;
+		_currentFeedbackBuffer = (_currentFeedbackBuffer + 1) & 0x01;
 	}
-
-
-	// Disable rasterization, this is update only
-	glEnable(GL_RASTERIZER_DISCARD);
-
-	// Make sure no VAOs are bound
-	glBindVertexArray(0);
-
-	// Bind the buffer and transform feedback
-	glBindBuffer(GL_ARRAY_BUFFER, _particleBuffers[_currentVertexBuffer]);
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, _feedbackBuffers[_currentFeedbackBuffer]);
-
-	// Enable our attributes, aside from color since it doesn't impact simulation
-	glEnableVertexAttribArray(0);
-	glEnableVertexAttribArray(1);
-	glEnableVertexAttribArray(2);
-	glEnableVertexAttribArray(3);
-	glEnableVertexAttribArray(4);
-	glEnableVertexAttribArray(5);
-
-	glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, sizeof(ParticleData), 0); // type
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Position)); // position
-	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Velocity)); // velocity
-	glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Color)); // color 
-	glVertexAttribPointer(4, 1, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Lifetime)); // metadata 
-	glVertexAttribPointer(5, 4, GL_FLOAT, GL_FALSE, sizeof(ParticleData), (const GLvoid*)offsetof(ParticleData, Metadata)); // metadata 
-
-	// Bind the update shader and send our relevant uniforms
-	_updateShader->Bind();
-	_updateShader->SetUniform("u_Gravity", _gravity);
-
-	// Our particles are points that we're simulating
-	glBeginQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN, _query);
-	glBeginTransformFeedback(GL_POINTS);
-
-	// If this is our first pass, we use drawArrays to get the initial state, otherwise we use transform feedback for rendering
-	if (!_hasInit) {
-		glDrawArrays(GL_POINTS, 0, _emitters.size());
-	}
-	else {
-		glDrawTransformFeedback(GL_POINTS, _feedbackBuffers[_currentVertexBuffer]);
-	}
-
-	// End of transform feedback
-	glEndTransformFeedback();
-	glEndQuery(GL_TRANSFORM_FEEDBACK_PRIMITIVES_WRITTEN);
-
-	// Use our query to get the number of particles
-	glGetQueryObjectuiv(_query, GL_QUERY_RESULT, &_numParticles);
-	if (_numParticles >= _emitters.size()) {
-		_numParticles -= _emitters.size();
-	}
-	else {
-		_numParticles = 0;
-	}
-
-	// Clean up our state
-	glBindTransformFeedback(GL_TRANSFORM_FEEDBACK, 0);
-
-	glDisableVertexAttribArray(0);
-	glDisableVertexAttribArray(1);
-	glDisableVertexAttribArray(2);
-	glDisableVertexAttribArray(3);
-	glDisableVertexAttribArray(4);
-	glDisableVertexAttribArray(5);
-
-	// Re-enable rasterization for later OpenGL calls
-	glDisable(GL_RASTERIZER_DISCARD);
-
-	_hasInit = true;
-
-	// Double-buffering, swap which buffers we're operating on
-	_currentVertexBuffer = _currentFeedbackBuffer;
-	_currentFeedbackBuffer = (_currentFeedbackBuffer + 1) & 0x01;
 }
 
 void ParticleSystem::Render()

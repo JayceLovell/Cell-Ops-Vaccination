@@ -8,6 +8,7 @@
 #include <Utils/ImGuiHelper.h>
 #include <Gameplay/Components/GUI/GuiText.h>
 #include <Gameplay/Components/GUI/GuiPanel.h>
+#include "Gameplay/Components/ParticleSystem.h"
 
 /// <summary>
 /// Target Behaviour
@@ -37,6 +38,11 @@ public:
 	/// </summary>
 	/// <param name="MaxHealth">Max Health of target</param>
 	void TargetSetUp(float MaxHealth);
+	/// <summary>
+	/// Changes things to make player alert of target being attacked
+	/// </summary>
+	/// <param name="Attackstatus">Boolean on if being attacked or not</param>
+	void Alert(bool Attackstatus);
 
 	int HealthInPercentage;
 	std::string HealthUiName;
@@ -44,6 +50,8 @@ public:
 protected:
 	float _maxHealth;
 	float _health;
+	bool _isBeingAttacked;
+	int _coolDownAlertCounter;
 	RenderComponent::Sptr _renderer;
 };
 

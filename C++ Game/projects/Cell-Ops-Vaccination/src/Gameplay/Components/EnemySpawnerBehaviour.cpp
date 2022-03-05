@@ -151,19 +151,15 @@ void EnemySpawnerBehaviour::_createNormalEnemy()
 		animation->ActivateAnim("Idle");
 
 		GetGameObject()->GetScene()->Enemies.push_back(NormalEnemy);
-		//GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(NormalEnemy);
 	}
 }
 
 void EnemySpawnerBehaviour::_createFastEnemy()
 {
-	std::string EnemyName = "Enemy ID:" + std::to_string(GetGameObject()->GetScene()->Enemies.size());
+	std::string EnemyName = "Enemy ID:" + std::to_string((GetGameObject()->GetScene()->Enemies.size()+1));
 	Gameplay::GameObject::Sptr FastEnemy = GetGameObject()->GetScene()->CreateGameObject(EnemyName);
 	{
 		FastEnemy->SetPostion(GetGameObject()->SelfRef()->GetPosition());
-
-		ParticleSystem::Sptr Emitter = FastEnemy->Add<ParticleSystem>();
-		Emitter->AddEmitter(glm::vec3(0.0f), glm::vec3(20.0f, -1.0f, 10.0f), 20.0f, glm::vec4(0.0f, 0.18f, 1.0f, 1.0f));
 
 		// Add a render component
 		RenderComponent::Sptr renderer = FastEnemy->Add<RenderComponent>();
