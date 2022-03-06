@@ -4,6 +4,7 @@
 TargetController::TargetController():
 	IComponent(),
 	TargetNames(std::vector<std::string>()),
+	TargetPositions(std::vector<glm::vec3>()),
 	TargetMeshs(std::vector<Gameplay::MeshResource::Sptr>()),
 	TargetMaterials(std::vector<Gameplay::Material::Sptr>()),
 	TargetFrames(std::vector<Gameplay::MeshResource::Sptr>()),
@@ -20,8 +21,10 @@ void TargetController::Update(float deltaTime)
 nlohmann::json TargetController::ToJson() const
 {
 	return {
-		/*{ "TargetNames", TargetNames},
-		{ "TargetMeshs", TargetMeshs ? TargetMeshs->GetGUID().str() : "null"},
+		{ "TargetNames", TargetNames},
+		{"TargetPositions",TargetPositions}
+		//{"TargetMeshs",TargetMeshs}
+		/*{ "TargetMeshs", TargetMeshs ? TargetMeshs->GetGUID().str() : "null"},
 		{ "TargetMaterials", TargetMaterials},
 		{ "TargetFrames", TargetFrames}*/
 	};
@@ -29,8 +32,10 @@ nlohmann::json TargetController::ToJson() const
 TargetController::Sptr TargetController::FromJson(const nlohmann::json& blob)
 {
 	TargetController::Sptr result = std::make_shared<TargetController>();
-	/*result->TargetNames = JsonGet(blob, "TargetNames", result->TargetNames);
+	result->TargetNames = JsonGet(blob, "TargetNames", result->TargetNames);
+	result->TargetPositions = JsonGet(blob, "TargetPositions", result->TargetPositions);
 	result->TargetMeshs = JsonGet(blob, "TargetMeshs", result->TargetMeshs);
+	/*result->TargetMeshs = JsonGet(blob, "TargetMeshs", result->TargetMeshs);
 	result->TargetMaterials = JsonGet(blob, "TargetMaterials", result->TargetMaterials);
 	result->TargetNames = JsonGet(blob, "TargetNames", result->TargetNames);*/
 	return result;
