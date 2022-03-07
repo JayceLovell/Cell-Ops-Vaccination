@@ -34,8 +34,8 @@ TargetController::Sptr TargetController::FromJson(const nlohmann::json& blob)
 	TargetController::Sptr result = std::make_shared<TargetController>();
 	result->TargetNames = JsonGet(blob, "TargetNames", result->TargetNames);
 	result->TargetPositions = JsonGet(blob, "TargetPositions", result->TargetPositions);
-	result->TargetMeshs = JsonGet(blob, "TargetMeshs", result->TargetMeshs);
 	/*result->TargetMeshs = JsonGet(blob, "TargetMeshs", result->TargetMeshs);
+	result->TargetMeshs = JsonGet(blob, "TargetMeshs", result->TargetMeshs);
 	result->TargetMaterials = JsonGet(blob, "TargetMaterials", result->TargetMaterials);
 	result->TargetNames = JsonGet(blob, "TargetNames", result->TargetNames);*/
 	return result;

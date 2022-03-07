@@ -58,7 +58,7 @@ namespace Gameplay {
 		std::vector<GameObject::Sptr> Targets;
 		std::vector<GameObject::Sptr> Enemies;
 		std::vector<GameObject::Sptr> BackgroundObjects;
-		GameObject::Sptr EnemySpawnerObject;
+		std::vector<GameObject::Sptr> EnemySpawnerObjects;
 		GameObject::Sptr TargetSpawnerObject;
 		GameObject::Sptr UiControllerObject;
 		glm::vec3 PlayerLastPosition;

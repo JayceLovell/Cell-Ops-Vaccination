@@ -134,16 +134,22 @@ namespace Gameplay {
 				}
 				GameRound++;
 				if (GameRound == 5) {
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					}					
 				}
 				else if (GameRound > 2) {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 2);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 2);
+					}
 				}
 				else {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 8);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 4);
+					}
 				}
 				EnemiesKilled = 0;
 				break;
@@ -151,18 +157,22 @@ namespace Gameplay {
 			/// Rounds 5 - 7
 			/// </summary>
 			case 12:
-				for each (GameObject::Sptr var in Targets)
+				for (auto var : Targets)
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				GameRound++;
 				if (GameRound > 6) {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 4, 4);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 4, 4);
+					}
 				}
 				else {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					}
 				}
 				EnemiesKilled = 0;
 				break;
@@ -170,31 +180,38 @@ namespace Gameplay {
 			/// round 8
 			/// </summary>
 			case 16:
-				for each (GameObject::Sptr var in Targets)
+				for (auto var : Targets)
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				GameRound++;
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 3, 5);
+				for (auto EnemySpawner : EnemySpawnerObjects)
+				{
+					EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 3, 5);
+				}
 				EnemiesKilled = 0;
 				break;
 			/// <summary>
 			/// round 9-10
 			/// </summary>
 			case 20:
-				for each (GameObject::Sptr var in Targets)
+				for (auto var : Targets)
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				GameRound++;
 				if (GameRound == 10) {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 4, 6);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 4, 6);
+					}
 				}
 				else {
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 2, 5);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 2, 5);
+					}
 				}
 				EnemiesKilled = 0;
 				break;
@@ -241,9 +258,9 @@ namespace Gameplay {
 		SetupShaderAndLights();
 
 		//Spawning first wave of enemies for round 1
-		//for (auto EnemySpawnerObject : EnemySpawnerObject) {
-			EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 8);
-		//}
+		for (auto EnemySpawner : EnemySpawnerObjects) {
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 4);
+		}
 
 		//Change UI
 		UiControllerObject->Get<UiController>()->SetupGameScreen();
@@ -380,7 +397,6 @@ namespace Gameplay {
 		//Code Added
 		UiControllerObject = FindObjectByName("UI");
 		TargetSpawnerObject = FindObjectByName("Target Spawner");
-		EnemySpawnerObject = FindObjectByName("Enemy Spawner");
 	}
 
 	void Scene::DoPhysics(float dt) {
