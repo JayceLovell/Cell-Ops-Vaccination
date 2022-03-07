@@ -242,7 +242,7 @@ namespace Gameplay {
 
 		//Spawning first wave of enemies for round 1
 		//for (auto EnemySpawnerObject : EnemySpawnerObject) {
-			EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 8);
+			EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 1, 8);
 		//}
 
 		//Change UI
