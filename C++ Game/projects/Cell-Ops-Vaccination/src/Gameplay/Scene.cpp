@@ -30,6 +30,7 @@ namespace Gameplay {
 		Lights(std::vector<Light>()),
 		Enemies(std::vector<GameObject::Sptr>()),
 		PlayerLastPosition(glm::vec3(0.0f)),
+		EnemySpawnerNames(std::vector<std::string>()),
 		IsPlaying(false),
 		isDestroyed(false),
 		IsPaused(false),
@@ -257,6 +258,12 @@ namespace Gameplay {
 		// Call this to bake lights
 		SetupShaderAndLights();
 
+		//Check if EnemySpawners are here
+		if (EnemySpawnerObjects.empty()) {
+			for (auto SpawnerName : EnemySpawnerNames) {
+				EnemySpawnerObjects.push_back(FindObjectByName(SpawnerName));
+			};
+		}
 		//Spawning first wave of enemies for round 1
 		for (auto EnemySpawner : EnemySpawnerObjects) {
 			EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 4);
@@ -568,8 +575,16 @@ namespace Gameplay {
 
 	Scene::Sptr Scene::FromJson(const nlohmann::json& data)
 	{
-
 		Scene::Sptr result = std::make_shared<Scene>();
+
+		// My Json Stuff
+
+		for (std::string _enemySpawnerObjectsName : data["EnemySpawnerObjects"]) {			
+			result->EnemySpawnerNames.push_back(_enemySpawnerObjectsName);
+		};
+
+		//Default Code
+
 		result->MainCamera = nullptr;
 		result->_objects.clear();
 		result->DefaultMaterial = ResourceManager::Get<Material>(Guid(data["default_material"]));
@@ -618,6 +633,17 @@ namespace Gameplay {
 	nlohmann::json Scene::ToJson() const
 	{
 		nlohmann::json blob;
+
+
+		// My Json Stuff
+		std::vector<std::string> _enemySpawnerObjectsNameInString;
+		for (auto _enemySpawnerObjects : EnemySpawnerObjects) {
+			_enemySpawnerObjectsNameInString.push_back(_enemySpawnerObjects->Name);
+		};
+		blob["EnemySpawnerObjects"] = _enemySpawnerObjectsNameInString;
+
+		//Default Code
+
 		// Save the default shader (really need a material class)
 		blob["default_material"] = DefaultMaterial ? DefaultMaterial->GetGUID().str() : "null";
 

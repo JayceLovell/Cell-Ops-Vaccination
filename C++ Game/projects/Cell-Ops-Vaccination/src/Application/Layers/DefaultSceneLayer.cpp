@@ -893,8 +893,8 @@ void DefaultSceneLayer::_CreateScene()
 		{
 			UI->Add<UiController>();
 
-			UI->Get<UiController>()->Font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			UI->Get<UiController>()->Font->Bake();
+			UI->Get<UiController>()->GameFont = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
+			UI->Get<UiController>()->GameFont->Bake();
 
 			UI->Get<UiController>()->GameTitleTexture = TitleTexture;
 			UI->Get<UiController>()->GamePauseTexture = GamePauseTexture;
