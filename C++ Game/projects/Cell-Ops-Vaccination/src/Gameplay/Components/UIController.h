@@ -23,7 +23,7 @@ public:
 	static UiController::Sptr FromJson(const nlohmann::json& blob);
 	virtual void RenderImGui() override;
 
-	Font::Sptr Font;
+	Font::Sptr GameFont;
 
 	Texture2D::Sptr GameTitleTexture;
 	Texture2D::Sptr GamePauseTexture;

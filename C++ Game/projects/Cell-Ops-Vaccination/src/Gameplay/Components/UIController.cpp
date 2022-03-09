@@ -2,7 +2,7 @@
 
 UiController::UiController() :
 	IComponent(),
-	Font(nullptr),
+	GameFont(nullptr),
 	GameTitleTexture(nullptr),
 	GamePauseTexture(nullptr),
 	GameOverTexture(nullptr),
@@ -182,7 +182,7 @@ void UiController::_createUiObject(std::string NameOfObject, std::string Text, i
 
 		GuiText::Sptr UiText = UIObject->Add<GuiText>();
 		UiText->SetText(Text);
-		UiText->SetFont(Font);
+		UiText->SetFont(GameFont);
 		UiText->SetColor(glm::vec4(1.0f));
 
 		GetGameObject()->AddChild(UIObject);
@@ -200,7 +200,7 @@ void UiController::_createUiObject(std::string NameOfObject, std::string Text, i
 
 		GuiText::Sptr UiText = UIObject->Add<GuiText>();
 		UiText->SetText(Text);
-		UiText->SetFont(Font);
+		UiText->SetFont(GameFont);
 		UiText->SetColor(glm::vec4(1.0f));
 
 		GetGameObject()->AddChild(UIObject);
@@ -221,7 +221,7 @@ void UiController::_createUiObject(std::string NameOfObject, std::string Text, i
 
 		GuiText::Sptr UiText = UIObject->Add<GuiText>();
 		UiText->SetText(Text);
-		UiText->SetFont(Font);
+		UiText->SetFont(GameFont);
 		UiText->SetColor(glm::vec4(1.0f));
 
 		GetGameObject()->AddChild(UIObject);
@@ -231,13 +231,44 @@ void UiController::_createUiObject(std::string NameOfObject, std::string Text, i
 nlohmann::json UiController::ToJson() const
 {
 	return {
-
+		{"Font",GameFont->GetGUID().str()},
+		{"GameTitleTexture", GameTitleTexture->GetGUID().str()},
+		{"GamePauseTexture",GamePauseTexture->GetGUID().str()},
+		{"GameOverTexture",GameOverTexture->GetGUID().str()},
+		{"GameWinTexture",GameWinTexture->GetGUID().str()},
+		{"FullHp",FullHp->GetGUID().str()},
+		{"NintyPercentHp",NintyPercentHp->GetGUID().str()},
+		{"EightyPercentHp",EightyPercentHp->GetGUID().str()},
+		{"SeventyPercentHp",SeventyPercentHp->GetGUID().str()},
+		{"SixtyPercentHp",SixtyPercentHp->GetGUID().str()},
+		{"HalfHp",HalfHp->GetGUID().str()},
+		{"FortyPercentHp",FortyPercentHp->GetGUID().str()},
+		{"ThirtyPercentHp",ThirtyPercentHp->GetGUID().str()},
+		{"TwentyPercentHp",TwentyPercentHp->GetGUID().str()},
+		{"TenPercentHp",TenPercentHp->GetGUID().str()},
+		{"NoHp",NoHp->GetGUID().str()}
 	};
 }
 
 UiController::Sptr UiController::FromJson(const nlohmann::json& blob)
 {
 	UiController::Sptr result = std::make_shared<UiController>();
+	result->GameFont = ResourceManager::Get<Font>(Guid(blob["Font"]));
+	result->GameTitleTexture = ResourceManager::Get<Texture2D>(Guid(blob["GameTitleTexture"]));
+	result->GamePauseTexture = ResourceManager::Get<Texture2D>(Guid(blob["GamePauseTexture"]));
+	result->GameOverTexture = ResourceManager::Get<Texture2D>(Guid(blob["GameOverTexture"]));
+	result->GameWinTexture = ResourceManager::Get<Texture2D>(Guid(blob["GameWinTexture"]));
+	result->FullHp=ResourceManager::Get<Texture2D>(Guid(blob["FullHp"]));
+	result->NintyPercentHp=ResourceManager::Get<Texture2D>(Guid(blob["NintyPercentHp"]));
+	result->EightyPercentHp=ResourceManager::Get<Texture2D>(Guid(blob["EightyPercentHp"]));
+	result->SeventyPercentHp=ResourceManager::Get<Texture2D>(Guid(blob["SeventyPercentHp"]));
+	result->SixtyPercentHp=ResourceManager::Get<Texture2D>(Guid(blob["SixtyPercentHp"]));
+	result->HalfHp=ResourceManager::Get<Texture2D>(Guid(blob["HalfHp"]));
+	result->FortyPercentHp=ResourceManager::Get<Texture2D>(Guid(blob["FortyPercentHp"]));
+	result->ThirtyPercentHp=ResourceManager::Get<Texture2D>(Guid(blob["ThirtyPercentHp"]));
+	result->TwentyPercentHp=ResourceManager::Get<Texture2D>(Guid(blob["TwentyPercentHp"]));
+	result->TenPercentHp=ResourceManager::Get<Texture2D>(Guid(blob["TenPercentHp"]));
+	result->NoHp=ResourceManager::Get<Texture2D>(Guid(blob["NoHp"]));
 	return result;
 }
 

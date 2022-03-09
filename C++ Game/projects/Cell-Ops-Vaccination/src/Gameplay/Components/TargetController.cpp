@@ -4,6 +4,7 @@
 TargetController::TargetController():
 	IComponent(),
 	TargetNames(std::vector<std::string>()),
+	TargetPositions(std::vector<glm::vec3>()),
 	TargetMeshs(std::vector<Gameplay::MeshResource::Sptr>()),
 	TargetMaterials(std::vector<Gameplay::Material::Sptr>()),
 	TargetFrames(std::vector<Gameplay::MeshResource::Sptr>()),
@@ -19,20 +20,40 @@ void TargetController::Update(float deltaTime)
 }
 nlohmann::json TargetController::ToJson() const
 {
+	std::vector<std::string> _meshInString;
+	std::vector<std::string> _materialnString;
+	std::vector<std::string> _framesInString;
+	for (auto targetmesh : TargetMeshs) {
+		_meshInString.push_back(targetmesh->GetGUID().str());
+	}
+	for (auto targetmaterials : TargetMaterials) {
+		_materialnString.push_back(targetmaterials->GetGUID().str());
+	}
+	for (auto targetframes : TargetFrames) {
+		_framesInString.push_back(targetframes->GetGUID().str());
+	}
 	return {
-		/*{ "TargetNames", TargetNames},
-		{ "TargetMeshs", TargetMeshs ? TargetMeshs->GetGUID().str() : "null"},
-		{ "TargetMaterials", TargetMaterials},
-		{ "TargetFrames", TargetFrames}*/
+		{ "TargetNames", TargetNames},
+		{ "TargetPositions", TargetPositions},
+		{ "TargetMeshs", _meshInString},
+		{ "TargetMaterials", _materialnString},
+		{ "TargetFrames", _framesInString}
 	};
 }
 TargetController::Sptr TargetController::FromJson(const nlohmann::json& blob)
 {
 	TargetController::Sptr result = std::make_shared<TargetController>();
-	/*result->TargetNames = JsonGet(blob, "TargetNames", result->TargetNames);
-	result->TargetMeshs = JsonGet(blob, "TargetMeshs", result->TargetMeshs);
-	result->TargetMaterials = JsonGet(blob, "TargetMaterials", result->TargetMaterials);
-	result->TargetNames = JsonGet(blob, "TargetNames", result->TargetNames);*/
+	result->TargetNames = JsonGet(blob, "TargetNames", result->TargetNames);
+	result->TargetPositions = JsonGet(blob, "TargetPositions", result->TargetPositions);
+	for (std::string meshGUID : blob["TargetMeshs"]) {
+		result->TargetMeshs.push_back(ResourceManager::Get<Gameplay::MeshResource>(Guid(meshGUID)));
+	};
+	for (std::string materialGUID : blob["TargetMaterials"]) {
+		result->TargetMaterials.push_back(ResourceManager::Get<Gameplay::Material>(Guid(materialGUID)));
+	};
+	for (std::string frameGUID : blob["TargetFrames"]) {
+		result->TargetFrames.push_back(ResourceManager::Get<Gameplay::MeshResource>(Guid(frameGUID)));
+	};
 	return result;
 }
 void TargetController::RenderImGui()

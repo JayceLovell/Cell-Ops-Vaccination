@@ -30,6 +30,7 @@ namespace Gameplay {
 		Lights(std::vector<Light>()),
 		Enemies(std::vector<GameObject::Sptr>()),
 		PlayerLastPosition(glm::vec3(0.0f)),
+		EnemySpawnerNames(std::vector<std::string>()),
 		IsPlaying(false),
 		isDestroyed(false),
 		IsPaused(false),
@@ -134,16 +135,22 @@ namespace Gameplay {
 				}
 				GameRound++;
 				if (GameRound == 5) {
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					}					
 				}
 				else if (GameRound > 2) {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 2);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 2);
+					}
 				}
 				else {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 8);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 4);
+					}
 				}
 				EnemiesKilled = 0;
 				break;
@@ -151,18 +158,22 @@ namespace Gameplay {
 			/// Rounds 5 - 7
 			/// </summary>
 			case 12:
-				for each (GameObject::Sptr var in Targets)
+				for (auto var : Targets)
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				GameRound++;
 				if (GameRound > 6) {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 4, 4);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 4, 4);
+					}
 				}
 				else {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 3, 3);
+					}
 				}
 				EnemiesKilled = 0;
 				break;
@@ -170,31 +181,38 @@ namespace Gameplay {
 			/// round 8
 			/// </summary>
 			case 16:
-				for each (GameObject::Sptr var in Targets)
+				for (auto var : Targets)
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				GameRound++;
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 3, 5);
+				for (auto EnemySpawner : EnemySpawnerObjects)
+				{
+					EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+					EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 3, 5);
+				}
 				EnemiesKilled = 0;
 				break;
 			/// <summary>
 			/// round 9-10
 			/// </summary>
 			case 20:
-				for each (GameObject::Sptr var in Targets)
+				for (auto var : Targets)
 				{
 					var->Get<TargetBehaviour>()->Heal();
 				}
 				GameRound++;
 				if (GameRound == 10) {
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-						EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 4, 6);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 4, 6);
+					}
 				}
 				else {
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
-					EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 2, 5);
+					for (auto EnemySpawner : EnemySpawnerObjects) {
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
+						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(3, 2, 5);
+					}
 				}
 				EnemiesKilled = 0;
 				break;
@@ -240,10 +258,16 @@ namespace Gameplay {
 		// Call this to bake lights
 		SetupShaderAndLights();
 
+		//Check if EnemySpawners are here
+		if (EnemySpawnerObjects.empty()) {
+			for (auto SpawnerName : EnemySpawnerNames) {
+				EnemySpawnerObjects.push_back(FindObjectByName(SpawnerName));
+			};
+		}
 		//Spawning first wave of enemies for round 1
-		//for (auto EnemySpawnerObject : EnemySpawnerObject) {
-			EnemySpawnerObject->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 1, 8);
-		//}
+		for (auto EnemySpawner : EnemySpawnerObjects) {
+			EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 0, 4);
+		}
 
 		//Change UI
 		UiControllerObject->Get<UiController>()->SetupGameScreen();
@@ -380,7 +404,6 @@ namespace Gameplay {
 		//Code Added
 		UiControllerObject = FindObjectByName("UI");
 		TargetSpawnerObject = FindObjectByName("Target Spawner");
-		EnemySpawnerObject = FindObjectByName("Enemy Spawner");
 	}
 
 	void Scene::DoPhysics(float dt) {
@@ -552,8 +575,16 @@ namespace Gameplay {
 
 	Scene::Sptr Scene::FromJson(const nlohmann::json& data)
 	{
-
 		Scene::Sptr result = std::make_shared<Scene>();
+
+		// My Json Stuff
+
+		for (std::string _enemySpawnerObjectsName : data["EnemySpawnerObjects"]) {			
+			result->EnemySpawnerNames.push_back(_enemySpawnerObjectsName);
+		};
+
+		//Default Code
+
 		result->MainCamera = nullptr;
 		result->_objects.clear();
 		result->DefaultMaterial = ResourceManager::Get<Material>(Guid(data["default_material"]));
@@ -602,6 +633,17 @@ namespace Gameplay {
 	nlohmann::json Scene::ToJson() const
 	{
 		nlohmann::json blob;
+
+
+		// My Json Stuff
+		std::vector<std::string> _enemySpawnerObjectsNameInString;
+		for (auto _enemySpawnerObjects : EnemySpawnerObjects) {
+			_enemySpawnerObjectsNameInString.push_back(_enemySpawnerObjects->Name);
+		};
+		blob["EnemySpawnerObjects"] = _enemySpawnerObjectsNameInString;
+
+		//Default Code
+
 		// Save the default shader (really need a material class)
 		blob["default_material"] = DefaultMaterial ? DefaultMaterial->GetGUID().str() : "null";
 

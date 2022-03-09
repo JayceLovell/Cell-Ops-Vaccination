@@ -470,7 +470,7 @@ void DefaultSceneLayer::_CreateScene()
 			trigger->AddCollider(collider);
 		}
 		/////////////////////////TARGETS//////////////////////////
-		//GameObject::Sptr ListOfTargets = scene->CreateGameObject("List Of Targets");
+		GameObject::Sptr ListOfTargets = scene->CreateGameObject("List Of Targets");
 
 		GameObject::Sptr TargetSpawner = scene->CreateGameObject("Target Spawner");
 		{
@@ -500,26 +500,45 @@ void DefaultSceneLayer::_CreateScene()
 		}
 
 		////////////////////////Enemies/////////////////////////////// 
-		//GameObject::Sptr Enemies = scene->CreateGameObject("Enemies");
+		GameObject::Sptr Enemies = scene->CreateGameObject("Enemies");
 
-		GameObject::Sptr EnemySpawner = scene->CreateGameObject("Enemy Spawner");
+		GameObject::Sptr TopEnemySpawner = scene->CreateGameObject("Enemy Spawner Top");
 		{
-			EnemySpawner->SetPostion(glm::vec3(0.0f, 0.0f, 100.0f));
-			EnemySpawner->Add<EnemySpawnerBehaviour>();
+			TopEnemySpawner->SetPostion(glm::vec3(0.0f, 0.0f, 100.0f));
+			TopEnemySpawner->Add<EnemySpawnerBehaviour>();
 
-			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
-			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
-			EnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
+			TopEnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
+			TopEnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
+			TopEnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
 
-			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
-			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
-			EnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
+			TopEnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
+			TopEnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
+			TopEnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
 
-			EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
-			EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
+			TopEnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
+			TopEnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
 			//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
 
-			//scene->EnemySpawnerObjects.push_back(EnemySpawner);
+			scene->EnemySpawnerObjects.push_back(TopEnemySpawner);
+		}
+		GameObject::Sptr BottomEnemySpawner = scene->CreateGameObject("Enemy Spawner Bottom");
+		{
+			BottomEnemySpawner->SetPostion(glm::vec3(0.0f, 0.0f, -100.0f));
+			BottomEnemySpawner->Add<EnemySpawnerBehaviour>();
+
+			BottomEnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMaterial = LargeEnemyMaterial;
+			BottomEnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyMesh = LargeEnemyMesh;
+			BottomEnemySpawner->Get<EnemySpawnerBehaviour>()->LargeEnemyFrames = LargeEnemyFrames;
+
+			BottomEnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMaterial = NormalEnemyMaterial;
+			BottomEnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyMesh = NormalEnemyMesh;
+			BottomEnemySpawner->Get<EnemySpawnerBehaviour>()->NormalEnemyFrames = NormalEnemyFrames;
+
+			BottomEnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMaterial = FastEnemyMaterial;
+			BottomEnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyMesh = FastEnemyMesh;
+			//BottomEnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
+
+			scene->EnemySpawnerObjects.push_back(BottomEnemySpawner);
 		}
 		
 		//OBJECTS BELOW HAVE A SPAWN RANGE OF - (X,Y,Z) TO + (X,Y,Z)
@@ -692,20 +711,35 @@ void DefaultSceneLayer::_CreateScene()
 			Oxygen->Add<BackgroundObjectsBehaviour>();
 			BackgroundObjects->AddChild(Oxygen);
 		}
-		GameObject::Sptr Pipe = scene->CreateGameObject("Pipe");
+		GameObject::Sptr TopPipeEntrance = scene->CreateGameObject("Top Pipe Entrance");
 		{
 
-			Pipe->SetPostion(glm::vec3(0.0f, 0.0f, 100.0f));
-			Pipe->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
-			Pipe->SetScale(glm::vec3(5.0f));
+			TopPipeEntrance->SetPostion(glm::vec3(0.0f, 0.0f, 100.0f));
+			TopPipeEntrance->SetRotation(glm::vec3(90.0f, 0.0f, 0.0f));
+			TopPipeEntrance->SetScale(glm::vec3(5.0f));
 
 
 			// Add a render component
-			RenderComponent::Sptr renderer = Pipe->Add<RenderComponent>();
+			RenderComponent::Sptr renderer = TopPipeEntrance->Add<RenderComponent>();
 			renderer->SetMesh(PipeMesh);
 			renderer->SetMaterial(PipeMaterial);
 
-			BackgroundObjects->AddChild(Pipe);
+			BackgroundObjects->AddChild(TopPipeEntrance);
+		}
+		GameObject::Sptr BottomPipeEntrance = scene->CreateGameObject("Bottom Pipe Entrance");
+		{
+
+			BottomPipeEntrance->SetPostion(glm::vec3(0.0f, 0.0f, -100.0f));
+			BottomPipeEntrance->SetRotation(glm::vec3(90.0f, 180.0f, 0.0f));
+			BottomPipeEntrance->SetScale(glm::vec3(5.0f));
+
+
+			// Add a render component
+			RenderComponent::Sptr renderer = BottomPipeEntrance->Add<RenderComponent>();
+			renderer->SetMesh(PipeMesh);
+			renderer->SetMaterial(PipeMaterial);
+
+			BackgroundObjects->AddChild(BottomPipeEntrance);
 		}
 		GameObject::Sptr Smokeplaque = scene->CreateGameObject("Smokeplaque");
 		{
@@ -859,8 +893,8 @@ void DefaultSceneLayer::_CreateScene()
 		{
 			UI->Add<UiController>();
 
-			UI->Get<UiController>()->Font = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
-			UI->Get<UiController>()->Font->Bake();
+			UI->Get<UiController>()->GameFont = ResourceManager::CreateAsset<Font>("fonts/Font.otf", 25.0f);
+			UI->Get<UiController>()->GameFont->Bake();
 
 			UI->Get<UiController>()->GameTitleTexture = TitleTexture;
 			UI->Get<UiController>()->GamePauseTexture = GamePauseTexture;

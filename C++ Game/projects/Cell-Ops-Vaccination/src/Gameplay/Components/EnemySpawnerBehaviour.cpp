@@ -6,12 +6,15 @@ EnemySpawnerBehaviour::EnemySpawnerBehaviour() :
 	IComponent(),
 	LargeEnemyMaterial(nullptr),
 	LargeEnemyMesh(nullptr),
+	LargeEnemyFrames(std::vector<Gameplay::MeshResource::Sptr>()),
 	_largeEnemySpeed(0.1f),
 	NormalEnemyMaterial(nullptr),
 	NormalEnemyMesh(nullptr),
+	NormalEnemyFrames(std::vector<Gameplay::MeshResource::Sptr>()),
 	_normalEnemySpeed(0.3f),
 	FastEnemyMaterial(nullptr),
 	FastEnemyMesh(nullptr),
+	FastEnemyFrames(std::vector<Gameplay::MeshResource::Sptr>()),
 	_fastEnemySpeed(0.5f),
 	_counter(0),
 	_totalAmount(0),
@@ -32,15 +35,33 @@ void EnemySpawnerBehaviour::Update(float deltaTime)
 
 nlohmann::json EnemySpawnerBehaviour::ToJson() const
 {
+	std::vector<std::string> _largeEnemyFramesInString;
+	std::vector<std::string> _normalEnemyFramesInString;
+	std::vector<std::string> _fastEnemyFramesInString;
+
+	for (auto largeEnemyFarmes : LargeEnemyFrames) {
+		_largeEnemyFramesInString.push_back(largeEnemyFarmes->GetGUID().str());
+	}
+	for (auto normalEnemyFarmes : NormalEnemyFrames) {
+		_normalEnemyFramesInString.push_back(normalEnemyFarmes->GetGUID().str());
+	}
+	for (auto fastEnemyFarmes : FastEnemyFrames) {
+		_fastEnemyFramesInString.push_back(fastEnemyFarmes->GetGUID().str());
+	}
+
 	return {
-		{"IsSpawning",_isSpawning},
-		{"Delay Counter",_counter},
+		{"LargeEnemyMaterial",LargeEnemyMaterial->GetGUID().str()},
+		{"LargeEnemyMesh",LargeEnemyMesh->GetGUID().str()},
+		{"LargeEnemyFrames",_largeEnemyFramesInString},
 		{"Large Enemy Speed",_largeEnemySpeed},
+		{"NormalEnemyMaterial",NormalEnemyMaterial->GetGUID().str()},
+		{"NormalEnemyMesh",NormalEnemyMesh->GetGUID().str()},
+		{"NormalEnemyFrames",_normalEnemyFramesInString},
 		{"Normal Enemy Speed",_normalEnemySpeed},
-		{"Fast Enemy Speed",_fastEnemySpeed},
-		{"Amount of enemies",GetGameObject()->GetScene()->Enemies.size()},
-		{"Total Spawning",_totalAmount},
-		{"Spawned",_spawned}
+		{"FastEnemyMaterial",FastEnemyMaterial->GetGUID().str()},
+		{"FastEnemyMesh",FastEnemyMesh->GetGUID().str()},
+		{"FastEnemyFrames",_fastEnemyFramesInString},
+		{"Fast Enemy Speed",_fastEnemySpeed}
 	};
 
 }
@@ -48,13 +69,24 @@ nlohmann::json EnemySpawnerBehaviour::ToJson() const
 EnemySpawnerBehaviour::Sptr EnemySpawnerBehaviour::FromJson(const nlohmann::json& blob)
 {
 	EnemySpawnerBehaviour::Sptr result = std::make_shared<EnemySpawnerBehaviour>();
-	result->_isSpawning = blob["IsSpawning"];
-	result->_counter = blob["Delay Counter"];
+	result->LargeEnemyMaterial = ResourceManager::Get<Gameplay::Material>(Guid(blob["LargeEnemyMaterial"].get<std::string>()));
+	result->LargeEnemyMesh = ResourceManager::Get<Gameplay::MeshResource>(Guid(blob["LargeEnemyMesh"].get<std::string>()));
+	for (std::string frameGUID : blob["LargeEnemyFrames"]) {
+		result->LargeEnemyFrames.push_back(ResourceManager::Get<Gameplay::MeshResource>(Guid(frameGUID)));
+	};
 	result->_largeEnemySpeed = blob["Large Enemy Speed"];
+	result->NormalEnemyMaterial = ResourceManager::Get<Gameplay::Material>(Guid(blob["NormalEnemyMesh"].get<std::string>()));
+	result->NormalEnemyMesh = ResourceManager::Get<Gameplay::MeshResource>(Guid(blob["NormalEnemyMesh"].get<std::string>()));
+	for (std::string frameGUID : blob["NormalEnemyFrames"]) {
+		result->NormalEnemyFrames.push_back(ResourceManager::Get<Gameplay::MeshResource>(Guid(frameGUID)));
+	};
 	result->_normalEnemySpeed = blob["Normal Enemy Speed"];
+	result->FastEnemyMaterial = ResourceManager::Get<Gameplay::Material>(Guid(blob["FastEnemyMaterial"].get<std::string>()));
+	result->FastEnemyMesh = ResourceManager::Get<Gameplay::MeshResource>(Guid(blob["FastEnemyMesh"].get<std::string>()));
+	for (std::string frameGUID : blob["FastEnemyFrames"]) {
+		result->FastEnemyFrames.push_back(ResourceManager::Get<Gameplay::MeshResource>(Guid(frameGUID)));
+	};
 	result->_fastEnemySpeed = blob["Fast Enemy Speed"];
-	result->_totalAmount = blob["Total Spawning"];
-	result->_spawned = blob["Spawned"];
 	return result;
 }
 
@@ -91,6 +123,7 @@ void EnemySpawnerBehaviour::_createLargeEnemy()
 	std::string EnemyName = "Enemy ID:" + std::to_string(GetGameObject()->GetScene()->Enemies.size());
 	Gameplay::GameObject::Sptr LargeEnemy = GetGameObject()->GetScene()->CreateGameObject(EnemyName);
 	{
+		LargeEnemy->SetPostion(GetGameObject()->SelfRef()->GetPosition());
 		// Add a render component
 		RenderComponent::Sptr renderer = LargeEnemy->Add<RenderComponent>();
 		renderer->SetMesh(LargeEnemyMesh);
@@ -116,7 +149,7 @@ void EnemySpawnerBehaviour::_createLargeEnemy()
 		animation->ActivateAnim("Idle");
 
 		GetGameObject()->GetScene()->Enemies.push_back(LargeEnemy);
-		//GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(LargeEnemy);
+		GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(LargeEnemy);
 	}
 }
 
@@ -125,6 +158,8 @@ void EnemySpawnerBehaviour::_createNormalEnemy()
 	std::string EnemyName = "Enemy ID:" + std::to_string(GetGameObject()->GetScene()->Enemies.size());
 	Gameplay::GameObject::Sptr NormalEnemy = GetGameObject()->GetScene()->CreateGameObject(EnemyName);
 	{
+		NormalEnemy->SetPostion(GetGameObject()->SelfRef()->GetPosition());
+
 		// Add a render component
 		RenderComponent::Sptr renderer = NormalEnemy->Add<RenderComponent>();
 		renderer->SetMesh(NormalEnemyMesh);
@@ -151,6 +186,7 @@ void EnemySpawnerBehaviour::_createNormalEnemy()
 		animation->ActivateAnim("Idle");
 
 		GetGameObject()->GetScene()->Enemies.push_back(NormalEnemy);
+		GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(NormalEnemy);
 	}
 }
 
@@ -186,7 +222,7 @@ void EnemySpawnerBehaviour::_createFastEnemy()
 		animation->ActivateAnim("Idle");*/
 
 		GetGameObject()->GetScene()->Enemies.push_back(FastEnemy);
-		//GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(FastEnemy);
+		GetGameObject()->GetScene()->FindObjectByName("Enemies")->AddChild(FastEnemy);
 	}
 }
 
