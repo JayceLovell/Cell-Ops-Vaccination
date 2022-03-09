@@ -130,6 +130,10 @@ namespace Gameplay {
 		{
 			//Round 2 Spawn
 			if (EnemiesKilled == 8) {
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->Heal();
+				}
 				for (auto EnemySpawner : EnemySpawnerObjects) {
 					EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 					EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 1, 4);
@@ -143,6 +147,10 @@ namespace Gameplay {
 		{
 			//Round 3 Spawn
 			if (EnemiesKilled == 10) {
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->Heal();
+				}
 				for (auto EnemySpawner : EnemySpawnerObjects) {
 					EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 					EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 4);
@@ -156,6 +164,10 @@ namespace Gameplay {
 			{
 			//Round 4 Spawn
 				if (EnemiesKilled == 12) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 2, 4);
@@ -169,6 +181,10 @@ namespace Gameplay {
 			{
 			//Round 5 Spawn
 				if (EnemiesKilled == 14) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 3, 3);
@@ -182,6 +198,10 @@ namespace Gameplay {
 			{
 			//Round 6 Spawn
 				if (EnemiesKilled == 16) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(4, 3, 2);
@@ -195,6 +215,10 @@ namespace Gameplay {
 			{
 			//Round 7 Spawn
 				if (EnemiesKilled == 18) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(4, 4, 2);
@@ -208,6 +232,10 @@ namespace Gameplay {
 			{
 			//Round 8 Spawn
 				if (EnemiesKilled == 20) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(5, 4, 2);
@@ -221,6 +249,10 @@ namespace Gameplay {
 			{
 			//Round 9 Spawn
 				if (EnemiesKilled == 22) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(5, 5, 2);
@@ -234,6 +266,10 @@ namespace Gameplay {
 			{
 			//Round 10 Spawn
 				if (EnemiesKilled == 24) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(6, 4, 3);

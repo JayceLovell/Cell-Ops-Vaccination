@@ -39,6 +39,9 @@ void UiController::UpdateUI()
 	for (auto Target : GetGameObject()->GetScene()->Targets) {
 		std::string TargetUIName = Target->Name+" UI";
 		Gameplay::GameObject::Sptr TargetUI = GetGameObject()->GetScene()->FindObjectByName(TargetUIName);
+		if (TargetUI == NULL)
+			return;
+
 		int TargetHealthPrecentage = Target->Get<TargetBehaviour>()->HealthInPercentage;
 
 		if (TargetHealthPrecentage <= 0) {
