@@ -45,13 +45,4 @@ public:
 private:
 	bool _isNotSafe;
 	glm::vec3 _targetPosition;
-
-	/// <summary>
-	/// Check if number is in range
-	/// </summary>
-	/// <param name="low">Negative of number</param>
-	/// <param name="high">Positive of number</param>
-	/// <param name="x">Number we are checking</param>
-	/// <returns></returns>
-	bool _inRange(float low, float high, float x);
 };
