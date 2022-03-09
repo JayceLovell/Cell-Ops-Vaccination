@@ -31,7 +31,8 @@ void TargetBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Phy
 		else if (EnemyType == "Large Enemy") {
 			_health = _health - 5;
 		}
-		if (_health < 0) {
+		if (_health <= 0) {
+			HealthInPercentage = (_health * 100) / _maxHealth;
 			GetGameObject()->GetScene()->DeleteTarget(GetGameObject()->SelfRef());
 		}
 		_isBeingAttacked = true;

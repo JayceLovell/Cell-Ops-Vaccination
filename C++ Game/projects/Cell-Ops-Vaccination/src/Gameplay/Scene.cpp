@@ -103,6 +103,7 @@ namespace Gameplay {
 		if (it != Targets.end())
 		{
 			int index = std::distance(Targets.begin(), it);
+			UiControllerObject->Get<UiController>()->UpdateUI();
 			Targets.erase(Targets.begin() + index);
 			RemoveGameObject(object);
 		}
