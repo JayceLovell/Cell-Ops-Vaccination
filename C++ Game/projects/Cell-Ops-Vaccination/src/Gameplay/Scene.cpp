@@ -110,6 +110,10 @@ namespace Gameplay {
 		for (auto Enemy : Enemies) {
 			Enemy->Get<EnemyBehaviour>()->NewTarget();
 		}
+		/// If heart died gameover
+		if (object.get()->Name == "Heart") {
+			IsGameEnd = true;
+		}
 	}
 	void Scene::DeleteEnemy(const GameObject::Sptr& object)
 	{
