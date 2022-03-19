@@ -37,9 +37,6 @@ namespace Gameplay {
 
 		typedef std::shared_ptr<Scene> Sptr;
 
-		static const int MAX_LIGHTS = 8;
-		static const int LIGHT_UBO_BINDING = 2;
-
 		// The camera for our scene
 		Camera::Sptr               MainCamera;
 

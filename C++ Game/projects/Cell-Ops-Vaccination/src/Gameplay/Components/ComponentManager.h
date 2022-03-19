@@ -16,6 +16,10 @@ namespace Gameplay {
 		typedef std::function<IComponent::Sptr(const nlohmann::json&)> LoadComponentFunc;
 		typedef std::function<IComponent::Sptr()> CreateComponentFunc;
 
+		inline void clear() {
+			_Components.clear();
+		}
+
 		/// <summary>
 		/// Loads a component with the given type name from a JSON blob
 		/// If the type name does not correspond to a registered type, will

@@ -445,7 +445,20 @@ void DefaultSceneLayer::_CreateScene()
 		}
 
 		
-		
+		// Create some lights for our scene
+		GameObject::Sptr lightParent = scene->CreateGameObject("Lights");
+
+		for (int ix = 0; ix < 50; ix++) {
+			GameObject::Sptr light = scene->CreateGameObject("Light");
+			light->SetPostion(glm::vec3(glm::diskRand(25.0f), 1.0f));
+			lightParent->AddChild(light);
+
+			Light::Sptr lightComponent = light->Add<Light>();
+			lightComponent->SetColor(glm::linearRand(glm::vec3(0.0f), glm::vec3(1.0f)));
+			lightComponent->SetRadius(glm::linearRand(0.1f, 10.0f));
+			lightComponent->SetIntensity(glm::linearRand(1.0f, 2.0f));
+		}
+
 		GameObject::Sptr camera = scene->MainCamera->GetGameObject()->SelfRef();
 		//GameObject::Sptr camera = scene->CreateGameObject("Main Camera");
 		{
@@ -528,8 +541,10 @@ void DefaultSceneLayer::_CreateScene()
 
 			scene->EnemySpawnerObjects.push_back(TopEnemySpawner);
 
-			TopEnemySpawner->Add<Light>();
-			//TopEnemySpawner->Get<Light>()
+			Light::Sptr lightComponent = TopEnemySpawner->Add<Light>();
+			lightComponent->SetColor(glm::vec3(1.0f));
+			lightComponent->SetRadius(100.0f);
+			lightComponent->SetIntensity(1.0f);
 		}
 		GameObject::Sptr BottomEnemySpawner = scene->CreateGameObject("Enemy Spawner Bottom");
 		{
