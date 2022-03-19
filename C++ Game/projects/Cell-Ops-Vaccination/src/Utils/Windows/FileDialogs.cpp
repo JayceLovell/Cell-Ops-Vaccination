@@ -11,7 +11,7 @@
 std::optional<std::string> FileDialogs::OpenFile(const char* filter)
 {
 	OPENFILENAMEA ofn;
-	CHAR szFile[260] ={ 0 };
+	CHAR szFile[260] = { 0 };
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = glfwGetWin32Window(Application::Get().GetWindow());
@@ -29,7 +29,7 @@ std::optional<std::string> FileDialogs::OpenFile(const char* filter)
 std::optional<std::string> FileDialogs::SaveFile(const char* filter)
 {
 	OPENFILENAMEA ofn;
-	CHAR szFile[260] ={ 0 };
+	CHAR szFile[260] = { 0 };
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = glfwGetWin32Window(Application::Get().GetWindow());
@@ -50,7 +50,7 @@ std::optional<std::string> FileDialogs::SaveFile(const char* filter)
 std::optional<std::string> FileDialogs::SelectFolder(const char* filter)
 {
 	OPENFILENAMEA ofn;
-	CHAR szFile[260] ={ 0 };
+	CHAR szFile[260] = { 0 };
 	ZeroMemory(&ofn, sizeof(OPENFILENAME));
 	ofn.lStructSize = sizeof(OPENFILENAME);
 	ofn.hwndOwner = glfwGetWin32Window(Application::Get().GetWindow());

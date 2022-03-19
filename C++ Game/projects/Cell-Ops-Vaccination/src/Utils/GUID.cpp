@@ -1,7 +1,7 @@
 /*
  *
  *Loosely based off this implementation (it was awful though, my god)
- * 
+ *
  * The MIT License (MIT)
  * Copyright (c) 2014 Graeme Hill (http://graemehill.ca)
  * Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -78,7 +78,8 @@ Guid::Guid(std::string_view fromString) : Guid()
 		{
 			charOne = ch;
 			lookingForFirstChar = false;
-		} else
+		}
+		else
 		{
 			charTwo = ch;
 			auto byte = hexPairToChar(charOne, charTwo);
@@ -109,11 +110,11 @@ bool Guid::operator!=(const Guid& other) const {
 std::string Guid::str() const {
 	char result[37];
 	snprintf(result, 37, "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%02x",
-				_bytes[0], _bytes[1], _bytes[2], _bytes[3],
-				_bytes[4], _bytes[5],
-				_bytes[6], _bytes[7],
-				_bytes[8], _bytes[9],
-				_bytes[10], _bytes[11], _bytes[12], _bytes[13], _bytes[14], _bytes[15]
+		_bytes[0], _bytes[1], _bytes[2], _bytes[3],
+		_bytes[4], _bytes[5],
+		_bytes[6], _bytes[7],
+		_bytes[8], _bytes[9],
+		_bytes[10], _bytes[11], _bytes[12], _bytes[13], _bytes[14], _bytes[15]
 	);
 
 	return std::string(result);
@@ -144,7 +145,8 @@ Guid Guid::New() {
 		Guid result;
 		CoCreateGuid((GUID*)result._bytes);
 		return result;
-	} catch (...) {
+	}
+	catch (...) {
 		return Guid();
 	}
 }

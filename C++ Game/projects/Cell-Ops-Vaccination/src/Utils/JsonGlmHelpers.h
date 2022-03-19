@@ -21,7 +21,7 @@ namespace glm {
 	}
 	template <typename T, enum glm::qualifier Q = glm::qualifier::packed_highp>
 	inline void to_json(nlohmann::json& j, const vec<4, T, Q>& value) {
-		j =  {
+		j = {
 			{"x", value.x},
 			{"y", value.y},
 			{"z", value.z},
@@ -77,17 +77,18 @@ namespace glm {
 
 	template <int R, int C, typename T, enum glm::qualifier Q = glm::qualifier::packed_highp>
 	void from_json(const nlohmann::json& j, mat<R, C, T, Q>& value) {
-	for (int ix = 0; ix < R; ix++) {
-		j.at(ix).get_to(value[ix]);
+		for (int ix = 0; ix < R; ix++) {
+			j.at(ix).get_to(value[ix]);
+		}
 	}
-}
 }
 
 template <typename T>
 T JsonGet(const nlohmann::json& blob, const std::string& key, const T& defaultRet = T()) {
 	if (blob.find(key) != blob.end()) {
 		return blob[key].get<T>();
-	} else {
+	}
+	else {
 		return defaultRet;
 	}
 }

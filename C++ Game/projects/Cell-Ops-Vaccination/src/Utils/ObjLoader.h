@@ -85,7 +85,7 @@ VertexArrayObject::Sptr ObjLoader::LoadFromFile(const std::string& filename, boo
 			// Read in and store a position
 			file >> vecData.x >> vecData.y >> vecData.z;
 			normals.push_back(vecData);
-		} 
+		}
 		else if (command == "vt") {
 			// Read in and store a position
 			file >> vecData.x >> vecData.y;
@@ -129,7 +129,8 @@ VertexArrayObject::Sptr ObjLoader::LoadFromFile(const std::string& filename, boo
 					// If it exists, we push the index to our indices
 					if (it != vertexMap.end()) {
 						edges[ix] = it->second;
-					} else {
+					}
+					else {
 						vertices.push_back(vertexIndices - glm::ivec3(1));
 						uint32_t index = static_cast<uint32_t>(vertices.size()) - 1;
 

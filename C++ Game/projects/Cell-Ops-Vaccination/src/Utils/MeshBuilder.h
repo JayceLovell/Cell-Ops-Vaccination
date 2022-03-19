@@ -61,7 +61,7 @@ public:
 		_vertices.emplace_back(std::forward<Args>(args)...);
 		return static_cast<uint32_t>(_vertices.size() - 1u);
 	}
-	
+
 	/// <summary>
 	/// Adds an index to the index buffer
 	/// </summary>
@@ -83,7 +83,7 @@ public:
 		_indices.push_back(b);
 		_indices.push_back(c);
 	}
-	
+
 	/// <summary>
 	/// Resizes the internal vector to allocate space for new vertices, can improve
 	/// performance when appending large meshes of a known size
@@ -140,7 +140,7 @@ public:
 
 		return result;
 	}
-	
+
 	/// <summary>
 	/// Resets this mesh, removing all vertices and indices
 	/// </summary>
@@ -163,10 +163,10 @@ public:
 	const uint32_t* GetIndexDataPtr() const {
 		return _indices.data();
 	}
-	
+
 protected:
 	friend class MeshFactory;
-	
+
 	std::vector<VertType> _vertices;
 	std::vector<uint32_t> _indices;
 };
