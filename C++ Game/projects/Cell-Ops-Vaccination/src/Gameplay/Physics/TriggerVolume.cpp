@@ -86,7 +86,7 @@ namespace Gameplay::Physics {
 
 					// Make sure that the object is not a kinematic or static object (note: you may want
 					// to modify this behaviour depending on your game)
-					if ((body->getCollisionFlags() & btCollisionObject::CF_STATIC_OBJECT & btCollisionObject::CF_KINEMATIC_OBJECT == 0) ||
+					if (((body->getCollisionFlags() & btCollisionObject::CF_STATIC_OBJECT & btCollisionObject::CF_KINEMATIC_OBJECT) == 0) ||
 						((body->getCollisionFlags() & btCollisionObject::CF_STATIC_OBJECT) == *(_typeFlags & TriggerTypeFlags::Statics)) ||
 						((body->getCollisionFlags() & btCollisionObject::CF_KINEMATIC_OBJECT) == *(_typeFlags & TriggerTypeFlags::Kinematics))) {
 
@@ -128,8 +128,8 @@ namespace Gameplay::Physics {
 			if (it == thisFrameCollision.end()) {
 				RigidBody::Sptr body = weakPtr.lock();
 				if (body != nullptr) {
-					weakPtr.lock()->GetGameObject()->OnLeavingTrigger(std::dynamic_pointer_cast<TriggerVolume>(SelfRef().lock()));
-					GetGameObject()->OnTriggerVolumeLeaving(weakPtr.lock());
+					body->GetGameObject()->OnLeavingTrigger(std::dynamic_pointer_cast<TriggerVolume>(SelfRef().lock()));
+					GetGameObject()->OnTriggerVolumeLeaving(body);
 				}
 			}
 		}
