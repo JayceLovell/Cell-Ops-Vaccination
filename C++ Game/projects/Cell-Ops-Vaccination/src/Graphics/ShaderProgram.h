@@ -30,12 +30,14 @@ public:
 		ShaderDataType Type;
 		int            ArraySize;
 		int            Location;
+		int            Binding;
 		std::string    Name;
 
 		UniformInfo() :
 			Type(ShaderDataType::None),
 			ArraySize(0),
 			Location(-1),
+			Binding(-1),
 			Name("") {}
 	};
 
@@ -105,6 +107,8 @@ public:
 	/// </summary>
 	static void Unbind();
 
+	const std::unordered_map<std::string, UniformInfo>& GetUniforms() const { return _uniforms; }
+
 	// Inherited from IGraphicsResource
 
 	virtual GlResourceType GetResourceClass() const override;
@@ -155,7 +159,7 @@ public:
 	void SetUniform(const std::string& name, const T* values, int count = 1) {
 		int location = __GetUniformLocation(name);
 		if (location != -1) {
-			SetUniform(location, &values, count);
+			SetUniform(location, values, count);
 		} else {
 			LOG_WARN("Ignoring uniform \"{}\"", name);
 		}

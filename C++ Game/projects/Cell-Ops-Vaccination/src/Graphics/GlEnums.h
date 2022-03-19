@@ -120,6 +120,7 @@ constexpr size_t GetTexelComponentSize(PixelType type) {
 		return 2;
 	case PixelType::Int:
 	case PixelType::UInt:
+	case PixelType::Float:
 		return 4;
 	default:
 		LOG_ASSERT(false, "Unknown type: {}", type);
@@ -190,6 +191,7 @@ constexpr GLint GetTexelComponentCount(PixelFormat format) {
 constexpr size_t GetTexelSize(PixelFormat format, PixelType type) {
 	return GetTexelComponentSize(type) * GetTexelComponentCount(format);
 }
+
 
 /*
 	* Represents the type of data used in a shader in a more useful format for us
