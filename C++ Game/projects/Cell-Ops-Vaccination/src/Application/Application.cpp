@@ -11,14 +11,17 @@
 #include "Layers/GLAppLayer.h"
 #include "Utils/FileHelpers.h"
 #include "Utils/ResourceManager/ResourceManager.h"
+#include "Utils/ImGuiHelper.h"
 
 // Graphics
 #include "Graphics/Buffers/IndexBuffer.h"
 #include "Graphics/Buffers/VertexBuffer.h"
 #include "Graphics/VertexArrayObject.h"
 #include "Graphics/ShaderProgram.h"
-#include "Graphics/Texture2D.h"
-#include "Graphics/TextureCube.h"
+#include "Graphics/Textures/Texture1D.h"
+#include "Graphics/Textures/Texture2D.h"
+#include "Graphics/Textures/Texture3D.h"
+#include "Graphics/Textures/TextureCube.h"
 #include "Graphics/VertexTypes.h"
 #include "Graphics/Font.h"
 #include "Graphics/GuiBatcher.h"
@@ -38,6 +41,9 @@
 #include "Gameplay/Components/MaterialSwapBehaviour.h"
 #include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
 #include "Gameplay/Components/SimpleCameraControl.h"
+#include "Gameplay/Components/ParticleSystem.h"
+#include "Gameplay/Components/Light.h"
+
 #include "Gameplay/Components/PlayerBehaviour.h"
 #include "Gameplay/Components/EnemyBehaviour.h"
 #include "Gameplay/Components/TargetController.h"
@@ -46,26 +52,27 @@
 #include "Gameplay/Components/MorphAnimator.h"
 #include "Gameplay/Components/UIController.h"
 #include "Gameplay/Components/EnemySpawnerBehaviour.h"
-#include "Gameplay/Components/ParticleSystem.h"
 
 // GUI
 #include "Gameplay/Components/GUI/RectTransform.h"
 #include "Gameplay/Components/GUI/GuiPanel.h"
 #include "Gameplay/Components/GUI/GuiText.h"
+#include "Gameplay/Components/ComponentManager.h"
+
+// Layers
 #include "Layers/RenderLayer.h"
 #include "Layers/InterfaceLayer.h"
 #include "Layers/DefaultSceneLayer.h"
 #include "Layers/LogicUpdateLayer.h"
 #include "Layers/ImGuiDebugLayer.h"
-#include "Utils/ImGuiHelper.h"
-#include "Gameplay/Components/ComponentManager.h"
-#include <Application/Layers/ParticleLayer.h>
+#include "Layers/InstancedRenderingTestLayer.h"
+#include "Layers/ParticleLayer.h"
 
 Application* Application::_singleton = nullptr;
 std::string Application::_applicationName = "Cell Ops Vaccination";
 
-#define DEFAULT_WINDOW_WIDTH 800
-#define DEFAULT_WINDOW_HEIGHT 800
+#define DEFAULT_WINDOW_WIDTH 1280
+#define DEFAULT_WINDOW_HEIGHT 720
 
 /// <summary>
 /// Reminder to turn isEditor to true for debug windows.
@@ -77,7 +84,8 @@ Application::Application() :
 	_isEditor(true),
 	_windowTitle("Cell Ops Vaccination"),
 	_currentScene(nullptr),
-	_targetScene(nullptr)
+	_targetScene(nullptr),
+	_renderOutput(nullptr)
 { }
 
 Application::~Application() = default;
@@ -102,11 +110,11 @@ const glm::uvec4& Application::GetPrimaryViewport() const {
 	return _primaryViewport;
 }
 
-void Application::SetPrimaryViewport(const glm::uvec4 & value) {
+void Application::SetPrimaryViewport(const glm::uvec4& value) {
 	_primaryViewport = value;
 }
 
-void Application::ResizeWindow(const glm::ivec2 & newSize)
+void Application::ResizeWindow(const glm::ivec2& newSize)
 {
 	_HandleWindowSizeChanged(newSize);
 }
@@ -115,7 +123,7 @@ void Application::Quit() {
 	_isRunning = false;
 }
 
-bool Application::LoadScene(const std::string & path) {
+bool Application::LoadScene(const std::string& path) {
 	if (std::filesystem::exists(path)) {
 
 		std::string manifestPath = std::filesystem::path(path).stem().string() + "-manifest.json";
@@ -131,7 +139,7 @@ bool Application::LoadScene(const std::string & path) {
 	return false;
 }
 
-void Application::LoadScene(const Gameplay::Scene::Sptr & scene) {
+void Application::LoadScene(const Gameplay::Scene::Sptr& scene) {
 	_targetScene = scene;
 }
 
@@ -152,10 +160,11 @@ void Application::_Run()
 	// TODO: Register layers
 	_layers.push_back(std::make_shared<GLAppLayer>());
 	_layers.push_back(std::make_shared<DefaultSceneLayer>());
-	_layers.push_back(std::make_shared<RenderLayer>());
-	_layers.push_back(std::make_shared<InterfaceLayer>());
 	_layers.push_back(std::make_shared<LogicUpdateLayer>());
+	_layers.push_back(std::make_shared<RenderLayer>());
 	_layers.push_back(std::make_shared<ParticleLayer>());
+	//_layers.push_back(std::make_shared<InstancedRenderingTestLayer>());
+	_layers.push_back(std::make_shared<InterfaceLayer>());
 
 	// If we're in editor mode, we add all the editor layers
 	if (_isEditor) {
@@ -250,35 +259,40 @@ void Application::_RegisterClasses()
 	ResourceManager::Init();
 
 	// Register all our resource types so we can load them from manifest files
+	ResourceManager::RegisterType<Texture1D>();
 	ResourceManager::RegisterType<Texture2D>();
+	ResourceManager::RegisterType<Texture3D>();
 	ResourceManager::RegisterType<TextureCube>();
 	ResourceManager::RegisterType<ShaderProgram>();
 	ResourceManager::RegisterType<Material>();
 	ResourceManager::RegisterType<MeshResource>();
 	ResourceManager::RegisterType<Font>();
+	ResourceManager::RegisterType<Framebuffer>();
 
 	// Register all of our component types so we can load them from files
 	ComponentManager::RegisterType<Camera>();
 	ComponentManager::RegisterType<RenderComponent>();
 	ComponentManager::RegisterType<RigidBody>();
 	ComponentManager::RegisterType<TriggerVolume>();
-	ComponentManager::RegisterType<UiController>();
 	ComponentManager::RegisterType<RotatingBehaviour>();
 	ComponentManager::RegisterType<JumpBehaviour>();
 	ComponentManager::RegisterType<MaterialSwapBehaviour>();
 	ComponentManager::RegisterType<TriggerVolumeEnterBehaviour>();
 	ComponentManager::RegisterType<SimpleCameraControl>();
+	ComponentManager::RegisterType<RectTransform>();
+	ComponentManager::RegisterType<GuiPanel>();
+	ComponentManager::RegisterType<GuiText>();
+	ComponentManager::RegisterType<ParticleSystem>();
+	ComponentManager::RegisterType<Light>();
+
+	ComponentManager::RegisterType<UiController>();
 	ComponentManager::RegisterType<PlayerBehaviour>();
 	ComponentManager::RegisterType<EnemyBehaviour>();
 	ComponentManager::RegisterType<EnemySpawnerBehaviour>();
 	ComponentManager::RegisterType<TargetBehaviour>();
 	ComponentManager::RegisterType<BackgroundObjectsBehaviour>();
 	ComponentManager::RegisterType<MorphAnimator>();
-	ComponentManager::RegisterType<RectTransform>();
-	ComponentManager::RegisterType<GuiPanel>();
-	ComponentManager::RegisterType<GuiText>();
 	ComponentManager::RegisterType<TargetController>();
-	ComponentManager::RegisterType<ParticleSystem>();
 }
 
 void Application::_Load() {
@@ -350,30 +364,7 @@ void Application::_PostRender() {
 		const auto& layer = *it;
 		if (layer->Enabled && *(layer->Overrides & AppLayerFunctions::OnPostRender)) {
 			layer->OnPostRender();
-			Framebuffer::Sptr layerResult = layer->GetPostRenderOutput();
-			_renderOutput = layerResult != nullptr ? layerResult : _renderOutput;
 		}
-	}
-
-	// We can use the application's viewport to set our OpenGL viewport, as well as clip rendering to that area
-	const glm::uvec4& viewport = GetPrimaryViewport();
-	glViewport(viewport.x, viewport.y, viewport.z, viewport.w);
-	glScissor(viewport.x, viewport.y, viewport.z, viewport.w);
-
-	// If we have a final output, blit it to the screen
-	if (_renderOutput != nullptr) {
-		_renderOutput->Unbind();
-
-		glm::ivec2 windowSize = _windowSize;
-		if (_isEditor) {
-			glfwGetWindowSize(_window, &windowSize.x, &windowSize.y);
-		}
-		//glViewport(0, 0, windowSize.x, windowSize.y);
-		glm::ivec4 viewportMinMax = { viewport.x, viewport.y, viewport.x + viewport.z, viewport.y + viewport.w };
-
-		_renderOutput->Bind(FramebufferBinding::Read);
-		glBindFramebuffer(*FramebufferBinding::Write, 0);
-		Framebuffer::Blit({ 0, 0, _renderOutput->GetWidth(), _renderOutput->GetHeight() }, viewportMinMax, BufferFlags::All, MagFilter::Nearest);
 	}
 }
 
