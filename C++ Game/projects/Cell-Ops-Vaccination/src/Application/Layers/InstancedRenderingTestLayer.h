@@ -14,7 +14,7 @@ class InstancedRenderingTestLayer final : public ApplicationLayer {
 public:
 	MAKE_PTRS(InstancedRenderingTestLayer)
 
-	InstancedRenderingTestLayer();
+		InstancedRenderingTestLayer();
 	virtual ~InstancedRenderingTestLayer();
 
 	// Inherited from ApplicationLayer
@@ -28,7 +28,7 @@ protected:
 	VertexBuffer::Sptr _instanceBuffer;
 	ShaderProgram::Sptr _shader;
 	Texture2D::Sptr     _texture;
-		
+
 	std::vector<Gameplay::GameObject::WeakRef> _instances;
 
 	struct InstanceInfo {

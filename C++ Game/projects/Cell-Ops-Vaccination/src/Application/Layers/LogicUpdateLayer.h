@@ -5,7 +5,7 @@ class LogicUpdateLayer final : public ApplicationLayer {
 public:
 	MAKE_PTRS(LogicUpdateLayer)
 
-	LogicUpdateLayer();
+		LogicUpdateLayer();
 	virtual ~LogicUpdateLayer();
 
 	// Inherited from ApplicationLayer
