@@ -5,6 +5,7 @@
 #include "Gameplay/Physics/TriggerVolume.h"
 #include "Gameplay/Components/RenderComponent.h"
 #include "Gameplay/Physics/TriggerVolume.h"
+#include "Utils/AudioEngine.h"
 
 class EnemyBehaviour :public Gameplay::IComponent
 {
@@ -37,6 +38,9 @@ public:
 
 	float lerpTimer = 0;
 	float lerpTimerMax = 10.0f;
+
+	//Audio 
+	AudioEngine* audioEngine = AudioEngine::instance();
 
 	/// <summary>
 	/// Finds new target for enemy

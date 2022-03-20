@@ -4,7 +4,11 @@ UiController::UiController() :
 	IComponent(),
 	GameFont(nullptr),
 	GameTitleTexture(nullptr),
+	GameTutorialTexture(nullptr),
+	GameTutorialNextTexture(nullptr),
 	GamePauseTexture(nullptr),
+	GamePauseTutorialTexture(nullptr),
+	GamePauseTutorialNextTexture(nullptr),
 	GameOverTexture(nullptr),
 	GameWinTexture(nullptr),
 	FullHp(nullptr),
@@ -76,6 +80,7 @@ void UiController::UpdateUI()
 void UiController::SetupGameScreen()
 {
 	GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("Game Title"));
+	GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("Tutorial"));
 	if (GetGameObject()->GetScene()->IsLoseScreenUp) {
 		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("GameOver"));
 		GetGameObject()->GetScene()->IsLoseScreenUp = false;
@@ -112,7 +117,7 @@ void UiController::SetupGameScreen()
 void UiController::GameTitleScreen()
 {
 	Gameplay::GameObject::Sptr GameTitle = GetGameObject()->GetScene()->CreateGameObject("Game Title"); {
-
+		audioEngine->playSoundByName("menuBackground");
 		RectTransform::Sptr transform = GameTitle->Add<RectTransform>();
 		transform->SetSize({ 800,800 });
 		transform->SetMin({ 0,0 });
@@ -175,6 +180,76 @@ void UiController::GameWinScreen()
 	}
 }
 
+void UiController::GameTutorial(std::string GameStatus, int TutorialPageNumber)
+{
+	if (GameStatus == "Pause") {
+		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("Game Pause"));
+		if (TutorialPageNumber == 1) {
+			Gameplay::GameObject::Sptr Tutorial = GetGameObject()->GetScene()->CreateGameObject("Tutorial"); {
+				RectTransform::Sptr transform = Tutorial->Add<RectTransform>();
+				transform->SetSize({ 800,800 });
+				transform->SetMin({ 0,0 });
+				transform->SetMax({ 800,800 });
+
+				GuiPanel::Sptr TutorialPanel = Tutorial->Add<GuiPanel>();
+				TutorialPanel->SetTexture(GamePauseTutorialTexture);
+
+				GetGameObject()->AddChild(Tutorial);
+			}
+		}
+		else if (TutorialPageNumber == 2) {
+			//first remove previous page
+			GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("Tutorial"));
+			//put up next page
+			Gameplay::GameObject::Sptr Tutorial = GetGameObject()->GetScene()->CreateGameObject("Tutorial"); {
+				RectTransform::Sptr transform = Tutorial->Add<RectTransform>();
+				transform->SetSize({ 800,800 });
+				transform->SetMin({ 0,0 });
+				transform->SetMax({ 800,800 });
+
+				GuiPanel::Sptr TutorialPanel = Tutorial->Add<GuiPanel>();
+				TutorialPanel->SetTexture(GamePauseTutorialNextTexture);
+
+				GetGameObject()->AddChild(Tutorial);
+			}
+		}
+	}
+	else if (GameStatus == "Start") {
+
+		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("Game Title"));
+
+		if (TutorialPageNumber == 1) {
+			Gameplay::GameObject::Sptr Tutorial = GetGameObject()->GetScene()->CreateGameObject("Tutorial"); {
+				RectTransform::Sptr transform = Tutorial->Add<RectTransform>();
+				transform->SetSize({ 800,800 });
+				transform->SetMin({ 0,0 });
+				transform->SetMax({ 800,800 });
+
+				GuiPanel::Sptr TutorialPanel = Tutorial->Add<GuiPanel>();
+				TutorialPanel->SetTexture(GameTutorialTexture);
+
+				GetGameObject()->AddChild(Tutorial);
+			}
+		}
+		else if (TutorialPageNumber == 2) {
+			//first remove previous page
+			GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->GetScene()->FindObjectByName("Tutorial"));
+			//put up next page
+			Gameplay::GameObject::Sptr Tutorial = GetGameObject()->GetScene()->CreateGameObject("Tutorial"); {
+				RectTransform::Sptr transform = Tutorial->Add<RectTransform>();
+				transform->SetSize({ 800,800 });
+				transform->SetMin({ 0,0 });
+				transform->SetMax({ 800,800 });
+
+				GuiPanel::Sptr TutorialPanel = Tutorial->Add<GuiPanel>();
+				TutorialPanel->SetTexture(GameTutorialNextTexture);
+
+				GetGameObject()->AddChild(Tutorial);
+			}
+		}
+	}
+} 
+
 void UiController::_createUiObject(std::string NameOfObject, std::string Text, int SetSizeMinX, int SetSizeMinY, int SetMinX, int SetMinY, glm::vec4 Color)
 {
 	Gameplay::GameObject::Sptr UIObject = GetGameObject()->GetScene()->CreateGameObject(NameOfObject);
@@ -236,7 +311,11 @@ nlohmann::json UiController::ToJson() const
 	return {
 		{"Font",GameFont->GetGUID().str()},
 		{"GameTitleTexture", GameTitleTexture->GetGUID().str()},
+		{"GameTutorialTexture", GameTutorialTexture->GetGUID().str()},
+		{"GameTutorialNextTexture", GameTutorialNextTexture->GetGUID().str()},
 		{"GamePauseTexture",GamePauseTexture->GetGUID().str()},
+		{"GamePauseTutorialTexture",GamePauseTutorialTexture->GetGUID().str()},
+		{"GamePauseTutorialNextTexture",GamePauseTutorialNextTexture->GetGUID().str()},
 		{"GameOverTexture",GameOverTexture->GetGUID().str()},
 		{"GameWinTexture",GameWinTexture->GetGUID().str()},
 		{"FullHp",FullHp->GetGUID().str()},
@@ -257,8 +336,12 @@ UiController::Sptr UiController::FromJson(const nlohmann::json& blob)
 {
 	UiController::Sptr result = std::make_shared<UiController>();
 	result->GameFont = ResourceManager::Get<Font>(Guid(blob["Font"]));
+	result->GameTutorialTexture = ResourceManager::Get<Texture2D>(Guid(blob["GameTutorialTexture"]));
+	result->GameTutorialNextTexture = ResourceManager::Get<Texture2D>(Guid(blob["GameTutorialNextTexture"]));
 	result->GameTitleTexture = ResourceManager::Get<Texture2D>(Guid(blob["GameTitleTexture"]));
 	result->GamePauseTexture = ResourceManager::Get<Texture2D>(Guid(blob["GamePauseTexture"]));
+	result->GamePauseTutorialTexture = ResourceManager::Get<Texture2D>(Guid(blob["GamePauseTutorialTexture"]));
+	result->GamePauseTutorialNextTexture = ResourceManager::Get<Texture2D>(Guid(blob["GamePauseTutorialNextTexture"]));
 	result->GameOverTexture = ResourceManager::Get<Texture2D>(Guid(blob["GameOverTexture"]));
 	result->GameWinTexture = ResourceManager::Get<Texture2D>(Guid(blob["GameWinTexture"]));
 	result->FullHp=ResourceManager::Get<Texture2D>(Guid(blob["FullHp"]));

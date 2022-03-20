@@ -22,6 +22,7 @@ void PlayerBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Phy
 			LOG_INFO("Enemy Take Damage");
 			body->GetGameObject()->Get<EnemyBehaviour>()->TakeDamage();
 		//}
+			
 	}
 }
 void PlayerBehaviour::RenderImGui() {

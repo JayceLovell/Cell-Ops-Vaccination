@@ -9,6 +9,7 @@
 
 #include "Graphics/Buffers/UniformBuffer.h"
 #include "Graphics/Textures/Texture3D.h"
+#include "Utils/AudioEngine.h"
 
 
 struct GLFWwindow;
@@ -65,9 +66,12 @@ namespace Gameplay {
 		bool IsTitleUp;
 		bool IsWinScreenUp;
 		bool IsLoseScreenUp;
+		bool IsTutorialFinish;
 		int GameRound;
 		int EnemiesKilled;
 
+		//Attempt at sound because now I'm annoyed
+		AudioEngine* audioEngine = AudioEngine::instance();
 
 		Scene();
 		~Scene();

@@ -3,6 +3,7 @@
 #include "Gameplay/GameObject.h"
 #include "Gameplay/Scene.h"
 #include "Gameplay/Physics/TriggerVolume.h"
+#include "Utils/AudioEngine.h"
 
 /// <summary>
 /// Player Behaviour Class
@@ -23,6 +24,8 @@ public:
 	MAKE_TYPENAME(PlayerBehaviour);
 
 	int EnemiesKilled;
+
+	
 
 protected:
 	GLFWwindow* _window;

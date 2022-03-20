@@ -50,6 +50,7 @@ namespace Gameplay {
 		IsWinScreenUp(false),
 		GameStarted(false),
 		IsCheatActivated(false),
+		IsTutorialFinish(false),
 		GameRound(0),
 		EnemiesKilled(0)
 	{
@@ -316,6 +317,9 @@ namespace Gameplay {
 		UiControllerObject->Get<UiController>()->SetupGameScreen();
 		IsTitleUp = false;
 
+		//Hopefully it works....Yessirski
+		audioEngine->playSoundByName("background");
+
 		GameStarted = true;
 	}
 
@@ -331,20 +335,26 @@ namespace Gameplay {
 	{
 		if (!IsTitleUp && !IsLoseScreenUp) {
 			UiControllerObject->Get<UiController>()->GameOverScreen();
+			audioEngine->playSoundByName("GameLose");
 			IsLoseScreenUp = true;
 		}
+		
 	}
 
 	void Scene::GamePause(bool IsPaused)
 	{
 		if (IsPaused && !IsPauseUIUp) {
 			UiControllerObject->Get<UiController>()->GamePauseScreen();
+			audioEngine->playSoundByName("menuBackground");
 			IsPauseUIUp = true;
+			
 		}
 		else {
 			RemoveGameObject(FindObjectByName("Game Pause"));
+			audioEngine->playSoundByName("background");
 			IsPauseUIUp = false;
 		}
+		
 	}
 	
 	//////////// Default code
@@ -450,6 +460,7 @@ namespace Gameplay {
 		//Code Added
 		UiControllerObject = FindObjectByName("UI");
 		TargetSpawnerObject = FindObjectByName("Target Spawner");
+
 	}
 
 	void Scene::DoPhysics(float dt) {
@@ -492,7 +503,7 @@ namespace Gameplay {
 			}
 			// Pause
 			if (InputEngine::GetKeyState(GLFW_KEY_ESCAPE) == ButtonState::Pressed) {
-				if (IsPaused && IsPauseUIUp)
+				if (IsPaused && IsPauseUIUp && IsTutorialFinish)
 				{
 					IsPaused = false;
 					GamePause(IsPaused);
@@ -502,15 +513,37 @@ namespace Gameplay {
 					IsPaused = true;
 					GamePause(IsPaused);
 				}
-
+			}
+			if (InputEngine::GetKeyState(GLFW_KEY_H) == ButtonState::Pressed) {
+				if (IsPaused && IsPauseUIUp && IsTutorialFinish) {
+					UiControllerObject->Get<UiController>()->GameTutorial("Pause", 1);
+					IsPauseUIUp = false;
+					IsTutorialFinish = false;
+				}
+				else if (IsPaused && !IsPauseUIUp && !IsTutorialFinish)
+				{
+					UiControllerObject->Get<UiController>()->GameTutorial("Pause", 2);
+					IsTutorialFinish = true;
+				}
+				else {
+					RemoveGameObject(FindObjectByName("Tutorial"));
+					GamePause(IsPaused);
+				}
 			}
 			//Start
-			if (InputEngine::IsKeyDown(GLFW_KEY_ENTER)) {
-				if (!IsPlaying && !GameStarted)
-				{
+			if (InputEngine::GetKeyState(GLFW_KEY_ENTER) == ButtonState::Pressed) {
+				if (!IsPlaying && !GameStarted && IsTutorialFinish) {
 					IsPlaying = true;
 					GameStarted = true;
 					GameStart();
+				}
+				else {
+					if (FindObjectByName("Tutorial")) {
+						UiControllerObject->Get<UiController>()->GameTutorial("Start", 2);
+						IsTutorialFinish = true;
+					}
+					else
+					UiControllerObject->Get<UiController>()->GameTutorial("Start", 1);
 				}
 			}
 			_FlushDeleteQueue();
