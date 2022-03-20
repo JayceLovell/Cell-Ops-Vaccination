@@ -337,6 +337,9 @@ namespace Gameplay {
 		UiControllerObject->Get<UiController>()->SetupGameScreen();
 		IsTitleUp = false;
 
+		//Hopefully it works....Yessirski
+		audioEngine->playSoundByName("background");
+
 		GameStarted = true;
 	}
 
@@ -352,20 +355,26 @@ namespace Gameplay {
 	{
 		if (!IsTitleUp && !IsLoseScreenUp) {
 			UiControllerObject->Get<UiController>()->GameOverScreen();
+			audioEngine->playSoundByName("GameLose");
 			IsLoseScreenUp = true;
 		}
+		
 	}
 
 	void Scene::GamePause(bool IsPaused)
 	{
 		if (IsPaused && !IsPauseUIUp) {
 			UiControllerObject->Get<UiController>()->GamePauseScreen();
+			audioEngine->playSoundByName("menuBackground");
 			IsPauseUIUp = true;
+			
 		}
 		else {
 			RemoveGameObject(FindObjectByName("Game Pause"));
+			audioEngine->playSoundByName("background");
 			IsPauseUIUp = false;
 		}
+		
 	}
 	
 	//////////// Default code
@@ -468,6 +477,7 @@ namespace Gameplay {
 		//Code Added
 		UiControllerObject = FindObjectByName("UI");
 		TargetSpawnerObject = FindObjectByName("Target Spawner");
+
 	}
 
 	void Scene::DoPhysics(float dt) {

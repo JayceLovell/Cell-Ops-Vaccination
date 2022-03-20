@@ -6,6 +6,7 @@
 #include <Gameplay/Components/GUI/GuiText.h>
 #include "Gameplay/Components/GUI/GuiPanel.h"
 #include "Gameplay/Components/TargetBehaviour.h"
+#include "Utils/AudioEngine.h"
 
 /// <summary>
 /// This class will be responsible for all Ui stuff
@@ -22,6 +23,9 @@ public:
 	virtual nlohmann::json ToJson() const override;
 	static UiController::Sptr FromJson(const nlohmann::json& blob);
 	virtual void RenderImGui() override;
+
+	//Audio 
+	AudioEngine* audioEngine = AudioEngine::instance();
 
 	Font::Sptr GameFont;
 

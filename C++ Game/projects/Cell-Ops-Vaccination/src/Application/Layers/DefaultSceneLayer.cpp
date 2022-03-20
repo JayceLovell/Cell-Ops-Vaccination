@@ -31,6 +31,7 @@
 #include "Utils/JsonGlmHelpers.h"
 #include "Utils/StringUtils.h"
 #include "Utils/GlmDefines.h"
+#include "Utils/AudioEngine.h"
 
 // Gameplay
 #include "Gameplay/Material.h"
@@ -76,6 +77,7 @@
 
 #include "Application/Application.h"
 #include "Gameplay/Components/ParticleSystem.h"
+#include <Utils/AudioSource.h>
 
 DefaultSceneLayer::DefaultSceneLayer() :
 	ApplicationLayer()
@@ -219,6 +221,17 @@ void DefaultSceneLayer::_CreateScene()
 		Texture2D::Sptr Health0Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_0.png");
 		Texture2D::Sptr TitleTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/Title.png");
 
+
+		//Audio Files
+		AudioEngine* audioEngine = AudioEngine::instance();
+		audioEngine->init();
+		audioEngine->loadSound("background", "sounds/Background(AiryHeartBeat).mp3", true,true);
+		audioEngine->loadSound("menuBackground", "sounds/MenuBackgroundSound2.mp3", true,true);
+		audioEngine->loadSound("targetDeath", "sounds/Background(AiryHeartBeat.Fast).mp3", true);
+		audioEngine->loadSound("GameLose", "sounds/Background(AiryHeartBeat.FlatLine).mp3", true);
+		audioEngine->loadSound("enemyDeath", "sounds/EnemyDeathSFX.mp3", true);
+		audioEngine->loadSound("enemyHit", "sounds/HitFireSFX.mp3", true);
+		AudioSource sound;
 
 		// Here we'll load in the cubemap, as well as a special shader to handle drawing the skybox
 		TextureCube::Sptr testCubemap = ResourceManager::CreateAsset<TextureCube>("cubemaps/ocean/lung.png");

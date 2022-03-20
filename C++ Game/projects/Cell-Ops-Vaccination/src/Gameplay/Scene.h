@@ -9,6 +9,7 @@
 #include "Physics/BulletDebugDraw.h"
 
 #include "Graphics/Buffers/UniformBuffer.h"
+#include "Utils/AudioEngine.h"
 
 
 struct GLFWwindow;
@@ -75,6 +76,8 @@ namespace Gameplay {
 		int GameRound;
 		int EnemiesKilled;
 
+		//Attempt at sound because now I'm annoyed
+		AudioEngine* audioEngine = AudioEngine::instance();
 
 		Scene();
 		~Scene();
