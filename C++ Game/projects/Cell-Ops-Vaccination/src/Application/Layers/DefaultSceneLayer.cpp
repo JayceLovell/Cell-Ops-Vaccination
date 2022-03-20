@@ -32,6 +32,7 @@
 #include "Utils/StringUtils.h"
 #include "Utils/GlmDefines.h"
 #include "Utils/AudioEngine.h"
+#include <Utils/AudioSource.h>
 
 // Gameplay
 #include "Gameplay/Material.h"
@@ -55,6 +56,7 @@
 #include "Gameplay/Components/MorphAnimator.h"
 #include "Gameplay/Components/UIController.h"
 #include "Gameplay/Components/TargetController.h"
+#include <Gameplay/Components/AbilityBehaviour.h>
 
 // Physics
 #include "Gameplay/Physics/RigidBody.h"
@@ -77,7 +79,7 @@
 
 #include "Application/Application.h"
 #include "Gameplay/Components/ParticleSystem.h"
-#include <Utils/AudioSource.h>
+
 
 DefaultSceneLayer::DefaultSceneLayer() :
 	ApplicationLayer()
@@ -488,6 +490,8 @@ void DefaultSceneLayer::_CreateScene()
 
 
 			Player->Add<PlayerBehaviour>();
+
+			Player->Add<AbilityBehaviour>();
 
 
 			TriggerVolume::Sptr trigger = Player->Add<TriggerVolume>();

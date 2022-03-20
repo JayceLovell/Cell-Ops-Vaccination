@@ -47,6 +47,7 @@
 #include "Gameplay/Components/UIController.h"
 #include "Gameplay/Components/EnemySpawnerBehaviour.h"
 #include "Gameplay/Components/ParticleSystem.h"
+#include "Gameplay/Components/AbilityBehaviour.h"
 
 // GUI
 #include "Gameplay/Components/GUI/RectTransform.h"
@@ -279,6 +280,7 @@ void Application::_RegisterClasses()
 	ComponentManager::RegisterType<GuiText>();
 	ComponentManager::RegisterType<TargetController>();
 	ComponentManager::RegisterType<ParticleSystem>();
+	ComponentManager::RegisterType<AbilityBehaviour>();
 }
 
 void Application::_Load() {
