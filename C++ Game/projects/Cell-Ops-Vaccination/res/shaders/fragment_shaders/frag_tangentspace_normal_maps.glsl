@@ -22,20 +22,14 @@ layout(location = 0) out vec4 frag_color;
 // Unity
 struct Material {
 	sampler2D Diffuse;
+	sampler2D Emissive;
+	sampler2D NormalMap;
 	float     Shininess;
 };
 // Create a uniform for the material
 uniform Material u_Material;
 
 uniform sampler2D s_NormalMap;
-
-////////////////////////////////////////////////////////////////
-///////////// Application Level Uniforms ///////////////////////
-////////////////////////////////////////////////////////////////
-
-#include "../fragments/multiple_point_lights.glsl"
-
-const float LOG_MAX = 2.40823996531;
 
 // https://learnopengl.com/Advanced-Lighting/Advanced-Lighting
 void main() {
@@ -57,5 +51,5 @@ void main() {
 	// combine for the final result
 	vec3 result = lightAccumulation  * inColor * textureColor.rgb;
 
-	frag_color = vec4(result, textureColor.a);
+	frag_color = vec4(ColorCorrect(result), textureColor.a);
 }

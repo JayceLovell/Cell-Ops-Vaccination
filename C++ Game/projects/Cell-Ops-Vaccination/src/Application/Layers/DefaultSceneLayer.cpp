@@ -4,6 +4,7 @@
 #include <GLM/glm.hpp>
 #include <GLM/gtc/matrix_transform.hpp>
 #include <GLM/gtc/type_ptr.hpp>
+#include <GLM/gtc/random.hpp>
 #define GLM_ENABLE_EXPERIMENTAL
 #include <GLM/gtx/common.hpp> // for fmod (floating modulus)
 
@@ -14,12 +15,13 @@
 #include "Graphics/Buffers/VertexBuffer.h"
 #include "Graphics/VertexArrayObject.h"
 #include "Graphics/ShaderProgram.h"
-#include "Graphics/Texture2D.h"
-#include "Graphics/TextureCube.h"
+#include "Graphics/Textures/Texture2D.h"
+#include "Graphics/Textures/TextureCube.h"
 #include "Graphics/VertexTypes.h"
 #include "Graphics/Font.h"
 #include "Graphics/GuiBatcher.h"
 #include "Graphics/Framebuffer.h"
+
 
 // Utilities
 #include "Utils/MeshBuilder.h"
@@ -36,6 +38,7 @@
 #include "Gameplay/Material.h"
 #include "Gameplay/GameObject.h"
 #include "Gameplay/Scene.h"
+#include "Gameplay/Components/Light.h"
 
 // Components
 #include "Gameplay/Components/IComponent.h"
@@ -46,6 +49,7 @@
 #include "Gameplay/Components/MaterialSwapBehaviour.h"
 #include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
 #include "Gameplay/Components/SimpleCameraControl.h"
+
 #include "Gameplay/Components/EnemySpawnerBehaviour.h"
 #include "Gameplay/Components/PlayerBehaviour.h"
 #include "Gameplay/Components/EnemyBehaviour.h"
@@ -64,9 +68,6 @@
 #include "Gameplay/Physics/Colliders/CylinderCollider.h"
 #include "Gameplay/Physics/TriggerVolume.h"
 #include "Graphics/DebugDraw.h"
-#include "Gameplay/Components/TriggerVolumeEnterBehaviour.h"
-#include "Gameplay/Components/SimpleCameraControl.h"
-#include "Gameplay/Physics/Colliders/CylinderCollider.h"
 
 // GUI
 #include "Gameplay/Components/GUI/RectTransform.h"
@@ -76,6 +77,8 @@
 
 #include "Application/Application.h"
 #include "Gameplay/Components/ParticleSystem.h"
+#include "Graphics/Textures/Texture3D.h"
+#include "Graphics/Textures/Texture1D.h"
 
 DefaultSceneLayer::DefaultSceneLayer() :
 	ApplicationLayer()
@@ -103,34 +106,39 @@ void DefaultSceneLayer::_CreateScene()
 		app.LoadScene("scene.json");
 	} else {
 		////////////////////////////// SHADERS  ////////////////////////////////
-		// This time we'll have 2 different shaders, and share data between both of them using the UBO
-		// This shader will handle reflective materials 
-
-		// This shader handles our basic materials without reflections (cause they expensive)
-		ShaderProgram::Sptr basicShader = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
+		// Basic gbuffer generation with no vertex manipulation
+		ShaderProgram::Sptr deferredForward = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/basic.glsl" },
-			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_blinn_phong_textured.glsl" }
+			{ ShaderPartType::Fragment, "shaders/fragment_shaders/deferred_forward.glsl" }
 		});
+		deferredForward->SetDebugName("Deferred - GBuffer Generation");
 
 		ShaderProgram::Sptr BackgroundShader = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/animation.glsl" },
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_animation.glsl" }
 		});
+		BackgroundShader->SetDebugName("Background Shader");
+
 		ShaderProgram::Sptr BreathingShader = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/breathing.glsl" },
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_shader.glsl" }
 		});
+		BreathingShader->SetDebugName("Breathing ");
+
 		ShaderProgram::Sptr AnimationShader = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/Morph.glsl" },
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_blinn_phong_textured.glsl" }
 		});
+		AnimationShader->SetDebugName("Animation Shader");
+
 		ShaderProgram::Sptr Animation2Shader = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/Morph.glsl" },
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/frag_animation.glsl" }
 		});
+		Animation2Shader->SetDebugName("Animation 2");
 
 		/////////////////////////////////////////// MESHES ////////////////////////////////////////////////
-		// Load in the meshes
+		// Player Meshes
 		MeshResource::Sptr PlayerMesh = ResourceManager::CreateAsset<MeshResource>("models/Player.obj");
 
 		// Enemy Meshes
@@ -221,8 +229,8 @@ void DefaultSceneLayer::_CreateScene()
 
 
 		// Here we'll load in the cubemap, as well as a special shader to handle drawing the skybox
-		TextureCube::Sptr testCubemap = ResourceManager::CreateAsset<TextureCube>("cubemaps/ocean/lung.png");
-		ShaderProgram::Sptr skyboxShader = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
+		TextureCube::Sptr testCubemap = ResourceManager::CreateAsset<TextureCube>("cubemaps/ocean/ocean.jpg");
+		ShaderProgram::Sptr      skyboxShader = ResourceManager::CreateAsset<ShaderProgram>(std::unordered_map<ShaderPartType, std::string>{
 			{ ShaderPartType::Vertex, "shaders/vertex_shaders/skybox_vert.glsl" },
 			{ ShaderPartType::Fragment, "shaders/fragment_shaders/skybox_frag.glsl" }
 		});
@@ -250,10 +258,10 @@ void DefaultSceneLayer::_CreateScene()
 
 		// Create our materials
 		// Player Material
-		Material::Sptr PlayerMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr PlayerMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			PlayerMaterial->Name = "PlayerMaterial";
-			PlayerMaterial->Set("u_Material.Diffuse", PlayerTexture);
+			PlayerMaterial->Set("u_Material.AlbedoMap", PlayerTexture);
 			PlayerMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		// Enemy Materials
@@ -269,35 +277,35 @@ void DefaultSceneLayer::_CreateScene()
 			NormalEnemyMaterial->Set("u_Material.Diffuse", NormalEnemyTexture);
 			NormalEnemyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr FastEnemyMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr FastEnemyMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			FastEnemyMaterial->Name = "FastEnemyMaterial";
-			FastEnemyMaterial->Set("u_Material.Diffuse", FastEnemyTexture);
+			FastEnemyMaterial->Set("u_Material.AlbedoMap", FastEnemyTexture);
 			FastEnemyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		// Target Material
-		Material::Sptr LeftLungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr LeftLungMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			LeftLungMaterial->Name = "LeftLungMaterial";
-			LeftLungMaterial->Set("u_Material.Diffuse", LeftLungTexture);
+			LeftLungMaterial->Set("u_Material.AlbedoMap", LeftLungTexture);
 			LeftLungMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr RightLungMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr RightLungMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			RightLungMaterial->Name = "LeftLungMaterial";
-			RightLungMaterial->Set("u_Material.Diffuse", RightLungTexture);
+			RightLungMaterial->Set("u_Material.AlbedoMap", RightLungTexture);
 			RightLungMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr HeartMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr HeartMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			HeartMaterial->Name = "HeartMaterial";
-			HeartMaterial->Set("u_Material.Diffuse", HeartTexture);
+			HeartMaterial->Set("u_Material.AlbedoMap", HeartTexture);
 			HeartMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr KidneyMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr KidneyMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			KidneyMaterial->Name = "KidneyMateriall";
-			KidneyMaterial->Set("u_Material.Diffuse", KidneyTexture);
+			KidneyMaterial->Set("u_Material.AlbedoMap", KidneyTexture);
 			KidneyMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 
@@ -338,10 +346,10 @@ void DefaultSceneLayer::_CreateScene()
 			Co2Material->Set("u_Material.Diffuse", Co2Texture);
 			Co2Material->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr FloorVeinANDVeinMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr FloorVeinANDVeinMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			FloorVeinANDVeinMaterial->Name = "FloorVeinANDVeinMaterial";
-			FloorVeinANDVeinMaterial->Set("u_Material.Diffuse", FloorVeinANDVeinTexture);
+			FloorVeinANDVeinMaterial->Set("u_Material.AlbedoMap", FloorVeinANDVeinTexture);
 			FloorVeinANDVeinMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		Material::Sptr LL37Material = ResourceManager::CreateAsset<Material>(BackgroundShader);
@@ -374,10 +382,10 @@ void DefaultSceneLayer::_CreateScene()
 			OxygenMaterial->Set("u_Material.Diffuse", OxygenTexture);
 			OxygenMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr PipeMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr PipeMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			PipeMaterial->Name = "PipeMaterial";
-			PipeMaterial->Set("u_Material.Diffuse", PipeTexture);
+			PipeMaterial->Set("u_Material.AlbedoMap", PipeTexture);
 			PipeMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		Material::Sptr SmokeplaqueMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
@@ -398,16 +406,16 @@ void DefaultSceneLayer::_CreateScene()
 			Symbiont2Material->Set("u_Material.Diffuse", Symbiont2Texture);
 			Symbiont2Material->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr WhiteBloodCellMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr WhiteBloodCellMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			WhiteBloodCellMaterial->Name = "WhiteBloodCellMaterial";
-			WhiteBloodCellMaterial->Set("u_Material.Diffuse", WhiteBloodCellTexture);
+			WhiteBloodCellMaterial->Set("u_Material.AlbedoMap", WhiteBloodCellTexture);
 			WhiteBloodCellMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr WhiteBloodCell2Material = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr WhiteBloodCell2Material = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			WhiteBloodCell2Material->Name = "WhiteBloodCell2Material";
-			WhiteBloodCell2Material->Set("u_Material.Diffuse", WhiteBloodCell2Texture);
+			WhiteBloodCell2Material->Set("u_Material.AlbedoMap", WhiteBloodCell2Texture);
 			WhiteBloodCell2Material->Set("u_Material.Shininess", 0.1f);
 		}
 		Material::Sptr YellowMicrobiotaMaterial = ResourceManager::CreateAsset<Material>(BackgroundShader);
@@ -417,32 +425,44 @@ void DefaultSceneLayer::_CreateScene()
 			YellowMicrobiotaMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 		// UI Material
-		Material::Sptr GameOverMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr GameOverMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			GameOverMaterial->Name = "GameOverMaterial";
-			GameOverMaterial->Set("u_Material.Diffuse", GameOverTexture);
+			GameOverMaterial->Set("u_Material.AlbedoMap", GameOverTexture);
 			GameOverMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr GameWinMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr GameWinMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			GameWinMaterial->Name = "GameWinMaterial";
-			GameWinMaterial->Set("u_Material.Diffuse", GameWinTexture);
+			GameWinMaterial->Set("u_Material.AlbedoMap", GameWinTexture);
 			GameWinMaterial->Set("u_Material.Shininess", 0.1f);
 		}
-		Material::Sptr GamePauseMaterial = ResourceManager::CreateAsset<Material>(basicShader);
+		Material::Sptr GamePauseMaterial = ResourceManager::CreateAsset<Material>(deferredForward);
 		{
 			GamePauseMaterial->Name = "GamePauseMaterial";
-			GamePauseMaterial->Set("u_Material.Diffuse", GamePauseTexture);
+			GamePauseMaterial->Set("u_Material.AlbedoMap", GamePauseTexture);
 			GamePauseMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 
 		
-		
+		// Create some lights for our scene
+		GameObject::Sptr lightParent = scene->CreateGameObject("Lights");
+
+		for (int ix = 0; ix < 50; ix++) {
+			GameObject::Sptr light = scene->CreateGameObject("Light");
+			light->SetPostion(glm::vec3(glm::diskRand(25.0f), 1.0f));
+			lightParent->AddChild(light);
+
+			Light::Sptr lightComponent = light->Add<Light>();
+			lightComponent->SetColor(glm::linearRand(glm::vec3(0.0f), glm::vec3(1.0f)));
+			lightComponent->SetRadius(glm::linearRand(0.1f, 10.0f));
+			lightComponent->SetIntensity(glm::linearRand(1.0f, 2.0f));
+		}
+
 		GameObject::Sptr camera = scene->MainCamera->GetGameObject()->SelfRef();
 		//GameObject::Sptr camera = scene->CreateGameObject("Main Camera");
 		{
-			camera->SetPostion(glm::vec3(2.153f,49.807f,-0.995f));
-			camera->SetRotation(glm::vec3(118.0f, 0.0f, -179.0f));
+			camera->SetPostion(glm::vec3(16.0f,41.0f,16.0f));
 
 			camera->Add<SimpleCameraControl>();
 
@@ -520,6 +540,11 @@ void DefaultSceneLayer::_CreateScene()
 			//EnemySpawner->Get<EnemySpawnerBehaviour>()->FastEnemyFrames = FastEnemyFrames;
 
 			scene->EnemySpawnerObjects.push_back(TopEnemySpawner);
+
+			Light::Sptr lightComponent = TopEnemySpawner->Add<Light>();
+			lightComponent->SetColor(glm::vec3(1.0f));
+			lightComponent->SetRadius(100.0f);
+			lightComponent->SetIntensity(1.0f);
 		}
 		GameObject::Sptr BottomEnemySpawner = scene->CreateGameObject("Enemy Spawner Bottom");
 		{

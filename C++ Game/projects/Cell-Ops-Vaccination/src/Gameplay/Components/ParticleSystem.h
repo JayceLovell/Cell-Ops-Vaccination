@@ -1,12 +1,13 @@
 #pragma once
 #include "Gameplay/Components/IComponent.h"
+#include "Graphics/ShaderProgram.h"
 
 ENUM(ParticleType, uint32_t,
-	Emitter       = 0,
-	Particle      = 1
+	Emitter = 0,
+	Particle = 1
 );
 
-class ParticleSystem : public Gameplay::IComponent{
+class ParticleSystem : public Gameplay::IComponent {
 public:
 	MAKE_PTRS(ParticleSystem);
 

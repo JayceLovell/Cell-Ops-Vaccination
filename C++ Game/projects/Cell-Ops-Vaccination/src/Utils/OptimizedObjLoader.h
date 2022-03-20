@@ -1,7 +1,7 @@
 /**
  * NOTE: you MAY NOT use this file in your GDW game or graphics assignments
  * (at least for the fall semester)
- * 
+ *
  * You may use this implementation as a reference to implement your own version
  * using similar concepts, and that fit better with your game
  */
@@ -13,10 +13,10 @@
 
 #include "Utils/MeshBuilder.h"
 
-/// <summary>
-/// An optimized OBJ loader that can convert an OBJ file to a binary representation
-/// that we can load significantly faster
-/// </summary>
+ /// <summary>
+ /// An optimized OBJ loader that can convert an OBJ file to a binary representation
+ /// that we can load significantly faster
+ /// </summary>
 class OptimizedObjLoader {
 public:
 	/// <summary>
@@ -46,7 +46,7 @@ protected:
 	// Will be put at the start of the binary file, contains info about the contents of the file
 	struct BinaryHeader {
 		// A check value so we can ensure that we're loading in the right file type
-		char      HeaderBytes[4] ={ 'B', 'O', 'B', 'J' };
+		char      HeaderBytes[4] = { 'B', 'O', 'B', 'J' };
 		// The version code, we can use this to create different loaders if our format changes
 		uint16_t  Version = 0;
 		// The number of indices in the mesh
@@ -77,12 +77,12 @@ void OptimizedObjLoader::SaveBinaryFile(MeshBuilder<VertexType>& mesh, const std
 	}
 
 	// Create the fixed size header for our output file
-	BinaryHeader header  = BinaryHeader();
-	header.Version       = 0x01; // This is version 1! Update this and implement different readers if changes to format are made
-	header.NumIndices    = mesh.GetIndexCount();
-	header.IndicesType   = IndexType::UInt;
-	header.NumVertices   = mesh.GetVertexCount();
-	header.VertexStride  = sizeof(VertexType);
+	BinaryHeader header = BinaryHeader();
+	header.Version = 0x01; // This is version 1! Update this and implement different readers if changes to format are made
+	header.NumIndices = mesh.GetIndexCount();
+	header.IndicesType = IndexType::UInt;
+	header.NumVertices = mesh.GetVertexCount();
+	header.VertexStride = sizeof(VertexType);
 	header.NumAttributes = VertexType::V_DECL.size();
 
 	// Write header bytes to the stream

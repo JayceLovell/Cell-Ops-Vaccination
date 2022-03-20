@@ -43,7 +43,7 @@ public:
 
 protected:
 	Guid _guid;
-	IResource() : _guid(Guid::New()){}
+	IResource() : _guid(Guid::New()) {}
 };
 
 /// <summary>

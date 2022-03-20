@@ -108,7 +108,7 @@ private:
 	friend bool operator<(const Guid& lhs, const Guid& rhs);
 	friend bool operator>(const Guid& lhs, const Guid& rhs);
 
-	#ifdef GUID_CEREAL_ARCHIVES
+#ifdef GUID_CEREAL_ARCHIVES
 	// Allows the cereal library to access our internal data
 	friend class cereal::access;
 
@@ -117,7 +117,8 @@ private:
 	void save(Archive& ar) const {
 		if constexpr (cereal::traits::is_text_archive<Archive>::value) {
 			ar.saveBinaryValue(&_bytes[0], 16);
-		} else {
+		}
+		else {
 			ar(cereal::binary_data(&_bytes[0], 16));
 		}
 	}
@@ -126,11 +127,12 @@ private:
 	void load(Archive& ar) {
 		if constexpr (cereal::traits::is_text_archive<Archive>::value) {
 			ar.loadBinaryValue(&_bytes[0], 16);
-		} else {
+		}
+		else {
 			ar(cereal::binary_data(&_bytes[0], 16));
 		}
 	}
-	#endif
+#endif
 };
 
 // Handles the implementation details for our hashing algorithm

@@ -23,7 +23,7 @@ void ParticleLayer::OnUpdate()
 			if (system->IsEnabled) {
 				system->Update();
 			}
-		});
+			});
 	}
 }
 
@@ -33,5 +33,5 @@ void ParticleLayer::OnRender(const Framebuffer::Sptr& prevLayer)
 		if (system->IsEnabled) {
 			system->Render();
 		}
-	});
+		});
 }

@@ -19,7 +19,7 @@ GuiText::GuiText() :
 
 GuiText::~GuiText() = default;
 
-void GuiText::SetColor(const glm::vec4& color) {
+void GuiText::SetColor(const glm::vec4 & color) {
 	_color = color;
 }
 
@@ -27,11 +27,11 @@ const glm::vec4& GuiText::GetColor() const {
 	return _color;
 }
 
-const std::string& GuiText::GetText() const {
+std::string GuiText::GetText() const {
 	return StringConvert.to_bytes(_text);
 }
 
-void GuiText::SetText(const std::string& value) {
+void GuiText::SetText(const std::string & value) {
 	SetTextUnicode(StringConvert.from_bytes(value));
 }
 
@@ -39,9 +39,9 @@ const std::wstring& GuiText::GetTextUnicode() const {
 	return _text;
 }
 
-void GuiText::SetTextUnicode(const std::wstring& value) {
+void GuiText::SetTextUnicode(const std::wstring & value) {
 	_text = value;
-	
+
 	if (_font != nullptr) {
 		_textSize = _font->MeausureString(_text, _textScale);
 	}
@@ -59,7 +59,7 @@ const Font::Sptr& GuiText::GetFont() const {
 	return _font;
 }
 
-void GuiText::SetFont(const Font::Sptr& font) {
+void GuiText::SetFont(const Font::Sptr & font) {
 	_font = font;
 	if (_font != nullptr) {
 		_textSize = _font->MeausureString(_text, _textScale);
@@ -76,7 +76,7 @@ void GuiText::Awake() {
 
 void GuiText::RenderGUI()
 {
-	if (_font != nullptr && ! _text.empty()) {
+	if (_font != nullptr && !_text.empty()) {
 		glm::vec2 position = _transform->GetSize() / 2.0f;
 		position -= _textSize / 2.0f;
 		GuiBatcher::RenderText(_text, _font, position, _color, _textScale);
@@ -112,7 +112,7 @@ nlohmann::json GuiText::ToJson() const {
 	};
 }
 
-GuiText::Sptr GuiText::FromJson(const nlohmann::json& blob) {
+GuiText::Sptr GuiText::FromJson(const nlohmann::json & blob) {
 	GuiText::Sptr result = std::make_shared<GuiText>();
 	result->_color = JsonGet(blob, "color", result->_color);
 	result->_textScale = JsonGet(blob, "scale", 1.0f);

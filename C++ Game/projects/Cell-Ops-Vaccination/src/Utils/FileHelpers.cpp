@@ -21,10 +21,12 @@ std::string FileHelpers::ReadFile(const std::string& filename) {
 			// Seek to beginning of file, then read contents to string
 			in.seekg(0, std::ios::beg);
 			in.read(&result[0], size);
-		} else {
+		}
+		else {
 			LOG_ERROR("Could not read from file '{}'", filename);
 		}
-	} else {
+	}
+	else {
 		LOG_ERROR("Could not open file '{}'", filename);
 	}
 
@@ -42,7 +44,7 @@ std::string FileHelpers::ReadResolveIncludes(const std::string& filename, std::v
 	const size_t includeTokenLen = const_strlen(includeToken);
 
 	// Look for the token in the file
-	size_t seek = result.find(includeToken, 0); 
+	size_t seek = result.find(includeToken, 0);
 	// If we found it, there's work to do!
 	while (seek != std::string::npos) {
 		// Find the end of the line

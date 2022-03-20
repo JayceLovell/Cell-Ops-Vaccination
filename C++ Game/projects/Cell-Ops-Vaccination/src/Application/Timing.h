@@ -1,7 +1,7 @@
 #pragma once
 
 /**
- * The timing class is a very simple singleton class that will store our timing values 
+ * The timing class is a very simple singleton class that will store our timing values
  * per-frame
  */
 class Timing final {

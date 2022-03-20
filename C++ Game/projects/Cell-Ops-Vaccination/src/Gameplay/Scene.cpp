@@ -10,29 +10,37 @@
 #include "Gameplay/Physics/RigidBody.h"
 #include "Gameplay/Physics/TriggerVolume.h"
 #include "Gameplay/MeshResource.h"
+#include "Gameplay/Material.h"
 
 #include "Graphics/DebugDraw.h"
-#include "Graphics/TextureCube.h"
+#include "Graphics/Textures/TextureCube.h"
 #include "Graphics/VertexArrayObject.h"
-#include <Gameplay/Components/EnemyBehaviour.h>
-#include <Gameplay/Components/TargetBehaviour.h>
-#include <Gameplay/Components/GUI/GuiText.h>
 #include "Application/Application.h"
-#include <Gameplay/InputEngine.h>
+
 #include <Gameplay/Components/UIController.h>
 #include <Gameplay/Components/EnemySpawnerBehaviour.h>
 #include <Gameplay/Components/TargetController.h>
+#include <Gameplay/InputEngine.h>
 
 namespace Gameplay {
 	Scene::Scene() :
 		_objects(std::vector<GameObject::Sptr>()),
 		_deletionQueue(std::vector<std::weak_ptr<GameObject>>()),
-		Lights(std::vector<Light>()),
-		Enemies(std::vector<GameObject::Sptr>()),
-		PlayerLastPosition(glm::vec3(0.0f)),
-		EnemySpawnerNames(std::vector<std::string>()),
 		IsPlaying(false),
+		MainCamera(nullptr),
+		DefaultMaterial(nullptr),
+		_isAwake(false),
+		_filePath(""),
+		_skyboxShader(nullptr),
+		_skyboxMesh(nullptr),
+		_skyboxTexture(nullptr),
+		_skyboxRotation(glm::mat3(1.0f)),
+		_ambientLight(glm::vec3(0.1f)),
+		_gravity(glm::vec3(0.0f, 0.0f, -9.81f)),
+
 		isDestroyed(false),
+		Enemies(std::vector<GameObject::Sptr>()),
+		EnemySpawnerNames(std::vector<std::string>()),
 		IsPaused(false),
 		IsPauseUIUp(false),
 		IsGameEnd(false),
@@ -43,22 +51,8 @@ namespace Gameplay {
 		GameStarted(false),
 		IsCheatActivated(false),
 		GameRound(0),
-		EnemiesKilled(0),
-		MainCamera(nullptr),
-		DefaultMaterial(nullptr),
-		_isAwake(false),
-		_filePath(""),
-		_skyboxShader(nullptr),
-		_skyboxMesh(nullptr),
-		_skyboxTexture(nullptr),
-		_skyboxRotation(glm::mat3(1.0f)),
-		_gravity(glm::vec3(0.0f, 0.0f, -9.81f))
+		EnemiesKilled(0)
 	{
-		_lightingUbo = std::make_shared<UniformBuffer<LightingUboStruct>>();
-		_lightingUbo->GetData().AmbientCol = glm::vec3(0.1f);
-		_lightingUbo->Update();
-		_lightingUbo->Bind(LIGHT_UBO_BINDING_SLOT);
-
 		GameObject::Sptr mainCam = CreateGameObject("Main Camera");
 		MainCamera = mainCam->Add<Camera>();
 
@@ -74,7 +68,6 @@ namespace Gameplay {
 		_skyboxTexture = nullptr;
 		_objects.clear();
 		Targets.clear();
-		Lights.clear();
 		_components.clear();
 		isDestroyed = true;
 		_CleanupPhysics();
@@ -110,6 +103,10 @@ namespace Gameplay {
 		for (auto Enemy : Enemies) {
 			Enemy->Get<EnemyBehaviour>()->NewTarget();
 		}
+		/// If heart died gameover
+		if (object.get()->Name == "Heart") {
+			IsGameEnd = true;
+		}
 	}
 	void Scene::DeleteEnemy(const GameObject::Sptr& object)
 	{
@@ -130,6 +127,10 @@ namespace Gameplay {
 		{
 			//Round 2 Spawn
 			if (EnemiesKilled == 8) {
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->Heal();
+				}
 				for (auto EnemySpawner : EnemySpawnerObjects) {
 					EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 					EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 1, 4);
@@ -143,6 +144,10 @@ namespace Gameplay {
 		{
 			//Round 3 Spawn
 			if (EnemiesKilled == 10) {
+				for each (GameObject::Sptr var in Targets)
+				{
+					var->Get<TargetBehaviour>()->Heal();
+				}
 				for (auto EnemySpawner : EnemySpawnerObjects) {
 					EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 					EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(0, 2, 4);
@@ -156,6 +161,10 @@ namespace Gameplay {
 			{
 			//Round 4 Spawn
 				if (EnemiesKilled == 12) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(1, 2, 4);
@@ -169,6 +178,10 @@ namespace Gameplay {
 			{
 			//Round 5 Spawn
 				if (EnemiesKilled == 14) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(2, 3, 3);
@@ -182,6 +195,10 @@ namespace Gameplay {
 			{
 			//Round 6 Spawn
 				if (EnemiesKilled == 16) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(4, 3, 2);
@@ -195,6 +212,10 @@ namespace Gameplay {
 			{
 			//Round 7 Spawn
 				if (EnemiesKilled == 18) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(4, 4, 2);
@@ -208,6 +229,10 @@ namespace Gameplay {
 			{
 			//Round 8 Spawn
 				if (EnemiesKilled == 20) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(5, 4, 2);
@@ -221,6 +246,10 @@ namespace Gameplay {
 			{
 			//Round 9 Spawn
 				if (EnemiesKilled == 22) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(5, 5, 2);
@@ -234,6 +263,10 @@ namespace Gameplay {
 			{
 			//Round 10 Spawn
 				if (EnemiesKilled == 24) {
+					for each (GameObject::Sptr var in Targets)
+					{
+						var->Get<TargetBehaviour>()->Heal();
+					}
 					for (auto EnemySpawner : EnemySpawnerObjects) {
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->IncreaseEnemySpeed();
 						EnemySpawner->Get<EnemySpawnerBehaviour>()->SpawnWave(6, 4, 3);
@@ -267,20 +300,6 @@ namespace Gameplay {
 
 		//Spawn Targets
 		TargetSpawnerObject->Get<TargetController>()->Spawntargets();
-
-		// Set up Lights for scene
-		Lights.resize(Targets.size());
-		int lightIndex;
-		lightIndex = 0;
-		for (auto Target : Targets) {
-			
-			Lights[lightIndex].Position = Target->GetPosition();
-			Lights[lightIndex].Color= glm::vec3(1.0f, 1.0f, 1.0f);
-			Lights[lightIndex].Range = 200.0f;
-			lightIndex++;
-		}
-		// Call this to bake lights
-		SetupShaderAndLights();
 
 		//Check if EnemySpawners are here
 		if (EnemySpawnerObjects.empty()) {
@@ -355,12 +374,18 @@ namespace Gameplay {
 
 	void Scene::SetSkyboxRotation(const glm::mat3& value) {
 		_skyboxRotation = value;
-		_lightingUbo->GetData().EnvironmentRotation = value;
-		_lightingUbo->Update();
 	}
 
 	const glm::mat3& Scene::GetSkyboxRotation() const {
 		return _skyboxRotation;
+	}
+
+	void Scene::SetColorLUT(const Texture3D::Sptr& texture) {
+		_colorCorrection = texture;
+	}
+
+	const Texture3D::Sptr& Scene::GetColorLUT() const {
+		return _colorCorrection;
 	}
 
 	GameObject::Sptr Scene::CreateGameObject(const std::string& name)
@@ -392,12 +417,11 @@ namespace Gameplay {
 	}
 
 	void Scene::SetAmbientLight(const glm::vec3& value) {
-		_lightingUbo->GetData().AmbientCol = glm::vec3(0.1f);
-		_lightingUbo->Update();
+		_ambientLight = value;
 	}
 
 	const glm::vec3& Scene::GetAmbientLight() const {
-		return _lightingUbo->GetData().AmbientCol;
+		return _ambientLight;
 	}
 
 	void Scene::Awake() {
@@ -420,8 +444,6 @@ namespace Gameplay {
 		for (auto& obj : _objects) {
 			obj->Awake();
 		}
-		// Set up our lighting 
-		SetupShaderAndLights();
 
 		_isAwake = true;
 
@@ -440,7 +462,7 @@ namespace Gameplay {
 
 		if (IsPlaying) {
 
-			_physicsWorld->stepSimulation(dt, 15);
+			_physicsWorld->stepSimulation(dt, 1);
 
 			_components.Each<Gameplay::Physics::RigidBody>([=](const std::shared_ptr<Gameplay::Physics::RigidBody>& body) {
 				body->PhysicsPostStep(dt);
@@ -532,7 +554,6 @@ namespace Gameplay {
 			/// <param name="dt"></param>
 			if (InputEngine::GetKeyState(GLFW_KEY_TAB) == ButtonState::Pressed) {
 				
-				Lights.clear();
 				Enemies.clear();
 				IsGameEnd = false;
 				IsGameWon = false;
@@ -547,9 +568,6 @@ namespace Gameplay {
 		}
 	}
 
-	void Scene::PreRender() {
-		_lightingUbo->Bind(LIGHT_UBO_BINDING);
-	}
 
 	void Scene::RenderGUI()
 	{
@@ -561,37 +579,6 @@ namespace Gameplay {
 		}
 	}
 
-	void Scene::SetShaderLight(int index, bool update /*= true*/) {
-		if (index >= 0 && index < Lights.size() && index < MAX_LIGHTS) {
-			// Get a reference to the light UBO data so we can update it
-			LightingUboStruct& data = _lightingUbo->GetData();
-			Light& light = Lights[index];
-
-			// Copy to the ubo data
-			data.Lights[index].Position = light.Position;
-			data.Lights[index].Color = light.Color;
-			data.Lights[index].Attenuation = 1.0f / (1.0f + light.Range);
-
-			// If requested, send the new data to the UBO
-			if (update)	_lightingUbo->Update();
-		}
-	}
-
-	void Scene::SetupShaderAndLights() {
-		// Get a reference to the light UBO data so we can update it
-		LightingUboStruct& data = _lightingUbo->GetData();
-		// Send in how many active lights we have and the global lighting settings
-		data.AmbientCol = glm::vec3(0.1f);
-		data.NumLights = Lights.size();
-
-		// Iterate over all lights that are enabled and configure them
-		for (int ix = 0; ix < Lights.size(); ix++) {
-			SetShaderLight(ix, false);
-		}
-
-		// Send updated data to OpenGL
-		_lightingUbo->Update();
-	}
 
 	btDynamicsWorld* Scene::GetPhysicsWorld() const {
 		return _physicsWorld;
@@ -642,12 +629,6 @@ namespace Gameplay {
 			}
 		}
 
-		// Make sure the scene has lights, then load all
-		LOG_ASSERT(data["lights"].is_array(), "Lights not present in scene!");
-		for (auto& light : data["lights"]) {
-			result->Lights.push_back(Light::FromJson(light));
-		}
-
 		// Create and load camera config
 		result->MainCamera = result->_components.GetComponentByGUID<Camera>(Guid(data["main_camera"]));
 
@@ -686,14 +667,6 @@ namespace Gameplay {
 			objects[ix] = _objects[ix]->ToJson();
 		}
 		blob["objects"] = objects;
-
-		// Save lights
-		std::vector<nlohmann::json> lights;
-		lights.resize(Lights.size());
-		for (int ix = 0; ix < Lights.size(); ix++) {
-			lights[ix] = Lights[ix].ToJson();
-		}
-		blob["lights"] = lights;
 
 		// Save camera info
 		blob["main_camera"] = MainCamera != nullptr ? MainCamera->GetGUID().str() : "null";
@@ -795,8 +768,8 @@ namespace Gameplay {
 			glDepthFunc(GL_LEQUAL);
 
 			_skyboxShader->Bind();
-			_skyboxShader->SetUniformMatrix("u_View", MainCamera->GetProjection() * glm::mat4(glm::mat3(MainCamera->GetView())));
-			_skyboxShader->SetUniformMatrix("u_EnvironmentRotation", _skyboxRotation);
+			_skyboxShader->SetUniformMatrix("u_ClippedView", MainCamera->GetProjection());
+			_skyboxShader->SetUniformMatrix("u_EnvironmentRotation", _skyboxRotation * glm::inverse(glm::mat3(MainCamera->GetView())));
 			_skyboxTexture->Bind(0);
 			_skyboxMesh->Mesh->Draw();
 
@@ -806,5 +779,4 @@ namespace Gameplay {
 
 		}
 	}
-
 }

@@ -13,7 +13,7 @@ GuiPanel::GuiPanel() :
 
 GuiPanel::~GuiPanel() = default;
 
-void GuiPanel::SetColor(const glm::vec4& color) {
+void GuiPanel::SetColor(const glm::vec4 & color) {
 	_color = color;
 }
 
@@ -33,7 +33,7 @@ Texture2D::Sptr GuiPanel::GetTexture() const {
 	return _texture;
 }
 
-void GuiPanel::SetTexture(const Texture2D::Sptr& value) {
+void GuiPanel::SetTexture(const Texture2D::Sptr & value) {
 	_texture = value;
 }
 
@@ -48,24 +48,17 @@ void GuiPanel::Awake() {
 void GuiPanel::StartGUI() {
 	Texture2D::Sptr tex = _texture != nullptr ? _texture : GuiBatcher::GetDefaultTexture();
 
-	glm::vec2 min = _transform->GetMin();
-	glm::vec2 max = _transform->GetMax();
+	GuiBatcher::PushRect(glm::vec2(0, 0), _transform->GetSize(), _color, tex, _borderRadius < 0 ? GuiBatcher::GetDefaultBorderRadius() : _borderRadius);
 
-	GuiBatcher::PushRect(min, max, _color, tex, _borderRadius < 0 ? GuiBatcher::GetDefaultBorderRadius() : _borderRadius);
-
-	GuiBatcher::PushScissorRect(min, max);
-	GuiBatcher::PushModelTransform(_transform->GetLocalTransform());
 }
 
 void GuiPanel::FinishGUI() {
-	GuiBatcher::PopModelTransform();
-	GuiBatcher::PopScissorRect();
 }
 
 void GuiPanel::RenderImGui()
 {
 	LABEL_LEFT(ImGui::ColorEdit4, "Color ", &_color.x);
-	LABEL_LEFT(ImGui::DragInt,    "Radius", &_borderRadius, 1, 0, 128);
+	LABEL_LEFT(ImGui::DragInt, "Radius", &_borderRadius, 1, 0, 128);
 }
 
 nlohmann::json GuiPanel::ToJson() const {
@@ -76,7 +69,7 @@ nlohmann::json GuiPanel::ToJson() const {
 	};
 }
 
-GuiPanel::Sptr GuiPanel::FromJson(const nlohmann::json& blob) {
+GuiPanel::Sptr GuiPanel::FromJson(const nlohmann::json & blob) {
 	GuiPanel::Sptr result = std::make_shared<GuiPanel>();
 
 	result->_color = JsonGet(blob, "color", result->_color);

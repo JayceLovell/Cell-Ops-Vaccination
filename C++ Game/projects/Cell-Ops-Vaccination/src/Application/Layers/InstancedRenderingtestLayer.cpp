@@ -77,7 +77,7 @@ void InstancedRenderingTestLayer::OnSceneLoad() {
 }
 
 void InstancedRenderingTestLayer::OnUpdate() {
-	_UpdateInstances();
+	//_UpdateInstances();
 }
 
 void InstancedRenderingTestLayer::OnRender(const Framebuffer::Sptr& prevLayer) {

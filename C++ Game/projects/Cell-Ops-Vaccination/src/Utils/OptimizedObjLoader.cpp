@@ -33,7 +33,7 @@ VertexArrayObject::Sptr OptimizedObjLoader::LoadFromFile(const std::string& file
 		}
 		// Load the corresponding binary file
 		return _LoadFromBinFile(binPath.string());
-	} 
+	}
 	// Load our fancy binary files
 	else if (extension == ".bin") {
 		return _LoadFromBinFile(filename);
@@ -53,7 +53,7 @@ void OptimizedObjLoader::ConvertToBinary(const std::string& inFile, const std::s
 
 	// If we didn't get an output path, just take the input and replace the extension
 	std::string outFileName = outFile;
-	if (outFileName.empty()) { 
+	if (outFileName.empty()) {
 		// Copy input path
 		auto path = std::filesystem::path(inFile);
 		// Change extension
@@ -129,7 +129,8 @@ MeshBuilder<VertexPosNormTexColTangents>* OptimizedObjLoader::_LoadFromObjFile(c
 			// Read in and store a position
 			file >> vecData.x >> vecData.y >> vecData.z;
 			normals.push_back(vecData);
-		} else if (command == "vt") {
+		}
+		else if (command == "vt") {
 			// Read in and store a position
 			file >> vecData.x >> vecData.y;
 			uvs.push_back(vecData);
@@ -157,8 +158,8 @@ MeshBuilder<VertexPosNormTexColTangents>* OptimizedObjLoader::_LoadFromObjFile(c
 					stream >> vertexIndices.x >> tempChar >> vertexIndices.y >> tempChar >> vertexIndices.z;
 					// The OBJ format can have negative values, which are a reference from the last added attributes
 					if (vertexIndices.x < 0) { vertexIndices.x = positions.size() + 1 + vertexIndices.x; }
-					if (vertexIndices.y < 0) { vertexIndices.y = uvs.size()       + 1 + vertexIndices.y; }
-					if (vertexIndices.z < 0) { vertexIndices.z = normals.size()   + 1 + vertexIndices.z; }
+					if (vertexIndices.y < 0) { vertexIndices.y = uvs.size() + 1 + vertexIndices.y; }
+					if (vertexIndices.z < 0) { vertexIndices.z = normals.size() + 1 + vertexIndices.z; }
 
 					// We can construct a key using a bitmask of the attribute indices
 					// This let's us quickly look up a combination of attributes to see if it's already been added
@@ -172,7 +173,8 @@ MeshBuilder<VertexPosNormTexColTangents>* OptimizedObjLoader::_LoadFromObjFile(c
 					// If it exists, we push the index to our indices
 					if (it != vertexMap.end()) {
 						edges[ix] = it->second;
-					} else {
+					}
+					else {
 						vertices.push_back(vertexIndices - glm::ivec3(1));
 						uint32_t index = static_cast<uint32_t>(vertices.size()) - 1;
 
@@ -210,9 +212,9 @@ MeshBuilder<VertexPosNormTexColTangents>* OptimizedObjLoader::_LoadFromObjFile(c
 		// Construct a new vertex using the indices for the vertex
 		VertexPosNormTexColTangents vertex;
 		vertex.Position = positions[vertexIndices.x];
-		vertex.UV       = vertexIndices.y != 0 ? uvs[vertexIndices.y] : glm::vec2(0.0f);
-		vertex.Normal   = vertexIndices.z != 0 ? normals[vertexIndices.z] : glm::vec3(0.0f, 0.0f, 1.0f);
-		vertex.Color    = color;
+		vertex.UV = vertexIndices.y != 0 ? uvs[vertexIndices.y] : glm::vec2(0.0f);
+		vertex.Normal = vertexIndices.z != 0 ? normals[vertexIndices.z] : glm::vec3(0.0f, 0.0f, 1.0f);
+		vertex.Color = color;
 
 		// Add to the mesh, get index of the added vertex
 		mesh->AddVertex(vertex);
@@ -251,7 +253,8 @@ VertexArrayObject::Sptr OptimizedObjLoader::_LoadFromBinFile(const std::string& 
 	BinaryHeader header = BinaryHeader();
 	if (size >= sizeof(BinaryHeader)) {
 		file.read(reinterpret_cast<char*>(&header), sizeof(BinaryHeader));
-	} else {
+	}
+	else {
 		LOG_ERROR("Not enough data in the file!");
 		return nullptr;
 	}
@@ -292,7 +295,7 @@ VertexArrayObject::Sptr OptimizedObjLoader::_LoadFromBinFile(const std::string& 
 			// Create memory to store indices, then read from the file
 			void* dataStore = malloc(header.NumIndices * GetIndexTypeSize(header.IndicesType));
 			file.read(reinterpret_cast<char*>(dataStore), header.NumIndices * GetIndexTypeSize(header.IndicesType));
-			
+
 			// Load data into OpenGL and free the CPU memory we allocated
 			indices->LoadData(dataStore, GetIndexTypeSize(header.IndicesType), header.NumIndices, header.IndicesType);
 			free(dataStore);
