@@ -241,7 +241,7 @@ void DefaultSceneLayer::_CreateScene()
 		//Audio Files
 		AudioEngine* audioEngine = AudioEngine::instance();
 		audioEngine->init();
-		audioEngine->loadSound("background", "sounds/Background(AiryHeartBeat).mp3", true,true);
+		audioEngine->loadSound("background", "sounds/Background(AiryHeartBeat).mp3", true,true,true);
 		audioEngine->loadSound("menuBackground", "sounds/MenuBackgroundSound2.mp3", true,true);
 		audioEngine->loadSound("targetDeath", "sounds/Background(AiryHeartBeat.Fast).mp3", true);
 		audioEngine->loadSound("GameLose", "sounds/Background(AiryHeartBeat.FlatLine).mp3", true);

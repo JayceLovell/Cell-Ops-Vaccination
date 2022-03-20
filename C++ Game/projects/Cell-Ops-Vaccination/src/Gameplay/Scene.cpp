@@ -22,6 +22,7 @@
 #include <Gameplay/Components/UIController.h>
 #include <Gameplay/Components/EnemySpawnerBehaviour.h>
 #include <Gameplay/Components/TargetController.h>
+#include <Application/Timing.h>
 
 namespace Gameplay {
 	Scene::Scene() :
@@ -43,8 +44,10 @@ namespace Gameplay {
 		GameStarted(false),
 		IsCheatActivated(false),
 		IsTutorialFinish(false),
+		IsBackGroundPlaying(false),
 		GameRound(0),
 		EnemiesKilled(0),
+		BackgroundLoopCounter(0),
 		MainCamera(nullptr),
 		DefaultMaterial(nullptr),
 		_isAwake(false),
@@ -340,6 +343,8 @@ namespace Gameplay {
 
 		//Hopefully it works....Yessirski
 		audioEngine->playSoundByName("background");
+		//Start counter to loopbackground
+		IsBackGroundPlaying = true;
 
 		GameStarted = true;
 	}
@@ -560,12 +565,19 @@ namespace Gameplay {
 						UiControllerObject->Get<UiController>()->GameTutorial("Start", 2);
 						IsTutorialFinish = true;
 					}
-					else
+					else if(!IsTutorialFinish)
 					UiControllerObject->Get<UiController>()->GameTutorial("Start", 1);
 				}
 			}
 			_FlushDeleteQueue();
 			if (IsPlaying) {
+				if (IsBackGroundPlaying) {
+					BackgroundLoopCounter += Timing::Current().DeltaTime();
+					if (BackgroundLoopCounter>19.0f) {
+						audioEngine->playSoundByName("background");
+						BackgroundLoopCounter = 0;
+					}
+				}
 				if (!IsPaused) {
 					for (int i = 0; i < _objects.size(); i++) {
 						_objects[i]->Update(dt);

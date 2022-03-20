@@ -74,8 +74,10 @@ namespace Gameplay {
 		bool IsWinScreenUp;
 		bool IsLoseScreenUp;
 		bool IsTutorialFinish;
+		bool IsBackGroundPlaying;
 		int GameRound;
 		int EnemiesKilled;
+		float BackgroundLoopCounter;
 
 		//Attempt at sound because now I'm annoyed
 		AudioEngine* audioEngine = AudioEngine::instance();
