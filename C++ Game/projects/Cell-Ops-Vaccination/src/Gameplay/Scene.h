@@ -73,6 +73,7 @@ namespace Gameplay {
 		bool IsTitleUp;
 		bool IsWinScreenUp;
 		bool IsLoseScreenUp;
+		bool IsTutorialFinish;
 		int GameRound;
 		int EnemiesKilled;
 

@@ -205,9 +205,26 @@ void DefaultSceneLayer::_CreateScene()
 		Texture2D::Sptr WhiteBloodCell2Texture = ResourceManager::CreateAsset<Texture2D>("textures/White Blood Cell2.png");
 		Texture2D::Sptr YellowMBiotaTexture = ResourceManager::CreateAsset<Texture2D>("textures/YellowMBiota.png");
 		// UI Textures
+		//Title
+		Texture2D::Sptr TitleTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Title/Title.png");
+
+		//Tutorial
+		Texture2D::Sptr Tutorial1Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/Tutorial/tutorial1.png");
+		Texture2D::Sptr Tutorial2Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/Tutorial/tutorial2.png");
+
+		//GameOver
 		Texture2D::Sptr GameOverTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Game Over Screen/GameOver.png");
+
+		//Game Win
 		Texture2D::Sptr GameWinTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Game Win Screen/GameWin.png");
+
+		//GamePause
 		Texture2D::Sptr GamePauseTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Game Pause Screen/GamePause.png");
+		Texture2D::Sptr Tutorial1PauseTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Tutorial/tutorial1_pause.png");
+		Texture2D::Sptr Tutorial2PauseTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/Tutorial/tutorial2_pause.png");
+
+
+		//Health
 		Texture2D::Sptr Health100Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_100.png");
 		Texture2D::Sptr Health90Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_90.png");
 		Texture2D::Sptr Health80Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_80.png");
@@ -219,7 +236,6 @@ void DefaultSceneLayer::_CreateScene()
 		Texture2D::Sptr Health20Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_20.png");
 		Texture2D::Sptr Health10Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_10.png");
 		Texture2D::Sptr Health0Texture = ResourceManager::CreateAsset<Texture2D>("ui assets/TargetHealth/Health_0.png");
-		Texture2D::Sptr TitleTexture = ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/Title.png");
 
 
 		//Audio Files
@@ -909,7 +925,11 @@ void DefaultSceneLayer::_CreateScene()
 			UI->Get<UiController>()->GameFont->Bake();
 
 			UI->Get<UiController>()->GameTitleTexture = TitleTexture;
+			UI->Get<UiController>()->GameTutorialTexture = Tutorial1Texture;
+			UI->Get<UiController>()->GameTutorialNextTexture = Tutorial2Texture;
 			UI->Get<UiController>()->GamePauseTexture = GamePauseTexture;
+			UI->Get<UiController>()->GamePauseTutorialTexture = Tutorial1PauseTexture;
+			UI->Get<UiController>()->GamePauseTutorialNextTexture = Tutorial2PauseTexture;
 			UI->Get<UiController>()->GameOverTexture = GameOverTexture;
 			UI->Get<UiController>()->GameWinTexture = GameWinTexture;
 			UI->Get<UiController>()->FullHp = Health100Texture;

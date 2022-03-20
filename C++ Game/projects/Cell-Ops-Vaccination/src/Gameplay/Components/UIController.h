@@ -30,7 +30,11 @@ public:
 	Font::Sptr GameFont;
 
 	Texture2D::Sptr GameTitleTexture;
+	Texture2D::Sptr GameTutorialTexture;
+	Texture2D::Sptr GameTutorialNextTexture;
 	Texture2D::Sptr GamePauseTexture;
+	Texture2D::Sptr GamePauseTutorialTexture;
+	Texture2D::Sptr GamePauseTutorialNextTexture;
 	Texture2D::Sptr GameOverTexture;
 	Texture2D::Sptr GameWinTexture;
 	Texture2D::Sptr FullHp;
@@ -53,12 +57,12 @@ public:
 	void SetupGameScreen();
 
 	/// <summary>
-	/// Brings Up GameTitle Screen
+	/// Brings Up Title Screen
 	/// </summary>
 	void GameTitleScreen();
 
 	/// <summary>
-	/// Brings Up GamePause Screen
+	/// Brings Up Pause Screen
 	/// </summary>
 	void GamePauseScreen();
 
@@ -71,6 +75,13 @@ public:
 	/// Brings Up GameWin Screen
 	/// </summary>
 	void GameWinScreen();
+
+	/// <summary>
+	/// Deals with displaying game tutorial
+	/// </summary>
+	/// <param name="GameStatus">Either at Game "Start" or Game "Pause"</param>
+	/// <param name="TutorialPageNumber">1st page or 2nd page</param>
+	void GameTutorial(std::string GameStatus,int TutorialPageNumber);
 private:
 	/// <summary>
 	/// Create Ui Object
