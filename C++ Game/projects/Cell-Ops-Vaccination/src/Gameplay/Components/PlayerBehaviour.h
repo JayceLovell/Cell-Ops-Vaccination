@@ -24,6 +24,7 @@ public:
 	MAKE_TYPENAME(PlayerBehaviour);
 
 	int EnemiesKilled;
+	bool isAbilityActive;
 
 	
 

@@ -71,13 +71,23 @@ void EnemyBehaviour::NewTarget()
 
 void EnemyBehaviour::TakeDamage()
 {
-	LOG_INFO("I {} Took Damage", EnemyType);
 	audioEngine->playSoundByName("enemyHit");
 	Health = Health - 1;
 	if (Health <= 0) {
 		//Audio for enemy death
 		audioEngine->playSoundByName("enemyDeath");
 		LOG_INFO("Killed {}", EnemyType);
+		GetGameObject()->GetScene()->DeleteEnemy(GetGameObject()->SelfRef());
+		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
+	}
+}
+
+void EnemyBehaviour::AbilityActiveDamage()
+{
+	Health = 0;
+	if (Health <= 0) {
+		//Audio for enemy death
+		audioEngine->playSoundByName("enemyDeath");
 		GetGameObject()->GetScene()->DeleteEnemy(GetGameObject()->SelfRef());
 		GetGameObject()->GetScene()->RemoveGameObject(GetGameObject()->SelfRef());
 	}

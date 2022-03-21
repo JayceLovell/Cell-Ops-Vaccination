@@ -8,7 +8,8 @@
 
 PlayerBehaviour::PlayerBehaviour() :
 	IComponent(),
-	EnemiesKilled(0)
+	EnemiesKilled(0),
+	isAbilityActive(false)
 { }
 
 PlayerBehaviour::~PlayerBehaviour() = default;
@@ -18,10 +19,10 @@ void PlayerBehaviour::OnTriggerVolumeEntered(const std::shared_ptr<Gameplay::Phy
 	std::string testname = body->GetGameObject()->Name;
 	bool test = body->GetGameObject()->Name.find("Enemy");
 	if (body->GetGameObject()->Name.find("Enemy") != std::string::npos) {
-		//if (glfwGetKey(_window, GLFW_KEY_Q) || glfwGetKey(_window, GLFW_KEY_E)) {
-			LOG_INFO("Enemy Take Damage");
+		if (isAbilityActive)
+			body->GetGameObject()->Get<EnemyBehaviour>()->AbilityActiveDamage();
+		else
 			body->GetGameObject()->Get<EnemyBehaviour>()->TakeDamage();
-		//}
 			
 	}
 }

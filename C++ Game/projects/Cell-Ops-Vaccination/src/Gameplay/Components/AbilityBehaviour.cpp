@@ -5,7 +5,7 @@ AbilityBehaviour::~AbilityBehaviour() = default;
 AbilityBehaviour::AbilityBehaviour() :
     IComponent(),
     _coolDownTimer(1000.0f),
-    _abilityIndex(3),
+    _abilityIndex(2),
     _abilityActiveCounter(0.0f),
     _isAbilityActive(false)
 {}
@@ -68,7 +68,9 @@ void AbilityBehaviour::Update(float deltaTime)
 
 void AbilityBehaviour::RenderImGui()
 {
+    ImGui::RadioButton("Is Ability Active", _isAbilityActive);
     ImGui::DragFloat( "Cool down on Ability", & _coolDownTimer);
+    ImGui::DragFloat("", &_abilityActiveCounter);
     ImGui::DragInt("Ability Index: ", &_abilityIndex);
 }
 
@@ -76,13 +78,14 @@ nlohmann::json AbilityBehaviour::ToJson() const
 {
     return {
         {"Ability Index",_abilityIndex},
+        {"Ability", GetPlayersAbilityChoice()}
     };
 }
 
 AbilityBehaviour::Sptr AbilityBehaviour::FromJson(const nlohmann::json& blob)
 {
     AbilityBehaviour::Sptr result = std::make_shared<AbilityBehaviour>();
-
+    result->_abilityIndex = blob["Ability Index"];
     return result;
 }
 
@@ -99,7 +102,7 @@ void AbilityBehaviour::SetPlayersAbilityChoice(std::string Ability)
     }
 }
 
-std::string AbilityBehaviour::GetPlayersAbilityChoice()
+std::string AbilityBehaviour::GetPlayersAbilityChoice() const
 {
     switch (_abilityIndex)
     {
@@ -123,7 +126,7 @@ void AbilityBehaviour::_pfizerBioNTech()
     if (!GetGameObject()->GetScene()->MainCamera->GetComponent<SimpleCameraControl>()->isAbilityActive) {
         GetGameObject()->GetScene()->MainCamera->GetComponent<SimpleCameraControl>()->isAbilityActive = true;
         audioEngine->playSoundByName("AbilityPfizer-BioNTech");
-        _abilityActiveCounter = 500.0f;
+        _abilityActiveCounter = 1000.0f;
         _isAbilityActive = true;
     }
     else
@@ -136,10 +139,36 @@ void AbilityBehaviour::_pfizerBioNTech()
 
 void AbilityBehaviour::_moderna()
 {
-    audioEngine->playSoundByName("AbilityModerna");
+    SimpleCameraControl::Sptr ability1 = GetGameObject()->GetScene()->MainCamera->GetComponent<SimpleCameraControl>();
+    PlayerBehaviour::Sptr ability2 = GetGameObject()->GetScene()->FindObjectByName("Player")->Get<PlayerBehaviour>();
+
+    if (!ability1->isAbilityActive && !ability2->isAbilityActive) {
+        ability1->isAbilityActive = true;
+        ability2->isAbilityActive = true;
+
+        audioEngine->playSoundByName("AbilityModerna");
+        _abilityActiveCounter = 1000.0f;
+        _isAbilityActive = true;
+    }
+    else {
+        ability1->isAbilityActive = false;
+        ability2->isAbilityActive = false;
+        _coolDownTimer = 3000.0f;
+        _isAbilityActive = false;
+    }
 }
 
 void AbilityBehaviour::_johnsonJohnson()
 {
-    audioEngine->playSoundByName("AbilityJohnson&Johnson");
+    if (!GetGameObject()->GetScene()->FindObjectByName("player")->Get<PlayerBehaviour>()->isAbilityActive) {
+        GetGameObject()->GetScene()->FindObjectByName("player")->Get<PlayerBehaviour>()->isAbilityActive = true;
+        audioEngine->playSoundByName("AbilityJohnson&Johnson");
+        _abilityActiveCounter = 1000.0f;
+        _isAbilityActive = true;
+    }
+    else {
+        GetGameObject()->GetScene()->FindObjectByName("player")->Get<PlayerBehaviour>()->isAbilityActive = false;
+        _coolDownTimer = 1500.0f;
+        _isAbilityActive = false;
+    }
 }

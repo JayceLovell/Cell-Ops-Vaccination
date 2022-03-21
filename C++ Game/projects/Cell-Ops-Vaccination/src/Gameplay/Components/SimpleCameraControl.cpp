@@ -63,7 +63,7 @@ void SimpleCameraControl::Update(float deltaTime)
 
 		if (InputEngine::IsKeyDown(GLFW_KEY_LEFT_SHIFT)) {
 			if (isAbilityActive) {
-				input *= (_shiftMultipler*2);
+				input *= (_shiftMultipler*4);
 			}
 			else
 			input *= _shiftMultipler;

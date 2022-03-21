@@ -4,6 +4,7 @@
 #include "Utils/AudioEngine.h"
 #include <Gameplay/InputEngine.h>
 #include <Gameplay/Components/SimpleCameraControl.h>
+#include <Gameplay/Components/PlayerBehaviour.h>
 #include <Gameplay/Scene.h>
 
 /// <summary>
@@ -40,7 +41,7 @@ public:
 	/// Returns players ability choise as a string
 	/// </summary>
 	/// <returns></returns>
-	std::string GetPlayersAbilityChoice();
+	std::string GetPlayersAbilityChoice() const;
 
 private:
 	bool _isAbilityActive;
@@ -63,12 +64,13 @@ private:
 
 	/// <summary>
 	/// Moderna Ability
+	/// Both abilities combine but longer cool down.
 	/// </summary>
 	void _moderna();
 
 	/// <summary>
-	/// Johnson & Johnson Ability
-	/// Player can one hit
+	/// Johnson and Johnson Ability
+	/// Player can one hit all Enemies
 	/// </summary>
 	void _johnsonJohnson();
 };

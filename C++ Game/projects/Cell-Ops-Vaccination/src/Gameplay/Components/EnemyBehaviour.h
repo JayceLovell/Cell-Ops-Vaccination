@@ -29,6 +29,11 @@ public:
 	/// </summary>
 	void TakeDamage();
 
+	/// <summary>
+	/// Instantly kills Enemy
+	/// </summary>
+	void AbilityActiveDamage();
+
 	float Health;
 	float Speed;
 	std::string EnemyType;
