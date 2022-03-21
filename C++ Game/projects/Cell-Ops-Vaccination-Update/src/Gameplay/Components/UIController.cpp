@@ -116,15 +116,18 @@ void UiController::SetupGameScreen()
 
 void UiController::GameTitleScreen()
 {
+	audioEngine->playSoundByName("menuBackground");
 	Gameplay::GameObject::Sptr GameTitle = GetGameObject()->GetScene()->CreateGameObject("Game Title"); {
-		audioEngine->playSoundByName("menuBackground");
 		RectTransform::Sptr transform = GameTitle->Add<RectTransform>();
 		transform->SetSize({ 800,800 });
-		transform->SetMin({ 0,0 });
-		transform->SetMax({ 800,800 });
+		/*transform->SetMin({ 0,0 });
+		transform->SetMax({ 800,800 });*/
 
-		GuiPanel::Sptr GameMenuPanel = GameTitle->Add<GuiPanel>();
-		GameMenuPanel->SetTexture(GameTitleTexture);
+
+		GuiPanel::Sptr GameTitlePanel = GameTitle->Add<GuiPanel>();
+		GameTitlePanel->SetColor(glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		GameTitlePanel->SetTexture(GameTitleTexture);
+	
 
 		GetGameObject()->AddChild(GameTitle);
 	}

@@ -272,7 +272,7 @@ void DefaultSceneLayer::_CreateScene()
 		audioEngine->loadSound("AbilityModerna", "sounds/ModernaPowerUp.wav", true);
 		audioEngine->loadSound("AbilityPfizer-BioNTech", "sounds/AbilityPfizer-BioNTech.mp3", false);
 		audioEngine->loadSound("AbilityJohnson&Johnson", "sounds/JJPowerUp.wav", false);
-		audioEngine->loadSound("background", "sounds/Background(AiryHeartBeat).mp3", true, true, true);
+		audioEngine->loadSound("background", "sounds/Background(AiryHeartBeat).mp3", true, true);
 		audioEngine->loadSound("menuBackground", "sounds/MenuBackgroundSound2.mp3", true, true);
 		audioEngine->loadSound("targetDeath", "sounds/Background(AiryHeartBeat.Fast).mp3", true);
 		audioEngine->loadSound("GameLose", "sounds/Background(AiryHeartBeat.FlatLine).mp3", true);
@@ -1027,7 +1027,7 @@ void DefaultSceneLayer::_CreateScene()
 			particleManager->AddEmitter(glm::vec3(0.0f), glm::vec3(0.0f, -1.0f, 10.0f), 10.0f, glm::vec4(0.0f, 1.0f, 0.0f, 1.0f)); 
 		}
 
-		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("textures/ui-sprite.png"));
+		GuiBatcher::SetDefaultTexture(ResourceManager::CreateAsset<Texture2D>("ui assets/menu screen/Title.png"));
 		GuiBatcher::SetDefaultBorderRadius(8);
 
 		// Save the asset manifest for all the resources we just loaded

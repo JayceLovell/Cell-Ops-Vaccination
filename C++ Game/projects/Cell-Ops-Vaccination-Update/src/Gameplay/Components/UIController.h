@@ -5,6 +5,7 @@
 #include <Graphics/Font.h>
 #include <Gameplay/Components/GUI/GuiText.h>
 #include "Gameplay/Components/GUI/GuiPanel.h"
+#include "Gameplay/Components/GUI/RectTransform.h"
 #include "Gameplay/Components/TargetBehaviour.h"
 #include "Utils/AudioEngine.h"
 

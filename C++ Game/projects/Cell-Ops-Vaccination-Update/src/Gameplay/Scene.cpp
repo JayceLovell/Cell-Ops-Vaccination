@@ -353,13 +353,13 @@ namespace Gameplay {
 	{
 		if (IsPaused && !IsPauseUIUp) {
 			UiControllerObject->Get<UiController>()->GamePauseScreen();
-			audioEngine->playSoundByName("menuBackground");
+			//audioEngine->playSoundByName("menuBackground");
 			IsPauseUIUp = true;
 
 		}
 		else {
 			RemoveGameObject(FindObjectByName("Game Pause"));
-			audioEngine->playSoundByName("background");
+			//audioEngine->playSoundByName("background");
 			IsPauseUIUp = false;
 		}
 
