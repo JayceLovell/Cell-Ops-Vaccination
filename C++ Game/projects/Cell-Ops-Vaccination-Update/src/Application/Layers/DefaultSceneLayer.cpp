@@ -520,19 +520,19 @@ void DefaultSceneLayer::_CreateScene()
 			YellowMicrobiotaMaterial->Set("u_Material.Shininess", 0.1f);
 		}
 
-		// Create some lights for our scene
-		GameObject::Sptr lightParent = scene->CreateGameObject("Lights");
+		//// Create some lights for our scene
+		//GameObject::Sptr lightParent = scene->CreateGameObject("Lights");
 
-		for (int ix = 0; ix < 50; ix++) {
-			GameObject::Sptr light = scene->CreateGameObject("Light");
-			light->SetPostion(glm::vec3(glm::diskRand(25.0f), 1.0f));
-			lightParent->AddChild(light);
+		//for (int ix = 0; ix < 50; ix++) {
+		//	GameObject::Sptr light = scene->CreateGameObject("Light");
+		//	light->SetPostion(glm::vec3(glm::diskRand(25.0f), 1.0f));
+		//	lightParent->AddChild(light);
 
-			Light::Sptr lightComponent = light->Add<Light>();
-			lightComponent->SetColor(glm::linearRand(glm::vec3(0.0f), glm::vec3(1.0f)));
-			lightComponent->SetRadius(glm::linearRand(0.1f, 10.0f));
-			lightComponent->SetIntensity(glm::linearRand(1.0f, 2.0f));
-		}
+		//	Light::Sptr lightComponent = light->Add<Light>();
+		//	lightComponent->SetColor(glm::linearRand(glm::vec3(0.0f), glm::vec3(1.0f)));
+		//	lightComponent->SetRadius(glm::linearRand(0.1f, 10.0f));
+		//	lightComponent->SetIntensity(glm::linearRand(1.0f, 2.0f));
+		//}
 
 
 
@@ -601,6 +601,12 @@ void DefaultSceneLayer::_CreateScene()
 
 		GameObject::Sptr TopEnemySpawner = scene->CreateGameObject("Enemy Spawner Top");
 		{
+			Light::Sptr lightComponent = TopEnemySpawner->Add<Light>();
+			lightComponent->SetColor(glm::vec3(0.0f));
+			lightComponent->SetIntensity(1.0f);
+			lightComponent->SetRadius(1000.0f);
+
+
 			TopEnemySpawner->SetPostion(glm::vec3(0.0f, 0.0f, 100.0f));
 			TopEnemySpawner->Add<EnemySpawnerBehaviour>();
 

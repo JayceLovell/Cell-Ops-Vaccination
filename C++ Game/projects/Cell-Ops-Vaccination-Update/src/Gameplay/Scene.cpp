@@ -546,13 +546,12 @@ namespace Gameplay {
 			}
 			//Start
 			if (InputEngine::GetKeyState(GLFW_KEY_ENTER) == ButtonState::Pressed) {
-				if (!IsPlaying && !GameStarted && IsTutorialFinish) {
-					IsPlaying = true;
+				if (!GameStarted && IsTutorialFinish) {
 					GameStarted = true;
 					GameStart();
 				}
 				else {
-					if (FindObjectByName("Tutorial")) {
+					if (FindObjectByName("Tutorial")&&!IsTutorialFinish) {
 						UiControllerObject->Get<UiController>()->GameTutorial("Start", 2);
 						IsTutorialFinish = true;
 					}
@@ -560,7 +559,7 @@ namespace Gameplay {
 						UiControllerObject->Get<UiController>()->GameTutorial("Start", 1);
 				}
 			}
-			if (IsPlaying) {
+			if (GameStarted) {
 				if (IsBackGroundPlaying) {
 					BackgroundLoopCounter += Timing::Current().DeltaTime();
 					if (BackgroundLoopCounter > 19.0f) {
@@ -605,7 +604,6 @@ namespace Gameplay {
 				IsGameWon = false;
 				GameStarted = false;
 				IsTitleUp = false;
-				IsPlaying = false;
 
 				Application& app = Application::Get();
 				app.LoadScene("scene.json");
