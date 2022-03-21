@@ -15,7 +15,8 @@ SimpleCameraControl::SimpleCameraControl() :
 	_moveSpeeds(glm::vec3(10.0f)),
 	_shiftMultipler(4.0f),
 	_currentRot(glm::vec2(0.0f)),
-	_isMousePressed(false)
+	_isMousePressed(false),
+	isAbilityActive(false)
 { }
 
 SimpleCameraControl::~SimpleCameraControl() = default;
@@ -61,6 +62,10 @@ void SimpleCameraControl::Update(float deltaTime)
 		}
 
 		if (InputEngine::IsKeyDown(GLFW_KEY_LEFT_SHIFT)) {
+			if (isAbilityActive) {
+				input *= (_shiftMultipler*2);
+			}
+			else
 			input *= _shiftMultipler;
 		}
 

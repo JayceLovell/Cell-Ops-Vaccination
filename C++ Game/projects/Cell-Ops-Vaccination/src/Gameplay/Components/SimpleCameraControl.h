@@ -22,6 +22,8 @@ public:
 	virtual nlohmann::json ToJson() const override;
 	static SimpleCameraControl::Sptr FromJson(const nlohmann::json& blob);
 
+	bool isAbilityActive;
+
 protected:
 	float _shiftMultipler;
 	glm::vec2 _mouseSensitivity;

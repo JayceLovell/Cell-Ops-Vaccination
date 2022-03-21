@@ -243,6 +243,12 @@ void DefaultSceneLayer::_CreateScene()
 		//Audio Files
 		AudioEngine* audioEngine = AudioEngine::instance();
 		audioEngine->init();
+
+		audioEngine->loadSound("AbilityNotReady", "sounds/AbilityNotReady.wav", true);
+		audioEngine->loadSound("AbilityReady", "sounds/AbilityReady.wav",true);
+		audioEngine->loadSound("AbilityModerna", "sounds/ModernaPowerUp.wav", true);
+		audioEngine->loadSound("AbilityPfizer-BioNTech", "sounds/AbilityPfizer-BioNTech.mp3",false);
+		audioEngine->loadSound("AbilityJohnson&Johnson", "sounds/JJPowerUp.wav", false);
 		audioEngine->loadSound("background", "sounds/Background(AiryHeartBeat).mp3", true,true,true);
 		audioEngine->loadSound("menuBackground", "sounds/MenuBackgroundSound2.mp3", true,true);
 		audioEngine->loadSound("targetDeath", "sounds/Background(AiryHeartBeat.Fast).mp3", true);

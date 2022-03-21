@@ -537,7 +537,7 @@ namespace Gameplay {
 					GamePause(IsPaused);
 				}
 			}
-			if (InputEngine::GetKeyState(GLFW_KEY_H) == ButtonState::Pressed) {
+			if ((InputEngine::GetKeyState(GLFW_KEY_H) == ButtonState::Pressed) && IsPaused){
 				if (IsPaused && IsPauseUIUp && IsTutorialFinish) {
 					UiControllerObject->Get<UiController>()->GameTutorial("Pause", 1);
 					IsPauseUIUp = false;

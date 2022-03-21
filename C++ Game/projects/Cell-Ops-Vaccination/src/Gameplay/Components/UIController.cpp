@@ -117,7 +117,7 @@ void UiController::SetupGameScreen()
 void UiController::GameTitleScreen()
 {
 	Gameplay::GameObject::Sptr GameTitle = GetGameObject()->GetScene()->CreateGameObject("Game Title"); {
-		//audioEngine->playSoundByName("menuBackground");
+		audioEngine->playSoundByName("menuBackground");
 		RectTransform::Sptr transform = GameTitle->Add<RectTransform>();
 		transform->SetSize({ 800,800 });
 		transform->SetMin({ 0,0 });
