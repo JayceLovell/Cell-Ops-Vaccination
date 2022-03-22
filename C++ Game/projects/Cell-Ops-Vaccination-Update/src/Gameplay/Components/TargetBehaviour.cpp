@@ -82,18 +82,17 @@ void TargetBehaviour::TargetSetUp(float MaxHealth)
 	HealthInPercentage = (_health * 100) / MaxHealth;
 	_isBeingAttacked = false;
 
-	//TODO: Particles
-	//this->GetGameObject()->Add<ParticleSystem>()->AddEmitter(GetGameObject()->GetPosition(), glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
 }
 
 void TargetBehaviour::Alert(bool Attackstatus)
 {
 	////Being attacked
 	if (Attackstatus) {
-		//this->GetGameObject()->Get<ParticleSystem>()->AddEmitter(GetGameObject()->GetPosition(), glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+		GetGameObject()->Get<Light>()->SetIntensity(100.0f);
 		_coolDownAlertCounter--;
+		if (_coolDownAlertCounter < 0)
+			_isBeingAttacked = false;
 	}
-	//_TargetParticles->AddEmitter(GetPosition(), glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
-	////Being attacked
-	//_TargetParticles->AddEmitter(GetPosition(), glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, glm::vec4(1.0f, 0.0f, 0.0f, 1.0f));
+	else
+		GetGameObject()->Get<Light>()->SetIntensity(1.0f);
 }

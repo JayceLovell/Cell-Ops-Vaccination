@@ -66,8 +66,8 @@ void TargetController::Spawntargets()
 		{
 			Target->SetPostion(TargetPositions[i]);;
 			
-			Target->Add<ParticleSystem>();
-			Target->Get<ParticleSystem>()->AddEmitter(Target->GetPosition(), glm::vec3(0.0f, 0.0f, 0.0f), 1.0f, glm::vec4(0.0f, 1.0f, 0.0f, 0.0f));
+			Light::Sptr light = Target->Add<Light>();
+			light->SetColor(glm::vec3(0.0f,1.0f,0.0f));
 			
 
 			// Add a render component

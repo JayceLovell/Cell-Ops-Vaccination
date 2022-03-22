@@ -124,6 +124,8 @@ void EnemySpawnerBehaviour::_createLargeEnemy()
 	Gameplay::GameObject::Sptr LargeEnemy = GetGameObject()->GetScene()->CreateGameObject(EnemyName);
 	{
 		LargeEnemy->SetPostion(GetGameObject()->SelfRef()->GetPosition());
+
+
 		// Add a render component
 		RenderComponent::Sptr renderer = LargeEnemy->Add<RenderComponent>();
 		renderer->SetMesh(LargeEnemyMesh);
@@ -201,6 +203,9 @@ void EnemySpawnerBehaviour::_createFastEnemy()
 		RenderComponent::Sptr renderer = FastEnemy->Add<RenderComponent>();
 		renderer->SetMesh(FastEnemyMesh);
 		renderer->SetMaterial(FastEnemyMaterial);
+
+		Light::Sptr light = FastEnemy->Add<Light>();
+		light->SetColor(glm::vec3(1.0f));
 
 		// Add a dynamic rigid body to this enemy
 		Gameplay::Physics::RigidBody::Sptr physics = FastEnemy->Add<Gameplay::Physics::RigidBody>(RigidBodyType::Dynamic);

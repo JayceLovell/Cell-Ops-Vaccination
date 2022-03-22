@@ -304,8 +304,8 @@ void DefaultSceneLayer::_CreateScene()
 #pragma endregion 
 
 		// Loading in a 1D LUT
-		Texture1D::Sptr toonLut = ResourceManager::CreateAsset<Texture1D>("luts/toon-1D.png"); 
-		toonLut->SetWrap(WrapMode::ClampToEdge);
+		/*Texture1D::Sptr toonLut = ResourceManager::CreateAsset<Texture1D>("luts/toon-1D.png"); 
+		toonLut->SetWrap(WrapMode::ClampToEdge);*/
 
 		// Here we'll load in the cubemap, as well as a special shader to handle drawing the skybox
 		TextureCube::Sptr testCubemap = ResourceManager::CreateAsset<TextureCube>("cubemaps/ocean/lung.png");
@@ -340,7 +340,7 @@ void DefaultSceneLayer::_CreateScene()
 		Texture3D::Sptr lut = ResourceManager::CreateAsset<Texture3D>("luts/cool.CUBE");   
 
 		// Configure the color correction LUT
-		scene->SetColorLUT(lut);
+		//scene->SetColorLUT(lut);
 
 		// Our materials
 		Material::Sptr PlayerMaterial = ResourceManager::CreateAsset<Material>(deferredForward);

@@ -9,6 +9,7 @@
 #include <Gameplay/Components/GUI/GuiText.h>
 #include <Gameplay/Components/GUI/GuiPanel.h>
 #include "Gameplay/Components/ParticleSystem.h"
+#include <Gameplay/Components/Light.h>
 
 /// <summary>
 /// Target Behaviour

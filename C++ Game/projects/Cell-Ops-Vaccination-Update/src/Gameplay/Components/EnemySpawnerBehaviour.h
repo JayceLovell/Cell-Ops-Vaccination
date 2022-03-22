@@ -3,6 +3,7 @@
 #include "Gameplay/Components/RenderComponent.h"
 #include "Gameplay/Components/EnemyBehaviour.h"
 #include <Gameplay/Components/MorphAnimator.h>
+#include <Gameplay/Components/Light.h>
 #include "Gameplay/GameObject.h"
 #include "Gameplay/MeshResource.h"
 #include "Gameplay/Physics/RigidBody.h"
